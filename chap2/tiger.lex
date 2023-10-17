@@ -4,7 +4,16 @@
 #include "tokens.h"
 #include "errormsg.h"
 
+/*
+ * Variable to keep track of the position of each token, measured in characters
+ * since the beginning of the file.
+ */
 int charPos=1;
+
+/*
+ * Variable to keep track of the depth that comments are nested.
+ */
+int commentNesting = 0;
 
 int yywrap(void)
 {
@@ -106,18 +115,26 @@ type   {adjust(); return TYPE;}
   /* comment handling */
 
   /* When in INITIAL condition and a comment starts, go to COMMENT condition */
-<INITIAL>"/*" {adjust(); BEGIN COMMENT;}
+<INITIAL>"/*" {adjust(); commentNesting++; BEGIN COMMENT;}
 
-  /* When in COMMENT condition and a comment starts, go back to INITIAL condition */
-<COMMENT>"*/" {adjust(); BEGIN INITIAL;}
+  
+<COMMENT>{
+  
+    /* When in COMMENT condition and a comment ends, go back to INITIAL condition */
+  "*/" {adjust(); commentNesting--; if (commentNesting == 0) { BEGIN INITIAL; } }
 
-  /* increment line numbers while inside multilien comments also */
-<COMMENT>\n	 {adjust(); EM_newline(); continue;}
+    /* When in COMMENT condition and a comment starts, stay in COMMENT condition and increment the comment nesting */
+  "/*" {adjust(); commentNesting++;}
 
-  /* When in COMMENT condition, consume all characters and ignore them */
-<COMMENT>. {adjust();}
+    /* increment line numbers while inside multilien comments also */
+  \n	 {adjust(); EM_newline(); continue;}
 
-  /* Detect unclosed comments on end of file EOF */
-<COMMENT><<EOF>>     {adjust(); EM_error(EM_tokPos,"unclosed comment detected! %s", yytext);  yyterminate();}
+    /* Detect unclosed comments on end of file EOF */
+  <<EOF>>     {adjust(); EM_error(EM_tokPos,"unclosed comment detected! %s", yytext);  yyterminate();}
+
+    /* When in COMMENT condition, consume all characters and ignore them */
+  . {adjust();}
+
+}
 
 
