@@ -30,4 +30,4 @@ util.o: util.c util.h
 	$(CC) -g -c util.c
 
 clean: 
-	rm -f a.out parsetest.exe util.o parsetest.o lex.yy.o errormsg.o y.tab.c y.tab.h y.tab.o y.output tiger.output lex.yy.c tiger.tab.grm tiger.tab.h tiger.tab.hh
+	rm -f a.out parsetest parsetest.exe util.o parsetest.o lex.yy.o errormsg.o y.tab.c y.tab.h y.tab.o y.output tiger.output lex.yy.c tiger.tab.grm tiger.tab.h tiger.tab.hh
