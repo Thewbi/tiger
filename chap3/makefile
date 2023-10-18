@@ -12,7 +12,7 @@ y.tab.o: y.tab.c
 	$(CC) -g -c y.tab.c
 
 y.tab.c: tiger.grm
-	$(PARSER_GENERATOR) -dv tiger.grm -o y.tab.c
+	$(PARSER_GENERATOR) -Wcounterexamples -dv tiger.grm -o y.tab.c
 
 y.tab.h: y.tab.c
 	echo "y.tab.h was created at the same time as y.tab.c"
