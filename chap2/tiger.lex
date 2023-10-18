@@ -4,16 +4,59 @@
 #include "tokens.h"
 #include "errormsg.h"
 
-/*
- * Variable to keep track of the position of each token, measured in characters
- * since the beginning of the file.
- */
-int charPos=1;
+
 
 /*
  * Variable to keep track of the depth that comments are nested.
  */
 int commentNesting = 0;
+
+
+
+
+/*
+ * strings defines
+ */
+const int INITIAL_BUF_LEN = 32;
+char *str_buf;
+unsigned int str_buf_cap;
+
+/*
+ * Initialize the string buffer.
+ */
+void init_str_buf(void){
+    str_buf = checked_malloc(INITIAL_BUF_LEN);
+    // 0 stands for end in a char array
+    str_buf[0] = 0;
+    str_buf_cap = INITIAL_BUF_LEN;
+}
+
+/*
+ * Append the given character to the string buffer and double
+ * the buffer's capacity if necessary.
+ */
+static void append_char2str_buf(char ch){
+    size_t new_length = strlen(str_buf) + 1;
+    if (new_length == str_buf_cap){
+        char *temp;
+        str_buf_cap *= 2;
+        temp = checked_malloc(str_buf_cap);
+        memcpy(temp, str_buf, new_length);
+        free(str_buf);
+        str_buf = temp;
+    }
+    str_buf[new_length - 1] = ch;
+    str_buf[new_length] = 0;
+}
+
+
+
+
+/*
+ * Variable to keep track of the position of each token, measured in characters
+ * since the beginning of the file.
+ */
+int charPos=1;
 
 int yywrap(void)
 {
@@ -102,6 +145,21 @@ type   {adjust(); return TYPE;}
 [a-zA-Z][a-zA-Z0-9]* {adjust();yylval.sval=String(yytext); return ID;}
 
 
+
+
+  /* lexer state/mode/condition transitions from INITIAL to states handling comments and strings */
+
+  /* When in INITIAL condition and a comment starts, go to COMMENT condition */
+<INITIAL>"/*" {adjust(); commentNesting++; BEGIN COMMENT;}
+
+  /* When in INITIAL condition and a string starts, go to STRING_STATE condition */
+<INITIAL>\" {adjust(); init_str_buf(); BEGIN STRING_STATE; }
+
+
+
+
+
+
 " "	 {adjust(); continue;}
 \n	 {adjust(); EM_newline(); continue;}
 \t	 {adjust(); continue;}
@@ -112,11 +170,22 @@ type   {adjust(); return TYPE;}
 
 
 
-  /* comment handling */
+  
 
-  /* When in INITIAL condition and a comment starts, go to COMMENT condition */
-<INITIAL>"/*" {adjust(); commentNesting++; BEGIN COMMENT;}
 
+<STRING_STATE>{
+
+  \" {adjust(); BEGIN INITIAL; yylval.sval = strdup(str_buf); return STRING; }
+
+  <<EOF>>	 {adjust(); EM_error(EM_tokPos,"Unclosed string detected! %s", yytext);  yyterminate();}
+
+  . {
+      adjust();
+      char *yptr=yytext;
+      append_char2str_buf(*yptr);
+  }
+
+}
   
 <COMMENT>{
   
@@ -130,7 +199,7 @@ type   {adjust(); return TYPE;}
   \n	 {adjust(); EM_newline(); continue;}
 
     /* Detect unclosed comments on end of file EOF */
-  <<EOF>>     {adjust(); EM_error(EM_tokPos,"unclosed comment detected! %s", yytext);  yyterminate();}
+  <<EOF>>     {adjust(); EM_error(EM_tokPos,"Unclosed comment detected! %s", yytext);  yyterminate();}
 
     /* When in COMMENT condition, consume all characters and ignore them */
   . {adjust();}

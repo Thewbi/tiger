@@ -35,3 +35,4 @@
 *.su
 
 Modern Compiler Implementation in C.pdf
+*.exe.stackdump
