@@ -147,7 +147,7 @@ In the string state the following rules apply:
 }
 ```
 
-<<EOF>> within a string leads to an error.
+EOF within a string leads to an error.
 
 All characters (.) are consumed but this time they are also copied into a buffer (append_char2str_buf()).
 The function that initializes the buffer is called on entering the STRING_STATE. The function implementations
