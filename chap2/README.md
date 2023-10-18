@@ -167,3 +167,6 @@ contains the identifier do_nothing1.
 [a-zA-Z][_a-zA-Z0-9]* {adjust();yylval.sval=String(yytext); return ID;}
 ```
  
+# TODO
+
+Handle the case where a string is too long. (Can this even happen, when the string buffer grows dynamically?)
