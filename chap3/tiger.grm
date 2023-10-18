@@ -34,10 +34,71 @@ void yyerror(char *s)
 
 %%
 
-program:	exp
+// Tiger programs do not have arguments: a program is just an expression exp.
+program: exp
+       ;
 
-exp:   ID
+exp: lvalue
+// | valueless_expression
+// | nil
+// | sequencing
+// | no_value
+   | INT // integer_literal
+   | STRING // string_literal
+// | negation
+// | function_call
+// | arithmetic
+// | comparison
+// | string_comparison
+// | boolean_operators
+// | precedence_of_operators
+// | associativity_of_operators
+// | record_creation
+   | array_creation
+// | array_and_record_assignment
+// | extent
+// | assignment
+// | if_then_else
+// | if_then
+// | while
+// | for
+// | break
+   | let
+// | parenthesis   
+   ;
 
+let: LET decs IN expseq END
+   ;
 
+lvalue: ID
+      ;
 
-	
+array_creation: ID LBRACK exp RBRACK OF exp
+              ;
+
+// A declaration-sequence is a sequence of type, value, and function declarations; 
+// no punctuation separates or terminates individual declarations.
+decs: dec
+    | decs dec
+    ;
+
+dec: tydec
+   | vardec
+//   | fundec
+   ;
+
+tydec: TYPE ID EQ ty
+     ;
+
+ty: ID
+//  | LBRACE tyfields RBRACE
+  | ARRAY OF ID  
+  ;
+
+expseq: exp
+    | expseq SEMICOLON exp
+    ;
+
+vardec: VAR ID ASSIGN exp
+      | VAR ID COLON ID ASSIGN exp
+      ;

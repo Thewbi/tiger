@@ -86,9 +86,11 @@ It is contained within A.3 VARIABLES AND EXPRESSIONS
 The definition of let is given amongst the list of all expressions:
 
 ```
-Let: The expression let decs in expseq end evaluates the declarations decs, binding types, variables, and procedures whose scope then extends over the expseq. 
+Let: The expression let decs in expseq end evaluates the declarations decs, binding types, variables, 
+and procedures whose scope then extends over the expseq. 
 
-The expseq is a sequence of zero or more expressions, separated by semicolons. The result (if any) of the last exp in the sequence is then the result of the entire let-expression.
+The expseq is a sequence of zero or more expressions, separated by semicolons. 
+The result (if any) of the last exp in the sequence is then the result of the entire let-expression.
 ```
 
 let itself is an expression since it is listed under the section on expressions.
@@ -148,19 +150,10 @@ It is defined to be
 ```
 The expseq is a sequence of zero or more expressions, separated by semicolons.
 
-Sequencing: A sequence of two or more expressions, surrounded by parentheses and separated by semicolons (exp;exp; ... exp) evaluates all the expressions in order. The result of a sequence is the result (if any) yielded by the last
+Sequencing: A sequence of two or more expressions, surrounded by parentheses and separated by semicolons (exp;exp; ... exp) evaluates all the expressions in order. The result of a sequence is the result (if any) yielded by the last
 of the expressions
 
 expseq → {exp SEMICOLON}
-```
-
-In the precise definition of expseq a single expression is not an expseq.
-This means that the grammar for let decs in expseq end
-
-has to be change to 
-
-```
-let decs in ( expseq | exp ) end
 ```
 
 The expression in test1.tig is just arr1
