@@ -53,11 +53,11 @@ exp: lvalue
 // | boolean_operators
 // | precedence_of_operators
 // | associativity_of_operators
-// | record_creation
+   | record_creation
    | array_creation
 // | array_and_record_assignment
 // | extent
-// | assignment
+   | assignment
 // | if_then_else
 // | if_then
 // | while
@@ -70,11 +70,28 @@ exp: lvalue
 let: LET decs IN expseq END
    ;
 
-lvalue: ID
+lvalue: ID // variable
+      | lvalue DOT ID // record field
+//      | lvalue LBRACK exp RBRACK // array subscript
       ;
+
+/**/
+record_creation: ID LBRACE record_creation_assignments RBRACE
+               ;
+
+record_creation_assignments: record_creation_assignment
+                           | record_creation_assignments COMMA record_creation_assignment
+                           ;
+
+record_creation_assignment: ID EQ exp
+                          ;
+
 
 array_creation: ID LBRACK exp RBRACK OF exp
               ;
+
+assignment: lvalue ASSIGN exp
+          ;
 
 // A declaration-sequence is a sequence of type, value, and function declarations; 
 // no punctuation separates or terminates individual declarations.
@@ -91,9 +108,16 @@ tydec: TYPE ID EQ ty
      ;
 
 ty: ID
-//  | LBRACE tyfields RBRACE
+  | LBRACE tyfields RBRACE
   | ARRAY OF ID  
   ;
+
+tyfields: tyfield
+        | tyfields COMMA tyfield
+        ;
+
+tyfield: ID COLON ID
+       ;
 
 expseq: exp
     | expseq SEMICOLON exp
