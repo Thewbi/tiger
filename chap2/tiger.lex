@@ -142,7 +142,7 @@ type   {adjust(); return TYPE;}
 
 
 
-[a-zA-Z][a-zA-Z0-9]* {adjust();yylval.sval=String(yytext); return ID;}
+[a-zA-Z][_a-zA-Z0-9]* {adjust();yylval.sval=String(yytext); return ID;}
 
 
 
