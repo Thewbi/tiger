@@ -68,7 +68,7 @@ program : exp
 exp : lvalue
 //  | valueless_expression
     | nil
-//  | sequencing
+    | sequencing
 //  | no_value
     | INT // integer_literal
     | STRING // string_literal
@@ -91,7 +91,7 @@ exp : lvalue
 //  | for
 //  | break
     | let
-//  | parenthesis   
+//    | parenthesis   
     ;
 
 lvalue : ID // variable
@@ -101,6 +101,9 @@ lvalue : ID // variable
 
 nil : NIL
     ;
+
+sequencing : LPAREN expseq RPAREN
+           ;
 
 function_call : ID LPAREN RPAREN
               | ID LPAREN expseq_comma RPAREN
@@ -136,11 +139,16 @@ array_creation : ID LBRACK exp RBRACK OF exp
 assignment : lvalue ASSIGN exp
            ;
 
-if_then_else : IF comparison THEN exp ELSE exp
+if_then_else : IF exp THEN exp ELSE exp
              ;
 
 let : LET decs IN expseq END
     ;
+
+/*
+parenthesis : LPAREN exp RPAREN
+            ;
+*/
 
 // A declaration-sequence is a sequence of type, value, and function declarations; 
 // no punctuation separates or terminates individual declarations.
@@ -183,5 +191,4 @@ vardec : VAR ID ASSIGN exp
 
 fundec : FUNCTION ID LPAREN tyfields RPAREN EQ exp
        | FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ exp
-     // | FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ stmt
        ;

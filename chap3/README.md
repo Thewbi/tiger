@@ -246,7 +246,7 @@ be between 2 and +
 1 + 2 . + 3
 ```
 
-From this situation the parser can either reduce 1 + 2 into exp and then shift he plus symbol:
+From this situation the parser can either reduce 1 + 2 into exp and then shift the plus symbol:
 
 ```
 exp + . 3
@@ -254,7 +254,7 @@ exp + 3 .
 exp .
 ```
 
-or it can shift then reduce 2 + 3 into exp and then reduce 1 + exp into exp
+or it can shift twice, then reduce 2 + 3 into exp and then reduce 1 + exp into exp
 
 ```
 1 + 2 + . 3
@@ -289,4 +289,4 @@ This tiger grammar makes use of operator precedences to solve the warnings in th
 I am not 100% sure on how the parser will behave once these settings are made but %left PLUS MINUS
 seems to instruct the parser to apply plus to the left most operator immediately when it has the
 chance to. This makes the parser reduce before shift. So Bison's default conflict resolution is
-overriden by the strategy to reduce first.
+overriden by the strategy to reduce first and the warning is gone.
