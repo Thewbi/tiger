@@ -1,0 +1,7 @@
+let
+    var a:= 0
+in
+	if row[r]=0 & diag1[r+c]=0
+	then 1
+end
+    

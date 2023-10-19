@@ -1,0 +1,11 @@
+let
+    function factorial(n: int): int =
+        if n = 0 then
+            1
+        else
+            n * factorial(n - 1)
+in
+    prints("factorial(10) is "); 
+    printi(factorial(10));
+    prints("\n(Should be 3628800)\n")
+end
