@@ -64,7 +64,6 @@ void yyerror(char *s)
 program : exp
         ;
 
-
 exp : lvalue
 //  | valueless_expression
     | nil
@@ -87,8 +86,8 @@ exp : lvalue
     | assignment
     | if_then_else
 //  | if_then
-//  | while
-//  | for
+    | while
+    | for
 //  | break
     | let
 //    | parenthesis   
@@ -142,13 +141,14 @@ assignment : lvalue ASSIGN exp
 if_then_else : IF exp THEN exp ELSE exp
              ;
 
-let : LET decs IN expseq END
+while : WHILE exp DO exp
+      ;
+
+for : FOR assignment TO exp DO exp
     ;
 
-/*
-parenthesis : LPAREN exp RPAREN
-            ;
-*/
+let : LET decs IN expseq END
+    ;
 
 // A declaration-sequence is a sequence of type, value, and function declarations; 
 // no punctuation separates or terminates individual declarations.
@@ -177,7 +177,8 @@ tyfields : %empty
 tyfield : ID COLON ID
         ;
 
-expseq : exp
+expseq : %empty
+       | exp
        | expseq SEMICOLON exp
        ;
 
