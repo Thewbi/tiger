@@ -61,161 +61,127 @@ void yyerror(char *s)
 %%
 
 // Tiger programs do not have arguments: a program is just an expression exp.
-program: exp
-      // | stmt
-       ;
-/*
-stmt : if_then_else
-     | array_creation
-     | assignment
-     ;
-    */
+program : exp
+        ;
 
-exp: lvalue
-// | valueless_expression
-   | nil
-// | sequencing
-// | no_value
-   | INT // integer_literal
-   | STRING // string_literal
-// | negation
-   | function_call
-   | arithmetic
-   | comparison
-// | string_comparison
-// | boolean_operators
-// | precedence_of_operators
-// | associativity_of_operators
-   | record_creation
-   | array_creation
-// | array_and_record_assignment
-// | extent
-   | assignment
-   | if_then_else
-// | if_then
-// | while
-// | for
-// | break
-   | let
-// | parenthesis   
-   ;
 
-lvalue: ID // variable
-      | lvalue DOT ID // record field
+exp : lvalue
+//  | valueless_expression
+    | nil
+//  | sequencing
+//  | no_value
+    | INT // integer_literal
+    | STRING // string_literal
+//  | negation
+    | function_call
+    | arithmetic
+    | comparison
+//  | string_comparison
+//  | boolean_operators
+//  | precedence_of_operators
+//  | associativity_of_operators
+    | record_creation
+    | array_creation
+//  | array_and_record_assignment
+//  | extent
+    | assignment
+    | if_then_else
+//  | if_then
+//  | while
+//  | for
+//  | break
+    | let
+//  | parenthesis   
+    ;
+
+lvalue : ID // variable
+       | lvalue DOT ID // record field
 //      | lvalue LBRACK exp RBRACK // array subscript
-      ;
+       ;
 
 nil : NIL
     ;
 
-function_call: ID LPAREN RPAREN
-             | ID LPAREN expseq_comma RPAREN
-             ;
-
-/*
-arithmetic: exp arith_op exp
-          ;
-        */
-
-arithmetic: exp PLUS exp
-          | exp MINUS exp
-          | exp TIMES exp
-          | exp DIVIDE exp
-          ;
-
-/*
-arithmetic: exp 
-          | arithmetic arith_op exp
-          ;
-        */
-/*
-arithmetic: arithmetic arith_op exp
-          ;
-        */
-/*
-arith_op: PLUS | MINUS | TIMES | DIVIDE
-        ;
-        */
-
-
-/*
-comparison: exp comp_op exp
-          ;
-
-comp_op: EQ | NEQ | LT | LE | GT | GE
-       ;
-*/
-
-comparison: exp EQ exp
-          | exp NEQ exp
-          | exp LT exp
-          | exp LE exp
-          | exp GT exp
-          | exp GE exp
-          ;
-
-record_creation: ID LBRACE record_creation_assignments RBRACE
-               ;
-
-record_creation_assignments: record_creation_assignment
-                           | record_creation_assignments COMMA record_creation_assignment
-                           ;
-
-record_creation_assignment: ID EQ exp
-                          ;
-
-array_creation: ID LBRACK exp RBRACK OF exp
+function_call : ID LPAREN RPAREN
+              | ID LPAREN expseq_comma RPAREN
               ;
 
-assignment: lvalue ASSIGN exp
-          ;
+arithmetic : exp PLUS exp
+           | exp MINUS exp
+           | exp TIMES exp
+           | exp DIVIDE exp
+           ;
 
-if_then_else: IF comparison THEN exp ELSE exp
-            ;
+comparison : exp EQ exp
+           | exp NEQ exp
+           | exp LT exp
+           | exp LE exp
+           | exp GT exp
+           | exp GE exp
+           ;
 
-let: LET decs IN expseq END
-   ;
+record_creation : ID LBRACE record_creation_assignments RBRACE
+                ;
+
+record_creation_assignments : record_creation_assignment
+                            | record_creation_assignments COMMA record_creation_assignment
+                            ;
+
+record_creation_assignment : ID EQ exp
+                           ;
+
+array_creation : ID LBRACK exp RBRACK OF exp
+               ;
+
+assignment : lvalue ASSIGN exp
+           ;
+
+if_then_else : IF comparison THEN exp ELSE exp
+             ;
+
+let : LET decs IN expseq END
+    ;
 
 // A declaration-sequence is a sequence of type, value, and function declarations; 
 // no punctuation separates or terminates individual declarations.
-decs: dec
-    | decs dec
-    ;
-
-dec: tydec
-   | vardec
-   | fundec
-   ;
-
-tydec: TYPE ID EQ ty
+decs : dec
+     | decs dec
      ;
 
-ty: ID
-  | LBRACE tyfields RBRACE
-  | ARRAY OF ID  
-  ;
-
-tyfields: %empty
-        | tyfield
-        | tyfields COMMA tyfield
-        ;
-
-tyfield: ID COLON ID
-       ;
-
-expseq: exp
-    | expseq SEMICOLON exp
+dec : tydec
+    | vardec
+    | fundec
     ;
 
-expseq_comma: exp
-            | expseq_comma COMMA exp
-            ;
-
-vardec: VAR ID ASSIGN exp
-      | VAR ID COLON ID ASSIGN exp
+tydec : TYPE ID EQ ty
       ;
 
-fundec: FUNCTION ID LPAREN tyfields RPAREN EQ exp
-      | FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ exp
+ty : ID
+   | LBRACE tyfields RBRACE
+   | ARRAY OF ID  
+   ;
+
+tyfields : %empty
+         | tyfield
+         | tyfields COMMA tyfield
+         ;
+
+tyfield : ID COLON ID
+        ;
+
+expseq : exp
+       | expseq SEMICOLON exp
+       ;
+
+expseq_comma : exp
+             | expseq_comma COMMA exp
+             ;
+
+vardec : VAR ID ASSIGN exp
+       | VAR ID COLON ID ASSIGN exp
+       ;
+
+fundec : FUNCTION ID LPAREN tyfields RPAREN EQ exp
+       | FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ exp
      // | FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ stmt
-      ;
+       ;

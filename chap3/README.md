@@ -54,7 +54,7 @@ parsetest.exe ..\testcases\test1.tig
 Initially, without ever updating the tiger.grm grammar definition, the parsing of any .tig file
 will fail because no valid grammar production rules are contained in tiger.grm.
 
-### Writing the grammar
+### Understanding the grammar
 
 The task in chapter 3 is to create a complete grammar definition for the tiger language.
 
@@ -174,3 +174,119 @@ id is the id token that the lexer returns. It is defined to be:
 Identifiers: An identifier is a sequence of letters, digits, and underscores, starting with a letter. Uppercase letters are distinguished from lowercase. In this
 appendix the symbol id stands for an identifier.
 ```
+
+### Writing the grammar in Bison
+
+Bison processes the tiger.grm file and it will generate C code for a parser for the grammar designed in the tiger.grm file.
+
+Working with Bison means adding production rules until all testcases can be parsed.
+Actions can be attached to each detected symbol in a rule. Actions are C code that is executed when a symbol
+is reduced. In chapter 3 of the book, it is explicitly stated that at this point no actions should be added, so
+the grammar will contain none yet.
+
+The largest problem when writing Bison grammars is that of shift/reduce conflicts.
+When your grammar creates a shift/reduce conflict, Bison will output a warning.
+It will output a warning since shift/reduce conflicts are no fatal errors. Bison will still generate
+code for a parser. Bison is able to generate working code under shift/reduce conflicts because
+it decides to shift in cases where it could shift and reduce at the same time.
+See https://www.gnu.org/software/bison/manual/html_node/Shift_002fReduce.html#:~:text=This%20situation%2C%20where%20either%20a,directed%20by%20operator%20precedence%20declarations.
+
+> This situation, where either a shift or a reduction would be valid, is called a shift/reduce conflict. Bison is designed to resolve these conflicts by choosing to shift, unless otherwise directed by operator precedence declarations.
+
+So what is a shift/reduce conflict exactly.
+Grammars contain rules. A rule tells the parser, which symbols (right side of a production rule) can be replaced
+by the symbol on the left side of a production rule.
+Shifting means that the parser will pull in the next token from the lexer.
+The parser will shift in symbols and reduce them until the start symbol is produced. Once the start symbol
+is produced, the input has been parsed succesfully.
+
+So at any point in time, the parse can do one of two things. It can reduce a parser rule or it can shift in a new
+symbol. There are situations where a parser has the option to reduce or to shift at the same time. This
+happens when both options are valid according to the grammar. The grammar is then said to be ambiguous.
+Bison outputs a shift/reduce conflict warning and the proceeds with the shift.
+
+The point is that you should get rid of shift/reduce conflicts wherever possible. Do not ignore those warnings.
+There are cases where grammars are ambiguous and cannot be rewritten to become unambiguous. But most of the time
+you as a grammar designer have the chance to adjust the grammar until it becomes unambiguous.
+
+You have two tools to get rid of ambiguity. Tool 1 is to change your productions. There is no recipe on how
+to do this but mostly try to keep the rules simple. If your rules try to achieve too much in one go, the chance
+of shift/reduce conflicts rises.
+
+Tool number two is to tell Bison how to handle operator precedences.
+
+Let's assume this grammar:
+
+```
+exp : arithmetic
+    | INT
+    ;
+
+arithmetic : exp PLUS exp
+           | exp MINUS exp
+           | exp TIMES exp
+           | exp DIVIDE exp
+           ;
+```
+
+Here exp (expression, is a integer or a combination of integers that form a new integer) is recursive
+in that two exp can be combined using the operators +, -, * and / to form a new exp.
+
+Imagine the parser sees the following input:
+
+```
+1 + 2 + 3
+```
+
+The parser current location pointer in the input stream is denoted by a dot and let's say the parser
+has just shifted in the symbol 2 and could potentially shift in the symbol + next. The dot mark will
+be between 2 and +
+
+```
+1 + 2 . + 3
+```
+
+From this situation the parser can either reduce 1 + 2 into exp and then shift he plus symbol:
+
+```
+exp + . 3
+exp + 3 .
+exp .
+```
+
+or it can shift then reduce 2 + 3 into exp and then reduce 1 + exp into exp
+
+```
+1 + 2 + . 3
+1 + 2 + 3 .
+1 + exp .
+exp .
+```
+
+The parser has to make a decision on what to do. A stated earlier, Bison will output a warning and
+shift by default. The question is how to change the grammar to get rid of the warning and have
+a user defined decision making baked into the grammar without the parser performing it's default
+conflict resolution strategy!
+
+The solution is this case can be operator precedences.
+See https://github.com/FlexW/tiger-compiler/blob/master/src/tiger_grm.y
+This tiger grammar makes use of operator precedences to solve the warnings in this case.
+
+```
+%nonassoc DO OF
+%nonassoc THEN /* ELSE must come after THEN! */
+%nonassoc ELSE
+%left SEMICOLON
+%left ASSIGN
+%left OR
+%left AND
+%nonassoc EQ NEQ GT LT GE LE
+%left PLUS MINUS
+%left TIMES DIVIDE
+%left UMINUS
+```
+
+I am not 100% sure on how the parser will behave once these settings are made but %left PLUS MINUS
+seems to instruct the parser to apply plus to the left most operator immediately when it has the
+chance to. This makes the parser reduce before shift. So Bison's default conflict resolution is
+overriden by the strategy to reduce first.
