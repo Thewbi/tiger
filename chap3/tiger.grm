@@ -85,7 +85,7 @@ exp : lvalue
 //  | extent
     | assignment
     | if_then_else
-//  | if_then
+    | if_then
     | while
     | for
 //  | break
@@ -140,6 +140,9 @@ assignment : lvalue ASSIGN exp
 
 if_then_else : IF exp THEN exp ELSE exp
              ;
+
+if_then : IF exp THEN exp
+        ;
 
 while : WHILE exp DO exp
       ;
