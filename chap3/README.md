@@ -290,3 +290,35 @@ I am not 100% sure on how the parser will behave once these settings are made bu
 seems to instruct the parser to apply plus to the left most operator immediately when it has the
 chance to. This makes the parser reduce before shift. So Bison's default conflict resolution is
 overriden by the strategy to reduce first and the warning is gone.
+
+To handle the unary minus operator, BISON has a special pseudo token UMINUS.
+It is not a real token but it is used to give a precedence to the unary minus.
+
+```
+arithmetic : exp PLUS exp
+           | exp MINUS exp
+           | exp TIMES exp
+           | exp DIVIDE exp
+           | MINUS exp %prec UMINUS
+           ;
+```
+
+For some reason it only works if it is used as the last option in the arithmetic rule.
+
+The precedence is defined by:
+
+```
+%nonassoc DO OF
+%nonassoc THEN /* ELSE must come after THEN! */
+%nonassoc ELSE
+%left SEMICOLON
+%left ASSIGN
+%left OR
+%left AND
+%nonassoc EQ NEQ GT LT GE LE
+%left PLUS MINUS
+%left TIMES DIVIDE
+%left UMINUS
+```
+
+Here, UMINUS has highest priority since it is located at the very bottom of the list of precedence commands %left and %nonassoc.

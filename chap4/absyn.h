@@ -5,7 +5,11 @@
  * Linked list types end with "..list"
  */
 
+#pragma once
+
 /* Type Definitions */
+
+#include "symbol.h"
 
 typedef int A_pos;
 
