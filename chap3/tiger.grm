@@ -42,6 +42,7 @@ void yyerror(char *s)
 %left GT 
 %left GE*/
 
+/* stolen from https://github.com/FlexW/tiger-compiler/blob/master/src/tiger_grm.y */
 %nonassoc DO OF
 %nonassoc THEN /* ELSE must come after THEN! */
 %nonassoc ELSE
