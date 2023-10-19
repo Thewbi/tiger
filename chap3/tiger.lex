@@ -162,7 +162,7 @@ type   {adjust(); return TYPE;}
 
 
 " "	 {adjust(); continue;}
-\n	 {adjust(); EM_newline(); continue;}
+\r?\n	 {adjust(); EM_newline(); continue;}
 \t	 {adjust(); continue;}
 ","	 {adjust(); return COMMA;}
 

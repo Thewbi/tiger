@@ -40,7 +40,8 @@ void yyerror(char *s)
 %left LT 
 %left LE 
 %left GT 
-%left GE*/
+%left GE
+*/
 
 /* stolen from https://github.com/FlexW/tiger-compiler/blob/master/src/tiger_grm.y */
 %nonassoc DO OF
@@ -76,7 +77,7 @@ exp : lvalue
     | arithmetic
     | comparison
 //  | string_comparison
-//  | boolean_operators
+    | boolean_operators
 //  | precedence_of_operators
 //  | associativity_of_operators
     | record_creation
@@ -95,7 +96,8 @@ exp : lvalue
 
 lvalue : ID // variable
        | lvalue DOT ID // record field
-//      | lvalue LBRACK exp RBRACK // array subscript
+//       | lvalue LBRACK exp RBRACK // array subscript
+       | lvalue array_indexing // array subscript
        ;
 
 nil : NIL
@@ -112,6 +114,7 @@ arithmetic : exp PLUS exp
            | exp MINUS exp
            | exp TIMES exp
            | exp DIVIDE exp
+           | MINUS exp %prec UMINUS
            ;
 
 comparison : exp EQ exp
@@ -122,17 +125,26 @@ comparison : exp EQ exp
            | exp GE exp
            ;
 
+boolean_operators : exp AND exp
+                  | exp OR exp
+                  ;
+
 record_creation : ID LBRACE record_creation_assignments RBRACE
                 ;
 
-record_creation_assignments : record_creation_assignment
+record_creation_assignments : %empty
+                            | record_creation_assignment
                             | record_creation_assignments COMMA record_creation_assignment
                             ;
 
 record_creation_assignment : ID EQ exp
                            ;
 
-array_creation : ID LBRACK exp RBRACK OF exp
+array_creation : lvalue OF exp
+//ID array_indexing OF exp
+               ;
+
+array_indexing : LBRACK exp RBRACK
                ;
 
 assignment : lvalue ASSIGN exp
