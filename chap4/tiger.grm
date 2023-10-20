@@ -1,4 +1,5 @@
 %{
+
 #include <stdio.h>
 #include "util.h"
 #include "errormsg.h"
@@ -12,18 +13,34 @@ void yyerror(char *s)
 {
  EM_error(EM_tokPos, "%s", s);
 }
+
 %}
 
-
+/* */
+/* union used for the variable $$, $1, $2, $3, ... */
+/* */
 %union {
 	int pos;
 	int ival;
 	string sval;
+    A_dec a_dec;
+    A_exp a_exp;
 	}
 
+/* */
+/* Define which rule uses which field of the union */
+/* */
+%type <a_dec> dec
+%type <a_dec> vardec
+%type <a_exp> exp
+%type <a_exp> nil
+%type <a_exp> arithmetic
+
+/* */
+/* the list of all token */
+/* */
 %token <sval> ID STRING
 %token <ival> INT
-
 %token 
   COMMA COLON SEMICOLON LPAREN RPAREN LBRACK RBRACK 
   LBRACE RBRACE DOT 
@@ -32,6 +49,10 @@ void yyerror(char *s)
   ARRAY IF THEN ELSE WHILE FOR TO DO LET IN END OF 
   BREAK NIL
   FUNCTION VAR TYPE 
+
+/* */
+/* operator precedence */
+/* */
 
 /* https://www-h.eng.cam.ac.uk/help/tpl/languages/flexbison/ *
 /* Define operator reduction to get rid of shift/reduce conflicts 
@@ -65,9 +86,7 @@ void yyerror(char *s)
 %%
 
 // Tiger programs do not have arguments: a program is just an expression exp.
-program : exp { //absyn_root = checked_malloc(sizeof(*absyn_root));
-                absyn_root = A_NilExp(0);
-              }
+program : exp { absyn_root = $1; }
         ;
 
 exp : lvalue
@@ -75,11 +94,11 @@ exp : lvalue
     | nil
     | sequencing
 //  | no_value
-    | INT // integer_literal
-    | STRING // string_literal
+    | INT { $$ = A_IntExp(0, $1); }
+    | STRING
 //  | negation
     | function_call
-    | arithmetic
+    | arithmetic { $$ = $1; }
     | comparison
 //  | string_comparison
     | boolean_operators
@@ -105,7 +124,7 @@ lvalue : ID // variable
        | lvalue array_indexing // array subscript
        ;
 
-nil : NIL
+nil : NIL { $$ = A_NilExp(0); }
     ;
 
 sequencing : LPAREN expseq RPAREN
@@ -115,10 +134,10 @@ function_call : ID LPAREN RPAREN
               | ID LPAREN expseq_comma RPAREN
               ;
 
-arithmetic : exp PLUS exp
-           | exp MINUS exp
-           | exp TIMES exp
-           | exp DIVIDE exp
+arithmetic : exp PLUS exp { $$ = A_OpExp(0, A_plusOp, $1, $3); }
+           | exp MINUS exp { $$ = A_OpExp(0, A_minusOp, $1, $3); }
+           | exp TIMES exp { $$ = A_OpExp(0, A_timesOp, $1, $3); }
+           | exp DIVIDE exp { $$ = A_OpExp(0, A_divideOp, $1, $3); }
            | MINUS exp %prec UMINUS
            ;
 
@@ -146,7 +165,6 @@ record_creation_assignment : ID EQ exp
                            ;
 
 array_creation : lvalue OF exp
-//ID array_indexing OF exp
                ;
 
 array_indexing : LBRACK exp RBRACK
@@ -167,17 +185,17 @@ while : WHILE exp DO exp
 for : FOR assignment TO exp DO exp
     ;
 
-let : LET decs IN expseq END
+let : LET decs IN expseq END // { $$ = $1; }
     ;
 
 // A declaration-sequence is a sequence of type, value, and function declarations; 
 // no punctuation separates or terminates individual declarations.
-decs : dec
+decs : dec // { $$ = $1; }
      | decs dec
      ;
 
-dec : tydec
-    | vardec
+dec : tydec 
+    | vardec { $$ = $1; }
     | fundec
     ;
 
@@ -206,8 +224,8 @@ expseq_comma : exp
              | expseq_comma COMMA exp
              ;
 
-vardec : VAR ID ASSIGN exp
-       | VAR ID COLON ID ASSIGN exp
+vardec : VAR ID ASSIGN exp { $$ = A_VarDec(0, $2, $2, NULL); }
+       | VAR ID COLON ID ASSIGN exp { $$ = A_VarDec(0, $2, $2, $4); }
        ;
 
 fundec : FUNCTION ID LPAREN tyfields RPAREN EQ exp

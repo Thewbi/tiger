@@ -1,19 +1,16 @@
 %{
 #include <string.h>
 #include "util.h"
-//#include "tokens.h"
+#include "absyn.h"
+
 #include "y.tab.h"
 #include "errormsg.h"
-
 
 
 /*
  * Variable to keep track of the depth that comments are nested.
  */
 int commentNesting = 0;
-
-
-
 
 /*
  * strings defines
@@ -49,9 +46,6 @@ static void append_char2str_buf(char ch){
     str_buf[new_length - 1] = ch;
     str_buf[new_length] = 0;
 }
-
-
-
 
 /*
  * Variable to keep track of the position of each token, measured in characters

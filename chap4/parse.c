@@ -12,6 +12,8 @@
 #include "y.tab.h"
 
 extern int yyparse(void);
+
+// this symbol is defined in tiger.grm
 extern A_exp absyn_root;
 
 /* parse source file fname; 

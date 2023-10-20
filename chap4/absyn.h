@@ -129,8 +129,7 @@ A_ty A_ArrayTy(A_pos pos, S_symbol array);
 A_field A_Field(A_pos pos, S_symbol name, S_symbol typ);
 A_fieldList A_FieldList(A_field head, A_fieldList tail);
 A_expList A_ExpList(A_exp head, A_expList tail);
-A_fundec A_Fundec(A_pos pos, S_symbol name, A_fieldList params, S_symbol result,
-		  A_exp body);
+A_fundec A_Fundec(A_pos pos, S_symbol name, A_fieldList params, S_symbol result, A_exp body);
 A_fundecList A_FundecList(A_fundec head, A_fundecList tail);
 A_decList A_DecList(A_dec head, A_decList tail);
 A_namety A_Namety(S_symbol name, A_ty ty);
