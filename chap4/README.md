@@ -28,20 +28,20 @@ Within the snippets, there are several Bison specific variables avaliable that t
 with certain specific values. Those variables are the interface between the snippets and the 
 parser if you want.
 
-The variable $$ is the result of the rule. When a non-terminal is reduced, it is reduced to a single
+The variable \$\$ is the result of the rule. When a non-terminal is reduced, it is reduced to a single
 symbol. That symbol is the symbol on the left side of the rule. This symbol caries a value with it.
 The $$ symbol is used to assign a value to the reduced left hand side symbol. When that symbol occurs
 in a rule on the right-hand side, and that rule is reduced, the semantic action has access to the value
-assigned to the symbol using $1, $2, $3, ....
+assigned to the symbol using \$1, \$2, \$3, ....
 
-The variables $1, $2, $3, ... denote the individual symbols on the right-hand side when a non-terminal 
+The variables \$1, \$2, \$3 and so on denote the individual symbols on the right-hand side when a non-terminal 
 is reduced. You have to realize that when a non-terminal is reduced and the right-hand side contains
 non-terminals then these non-terminals have been reduced before hence they already have a value assigned
 to them. You can then take the values from the non-terminals and combine them in new ways into a value
-that you then assign to the $$ variable to return it to other semantic actions that are executed 
+that you then assign to the \$\$ variable to return it to other semantic actions that are executed 
 later.
 
-There is on important thing to realize when using the variables $1, $2, $3, ... as explained in this
+There is on important thing to realize when using the variables \$1, \$2, \$3, ... as explained in this
 stack overflow question: https://stackoverflow.com/questions/43882160/bison-grammar-type-and-token
 The important point is that you semantic actions are actually counted along the symbols on the right
 hand side. If you insert a semantic action, this action will use up one of the indexes and all the
@@ -61,8 +61,8 @@ for_statement : tkFOR
                 next-statement;
 ```
 
-tkFOR is $1, tkIDENT is $2, the semantic action after tkIDENT is $3, tkEQUALS is $4, expr is $5, the 
-semantic action after expr is $6, ...
+tkFOR is \$1, tkIDENT is $2, the semantic action after tkIDENT is \$3, tkEQUALS is \$4, expr is \$5, the 
+semantic action after expr is \$6, ...
 
 Imagine the non-terminal rule:
 
@@ -70,13 +70,13 @@ Imagine the non-terminal rule:
 let : LET decs IN expseq END
 ```
 
-$$ is the value that will be stored inside let.
+\$\$ is the value that will be stored inside let.
 
-$1 is LET
-$2 is the value that is already stored inside decs.
-$3 is IN
-$4 is the value that is already stored inside expseq.
-$5 is the value ...
+\$1 is LET
+\$2 is the value that is already stored inside decs.
+\$3 is IN
+\$4 is the value that is already stored inside expseq.
+\$5 is the value ...
 
 
 
@@ -99,7 +99,7 @@ Otherwise the symbol is used twice for different things which causes the error.
 
 
 
-## Error: error: $$ of 'nil' has no declared type
+## Error: error: \$\$ of 'nil' has no declared type
 
 Your types are not set up correctly. Here is how types work in Bison.
 
@@ -118,19 +118,19 @@ E.g. there is a integer called pos, a integer called ival and a String called sv
 Next you have to select for each rule, which of the fields in the union is used.
 This selected field will become $$ for that rule!
 
-Some of the rules will use $$ and $$ is defined to be the int pos.
+Some of the rules will use \$\$ and \$\$ is defined to be the int pos.
 
 ```
 %type <pos> exp
 ```
 
-Some of the rules will use $$ and $$ is defined to be the int ival.
+Some of the rules will use \$\$ and \$\$ is defined to be the int ival.
 
 ```
 %type <ival> exp2
 ```
 
-Some of the rules will use $$ and $$ is defined to be the int sval.
+Some of the rules will use \$\$ and \$\$ is defined to be the int sval.
 
 ```
 %type <sval> exp3
@@ -172,8 +172,26 @@ The solution was to include #include "absyn.h" before #include "y.tab.h" in tige
 ```
 
 
+# Things I do not understand
 
-## Using the symbols
+Typewise, how does this rule work?
+
+```
+expseq : %empty
+       | exp { $$ = $1; }
+       | expseq SEMICOLON exp { $$ = A_ExpList($3, $1); }
+       ;
+```
+
+```
+%type <a_explist> expseq
+```
+
+expseq's type is defined to be a_explist, but the exp option of the rule returs a_exp! How do those two types get merged together! I do not understand!
+
+
+
+# Using the symbols
 
 The file absyn.h contains functions that construct nodes that can be inserted into the AST.
 
