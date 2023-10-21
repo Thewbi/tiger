@@ -161,7 +161,7 @@ type   {adjust(); return TYPE;}
 
 
 " "	 {adjust(); continue;}
-\r?\n	 {adjust(); EM_newline(); continue;}
+(\r\n?|\n)	 {adjust(); EM_newline(); continue;}
 \t	 {adjust(); continue;}
 ","	 {adjust(); return COMMA;}
 

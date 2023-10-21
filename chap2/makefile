@@ -19,4 +19,4 @@ util.o: util.c util.h
 	gcc $(CFLAGS) -c util.c
 
 clean: 
-	rm -f a.out util.o driver.o lex.yy.o lex.yy.c errormsg.o
+	rm -f a.out lextest.exe lextest.exe.stackdump util.o driver.o lex.yy.o lex.yy.c errormsg.o

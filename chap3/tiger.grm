@@ -89,7 +89,7 @@ exp : lvalue
     | if_then
     | while
     | for
-//  | break
+    | break
     | let
 //    | parenthesis   
     ;
@@ -161,6 +161,9 @@ while : WHILE exp DO exp
 
 for : FOR assignment TO exp DO exp
     ;
+
+break : BREAK
+      ;
 
 let : LET decs IN expseq END
     ;

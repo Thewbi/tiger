@@ -25,11 +25,11 @@ int main(int argc, char **argv) {
 
  if (argc!=2) {fprintf(stderr,"usage: a.out filename\n"); exit(1);}
 
- printf("A\n");
+ printf("parsetest.c - A\n");
 
 A_exp program = parse(argv[1]);
 
-printf("B\n");
+printf("parsetest.c - B\n");
 
 //  if (!fout) {
 //   printf("C\n");
@@ -45,11 +45,14 @@ FILE *out_file = fopen("ast_dump.txt", "w"); // write only
               exit(-1); // must include stdlib.h
             }
 
- printf("D\n");
+ printf("parsetest.c - D\n");
 
+
+printf("Dumping the AST ...\n");
  pr_exp(out_file, program, 0);
+ printf("Dumping the AST .\n");
 
-printf("E\n");
+printf("parsetest.c - E\n");
 
 fclose(out_file);
 out_file = NULL;

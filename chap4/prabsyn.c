@@ -53,7 +53,7 @@ static void pr_var(FILE *out, A_var v, int d) {
 
 static char str_oper[][12] = {
    "PLUS", "MINUS", "TIMES", "DIVIDE", 
-   "EQUAL", "NOTEQUAL", "LESSTHAN", "LESSEQ", "GREAT", "GREATEQ"};
+   "EQUAL", "NOTEQUAL", "LESSTHAN", "LESSEQ", "GREATER", "GREATEREQ"};
  
 static void pr_oper(FILE *out, A_oper d) {
   fprintf(out, "%s", str_oper[d]);
@@ -62,11 +62,11 @@ static void pr_oper(FILE *out, A_oper d) {
 /* Print A_var types. Indent d spaces. */
 void pr_exp(FILE *out, A_exp v, int d) {
 
-  printf("X1\n");
+  printf("pr_exp - X1\n");
 
  indent(out, d);
 
- printf("X2 %d\n", v);
+ printf("pr_exp - X2 %d vkind: %d\n", v, v->kind);
 
  switch (v->kind) {
 
@@ -125,14 +125,20 @@ void pr_exp(FILE *out, A_exp v, int d) {
    break;
 
  case A_ifExp:
- printf("A_ifExp\n");
+ printf("A_ifExp - A\n");
    fprintf(out, "iffExp(\n");
+   printf("A_ifExp - B\n");
    pr_exp(out, v->u.iff.test, d+1); fprintf(out, ",\n");
+   printf("A_ifExp - C\n");
    pr_exp(out, v->u.iff.then, d+1);
+   printf("A_ifExp - D\n");
    if (v->u.iff.elsee) { /* else is optional */
+   printf("A_ifExp - E\n");
       fprintf(out, ",\n");
+      printf("A_ifExp - F\n");
       pr_exp(out, v->u.iff.elsee, d+1);
    }
+   printf("A_ifExp - G\n");
    fprintf(out, ")");
    break;
 
