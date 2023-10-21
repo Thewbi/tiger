@@ -93,7 +93,7 @@ digits [0-9]+
 /* %s defines inclusive start conditions. Rules with the start condition and also rules without start condition are active. */
 /* %x defines exclusive start conditions. Only rules with the start condition are active! */
 
-%x COMMENT STRING_STATE
+%x COMMENT SINGLE_LINE_COMMENT STRING_STATE
 
 %%
 
@@ -152,8 +152,11 @@ type   {adjust(); return TYPE;}
   /* When in INITIAL condition and a comment starts, go to COMMENT condition */
 <INITIAL>"/*" {adjust(); commentNesting++; BEGIN COMMENT;}
 
+  /* When in INITIAL condition and a single line comment starts, go to SINGLE_LINE_COMMENT condition */
+<INITIAL>"//" {adjust(); BEGIN SINGLE_LINE_COMMENT;}
+
   /* When in INITIAL condition and a string starts, go to STRING_STATE condition */
-<INITIAL>\" {adjust(); init_str_buf(); BEGIN STRING_STATE; }
+<INITIAL>\" {adjust(); init_str_buf(); BEGIN STRING_STATE;}
 
 
 
@@ -195,7 +198,7 @@ type   {adjust(); return TYPE;}
     /* When in COMMENT condition and a comment starts, stay in COMMENT condition and increment the comment nesting */
   "/*" {adjust(); commentNesting++;}
 
-    /* increment line numbers while inside multilien comments also */
+    /* increment line numbers while inside multiline comments also */
   \n	 {adjust(); EM_newline(); continue;}
 
     /* Detect unclosed comments on end of file EOF */
@@ -204,6 +207,15 @@ type   {adjust(); return TYPE;}
     /* When in COMMENT condition, consume all characters and ignore them */
   . {adjust();}
 
+}
+
+<SINGLE_LINE_COMMENT>{
+  
+    /* increment line numbers while inside single line comments also */
+  \n	 {adjust(); EM_newline(); BEGIN INITIAL;}
+
+    /* When in SINGLE_LINE_COMMENT condition, consume all characters and ignore them */
+  . {adjust();}
 }
 
 

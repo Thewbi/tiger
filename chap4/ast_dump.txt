@@ -1,7 +1,9 @@
- iffExp(
-  opExp(
-   GREATER,
-   intExp(10),
-   intExp(20)),
-  intExp(30),
-  intExp(40))
+ seqExp(
+  expList(
+   opExp(
+    PLUS,
+    intExp(1),
+    intExp(1)),
+   expList(
+    nilExp(),
+    expList())))

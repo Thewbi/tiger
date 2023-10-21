@@ -4,7 +4,7 @@ Compiler for the Tiger programming language
 
 # Official Material
 
-Mr. Apple's profile page: https://www.cs.princeton.edu/~appel/modern/
+Mr. Apple's profile page: https://www.cs.princeton.edu/~appel/
 
 The book's page: https://www.cs.princeton.edu/~appel/modern/
 

@@ -62,11 +62,11 @@ static void pr_oper(FILE *out, A_oper d) {
 /* Print A_var types. Indent d spaces. */
 void pr_exp(FILE *out, A_exp v, int d) {
 
-  printf("pr_exp - X1\n");
+  //printf("pr_exp - X1\n");
 
  indent(out, d);
 
- printf("pr_exp - X2 %d vkind: %d\n", v, v->kind);
+ //printf("pr_exp - v: %d v.kind: %d\n", v, v->kind);
 
  switch (v->kind) {
 
@@ -111,10 +111,14 @@ void pr_exp(FILE *out, A_exp v, int d) {
    pr_efieldList(out, v->u.record.fields, d+1); fprintf(out, ")");
    break;
 
+ /* This is a sequencing node. It contains a pointer to the struct A_expList_ 
+ A_expList_ has a A_exp called head and a pointer to the next A_expList_.
+ This will form a singly linked list. */
  case A_seqExp:
- printf("A_seqExp\n");
+    printf("A_seqExp ...\n");
    fprintf(out, "seqExp(\n");
    pr_expList(out, v->u.seq, d+1); fprintf(out, ")");
+   printf("A_seqExp done.\n");
    break;
 
  case A_assignExp:
@@ -242,6 +246,9 @@ static void pr_fieldList(FILE *out, A_fieldList v, int d) {
 }
 
 static void pr_expList(FILE *out, A_expList v, int d) {
+
+  printf("pr_expList() ...\n");
+  
  indent(out, d);
  if (v) {
    fprintf(out, "expList(\n"); 
