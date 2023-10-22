@@ -31,7 +31,16 @@ static void indent(FILE *out, int d) {
 
 /* Print A_var types. Indent d spaces. */
 static void pr_var(FILE *out, A_var v, int d) {
+
+  printf("pr_var()\n");
+
  indent(out, d);
+
+ printf("%d\n", A_simpleVar);
+ printf("%d\n", A_fieldVar);
+ printf("%d\n", A_subscriptVar);
+ printf("%d\n", v->kind);
+
  switch (v->kind) {
  case A_simpleVar:
    fprintf(out, "simpleVar(%s)", S_name(v->u.simple)); 
@@ -53,7 +62,7 @@ static void pr_var(FILE *out, A_var v, int d) {
 
 static char str_oper[][12] = {
    "PLUS", "MINUS", "TIMES", "DIVIDE", 
-   "EQUAL", "NOTEQUAL", "LESSTHAN", "LESSEQ", "GREATER", "GREATEREQ"};
+   "EQUAL", "NOTEQUAL", "LESSTHAN", "LESSEQ", "GREATER", "GREATEREQ", "AND", "OR"};
  
 static void pr_oper(FILE *out, A_oper d) {
   fprintf(out, "%s", str_oper[d]);
@@ -71,7 +80,7 @@ void pr_exp(FILE *out, A_exp v, int d) {
  switch (v->kind) {
 
  case A_varExp:
- printf("A_varExp\n");
+ printf("pr_exp() - A_varExp\n");
    fprintf(out, "varExp(\n"); pr_var(out, v->u.var, d+1); 
    fprintf(out, "%s", ")");
    break;
@@ -248,7 +257,7 @@ static void pr_fieldList(FILE *out, A_fieldList v, int d) {
 static void pr_expList(FILE *out, A_expList v, int d) {
 
   printf("pr_expList() ...\n");
-  
+
  indent(out, d);
  if (v) {
    fprintf(out, "expList(\n"); 

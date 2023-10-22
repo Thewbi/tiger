@@ -2,7 +2,8 @@
   expList(
    opExp(
     PLUS,
-    intExp(1),
+    varExp(
+     simpleVar(i)),
     intExp(1)),
    expList(
     nilExp(),
