@@ -195,3 +195,116 @@ expseq's type is defined to be a_explist, but the exp option of the rule returs 
 
 The file absyn.h contains functions that construct nodes that can be inserted into the AST.
 
+
+
+
+# Approach Developing and Testing the Ssoftware for Chapter 4
+
+Constructing and printing the AST means to have semantic actions for all parts of the grammar to construct the AST.
+
+The most efficient way to work towards completion is to start with the most basic production rules and work your
+way up towards the higher level productions that make use of the low level production rules.
+
+As an example, one of the most basic rules is to have an expression that consists of the integer literal 1 only.
+1 is a valid expression hence it is already a valid tiger program and hence a AST can be constructed for it and
+printed onto the console or into a text file.
+
+Starting from the expression 1, you can now construct operation usage such as 1+2.
+From there construct variable usage such as 1+i or 1+k or 1 + variable_1.
+
+Proceed with if-then and if-then-else
+
+Then go to sequences. Once sequences are in place, go to while and for loops.
+
+Then go to type declaractions or function declarations.
+
+In terms of the testcases provided in the book, the proposed order of testing is:
+
+Comparison Operators
+test13.tig
+
+Arithmetic Operators
+test26.tig
+
+if-then-else:
+test8.tig, test9.tig, test15.tig
+
+while-loops:
+test10.tig
+
+for-loops:
+test11.tig
+
+sequences
+test20.tig
+
+array-indexing
+test24.tig
+
+record field acces
+test25.tig
+
+
+
+variable declarations:
+test12.tig
+test31.tig
+test37.tig
+test41.tig
+test43.tig
+
+record type definitions
+test33.tig
+test44.tig
+test45.tig
+test46.tig
+test47.tig
+test49.tig
+
+type definitions:
+test16.tig, test1.tig, test2.tig, test3.tig, test5.tig, test14.tig, test17.tig, test22.tig, test23.tig, test28.tig, test29.tig, test30.tig, test38.tig, test48.tig
+
+function declarations
+test4.tig, test6.tig, test7.tig, test18.tig, test19.tig, test39.tig, test40.tig
+
+function calls
+test21.tig, test27.tig
+
+
+# Implementing Sequences
+
+Extend the expseq rule in your tiger.grm by semantic actions.
+
+```
+expseq :
+       exp { $$ = A_ExpList($1, NULL); }
+       | 
+       exp SEMICOLON expseq { $$ = A_ExpList($1, $3); }
+       ;
+```
+Both semantic actions will add a node to the single linked list of expressions in the sequence.
+The rule for exp is add a NULL pointer denoting that there is no next node to follow.
+The semicolon rule does construct a node and a pointer to the rest of the list of expressions.
+
+Do not forget to extend the exp and the sequencing rules! They have to pass on the constructed nodes.
+
+```
+exp : 
+
+    ...
+
+    | sequencing { $$ = $1; }
+
+    ...
+
+```
+
+exp will just forward the node it sees without any further processing.
+
+```
+sequencing : LPAREN expseq RPAREN { $$ = A_SeqExp(0, $2); }
+           ;
+```
+
+The sequenceing rule will not only pass on a node, but it also constructs a A_SeqExp node
+wrapping the nodes it received from it's predecessors further down the AST.
