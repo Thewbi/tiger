@@ -130,7 +130,7 @@ Some of the rules will use \$\$ and \$\$ is defined to be the int ival.
 %type <ival> exp2
 ```
 
-Some of the rules will use \$\$ and \$\$ is defined to be the int sval.
+Some of the rules will use \$\$ and \$\$ is defined to be the string sval.
 
 ```
 %type <sval> exp3
@@ -151,7 +151,7 @@ The generated code in y.tab.c will look something like this:
 
 ## Error:  unknown type name 'A_dec'
 
-You have added a new field to the union. No bison complains that it does not
+You have added a new field to the union. Now bison complains that it does not
 know the type!
 
 As stated here: https://stackoverflow.com/questions/40028904/yacc-union-on-struct-type
@@ -171,23 +171,10 @@ The solution was to include #include "absyn.h" before #include "y.tab.h" in tige
 #include "errormsg.h"
 ```
 
-
-# Things I do not understand
-
-Typewise, how does this rule work?
-
-```
-expseq : %empty
-       | exp { $$ = $1; }
-       | expseq SEMICOLON exp { $$ = A_ExpList($3, $1); }
-       ;
-```
-
-```
-%type <a_explist> expseq
-```
-
-expseq's type is defined to be a_explist, but the exp option of the rule returs a_exp! How do those two types get merged together! I do not understand!
+The reason why this worked is that tiger.lex is converted to C code by the flex
+code generator. The generated C code had no include for the types it used. Adding
+an include into the .lex file causes this include to get generated into the final C code and
+the C code now can resolve the missing types.
 
 
 
@@ -198,7 +185,7 @@ The file absyn.h contains functions that construct nodes that can be inserted in
 
 
 
-# Approach Developing and Testing the Ssoftware for Chapter 4
+# Approach Developing and Testing the Software for Chapter 4
 
 Constructing and printing the AST means to have semantic actions for all parts of the grammar to construct the AST.
 
@@ -220,14 +207,16 @@ Then go to type declaractions or function declarations.
 
 In terms of the testcases provided in the book, the proposed order of testing is:
 
-Comparison Operators
+Comparison Operators:
 test13.tig
 
-Arithmetic Operators
+Arithmetic Operators:
 test26.tig
 
 if-then-else:
-test8.tig, test9.tig, test15.tig
+test8.tig, 
+test9.tig, 
+test15.tig
 
 while-loops:
 test10.tig
@@ -235,45 +224,72 @@ test10.tig
 for-loops:
 test11.tig
 
-sequences
+sequences:
 test20.tig
 
-array-indexing
+array-indexing:
 test24.tig
 
-record field acces
+record field acces:
 test25.tig
 
-
-
 variable declarations:
-test12.tig
-test31.tig
-test37.tig
-test41.tig
+test12.tig,
+test31.tig,
+test37.tig,
+test41.tig,
 test43.tig
 
-record type definitions
-test33.tig
-test44.tig
-test45.tig
-test46.tig
-test47.tig
+record type definitions:
+test33.tig,
+test44.tig,
+test45.tig,
+test46.tig,
+test47.tig,
 test49.tig
 
 type definitions:
-test16.tig, test1.tig, test2.tig, test3.tig, test5.tig, test14.tig, test17.tig, test22.tig, test23.tig, test28.tig, test29.tig, test30.tig, test38.tig, test48.tig
+test16.tig, 
+test1.tig, 
+test2.tig, 
+test3.tig, 
+test5.tig, 
+test14.tig, 
+test17.tig, 
+test22.tig, 
+test23.tig, 
+test28.tig, 
+test29.tig, 
+test30.tig, 
+test38.tig, 
+test48.tig
 
-function declarations
-test4.tig, test6.tig, test7.tig, test18.tig, test19.tig, test39.tig, test40.tig
+function declarations:
+test4.tig, 
+test6.tig, 
+test7.tig, 
+test18.tig, 
+test19.tig, 
+test39.tig, 
+test40.tig
 
-function calls
-test21.tig, test27.tig
+function calls:
+test21.tig, 
+test27.tig
 
 
 # Implementing Sequences
 
-Extend the expseq rule in your tiger.grm by semantic actions.
+Extend the expseq rule in your tiger.grm by semantic actions and use the functions from absyn.h
+to construct nodes that will then form the AST. absyn.h is already provided in the book's source
+code (https://www.cs.princeton.edu/~appel/modern/c/project.html). The task at hand is to call the
+correct provided function at the right time. Management of nodes it taken care of already.
+
+As noted in the book, for academic purposes, memory is only ever allocated but never there are no
+free calls to return the memory. This is not a problem since the application will not run for 
+an extended period of time say on a server. Therefore when the application terminates the memory
+is returned to the operating system immediately. In production grade software (server software
+or short running application) this approach of not returning memory would not be acceptable!
 
 ```
 expseq :
@@ -283,8 +299,9 @@ expseq :
        ;
 ```
 Both semantic actions will add a node to the single linked list of expressions in the sequence.
-The rule for exp is add a NULL pointer denoting that there is no next node to follow.
-The semicolon rule does construct a node and a pointer to the rest of the list of expressions.
+The rule for exp is adding a NULL pointer denoting that there is no next node to follow.
+The semicolon rule does construct a node and a pointer to the rest of the list of expressions
+which extends the single linked list by one new expression.
 
 Do not forget to extend the exp and the sequencing rules! They have to pass on the constructed nodes.
 
