@@ -196,16 +196,36 @@ As an example, one of the most basic rules is to have an expression that consist
 1 is a valid expression hence it is already a valid tiger program and hence a AST can be constructed for it and
 printed onto the console or into a text file.
 
-Starting from the expression 1, you can now construct operation usage such as 1+2.
-From there construct variable usage such as 1+i or 1+k or 1 + variable_1.
+Starting from the expression 1, you can now construct operation usage such as 1+2 and logical operator usage
+such as 1 and 2. From there construct variable usage such as 1+i or 1+k or 1 + variable_1.
 
-Proceed with if-then and if-then-else
+Then make sure assignments like a := 1 can be parsed and converted to an AST.
 
-Then go to sequences. Once sequences are in place, go to while and for loops.
+Then go to sequences. 
+
+Once sequences are in place, you should quickly get let statements right.
+
+Proceed with if-then and if-then-else.
+
+Then go to while and for loops.
 
 Then go to type declaractions or function declarations.
 
 In terms of the testcases provided in the book, the proposed order of testing is:
+
+Atomic Expressions:
+vardec.tig
+
+Assignments:
+assignment.tig
+
+Sequences:
+sequencing.tig
+
+Let
+let.tig
+
+All the following tests are in the testcases\book folder
 
 Comparison Operators:
 test13.tig
@@ -214,8 +234,8 @@ Arithmetic Operators:
 test26.tig
 
 if-then-else:
-test8.tig, 
-test9.tig, 
+test8.tig,
+test9.tig,
 test15.tig
 
 while-loops:
@@ -229,6 +249,7 @@ test20.tig
 
 array-indexing:
 test24.tig
+test32.tig
 
 record field acces:
 test25.tig
@@ -238,6 +259,7 @@ test12.tig,
 test31.tig,
 test37.tig,
 test41.tig,
+test42.tig,
 test43.tig
 
 record type definitions:
@@ -271,7 +293,10 @@ test7.tig,
 test18.tig, 
 test19.tig, 
 test39.tig, 
-test40.tig
+test40.tig,
+test34.tig,
+test35.tig,
+test36.tig
 
 function calls:
 test21.tig, 
@@ -285,11 +310,12 @@ to construct nodes that will then form the AST. absyn.h is already provided in t
 code (https://www.cs.princeton.edu/~appel/modern/c/project.html). The task at hand is to call the
 correct provided function at the right time. Management of nodes it taken care of already.
 
-As noted in the book, for academic purposes, memory is only ever allocated but never there are no
+As noted in the book, for academic purposes, memory is only ever allocated but there are no
 free calls to return the memory. This is not a problem since the application will not run for 
 an extended period of time say on a server. Therefore when the application terminates the memory
-is returned to the operating system immediately. In production grade software (server software
-or short running application) this approach of not returning memory would not be acceptable!
+is returned to the operating system immediately. But keep in mind that for production grade software 
+(server software or short running application, open source or payed-for closed source) this approach of 
+not returning memory would not be acceptable!
 
 ```
 expseq :

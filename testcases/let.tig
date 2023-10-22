@@ -1,0 +1,5 @@
+let
+	var i:int := 5
+in
+	i
+end
