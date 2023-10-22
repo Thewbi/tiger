@@ -1,5 +1,6 @@
 let
-	var i:int := 5
+	//var i:int := 5
+    var a := 0
 in
 	i
 end

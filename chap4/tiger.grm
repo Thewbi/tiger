@@ -27,6 +27,8 @@ void yyerror(char *s)
     A_exp a_exp;
     A_expList a_explist;
     A_var a_var;
+    A_decList a_declist;
+    //A_letExp a_letexp;
 	}
 
 /* */
@@ -47,6 +49,9 @@ void yyerror(char *s)
 %type <a_exp> assignment
 %type <a_exp> for
 %type <a_exp> no_value
+%type <a_exp> let
+
+%type <a_declist> decs
 
 %type <a_explist> sequencing
 %type <a_explist> expseq
@@ -129,7 +134,7 @@ exp : lvalue { printf("exp - lvalue\n"); $$ = $1; printf("exp - lvalue kind: %d\
     | while { $$ = $1; }
     | for { $$ = $1; }
     | break
-    | let
+    | let { $$ = $1; }
 //    | parenthesis
     ;
 
@@ -215,16 +220,24 @@ for : FOR assignment TO exp DO exp
 break : BREAK
       ;
 
-let : LET decs IN expseq END
+
+let : LET decs IN expseq END {
+
+        // A_exp A_LetExp(A_pos pos, A_decList decs, A_exp body);
+        //$$ = A_LetExp(0, $2, $4);
+
+        // A_exp A_SeqExp(A_pos pos, A_expList seq);
+        $$ = A_LetExp(0, $2, A_SeqExp(0, $4));
+    }
     ;
 
 // A declaration-sequence is a sequence of type, value, and function declarations; 
 // no punctuation separates or terminates individual declarations.
-decs : dec
-     | decs dec
+decs : dec { $$ = A_DecList($1, NULL); }
+     | dec decs { $$ = A_DecList($1, $2); }
      ;
 
-dec : tydec 
+dec : tydec
     | vardec { $$ = $1; }
     | fundec
     ;
@@ -255,8 +268,9 @@ expseq_comma : exp
              | expseq_comma COMMA exp
              ;
 
-vardec : VAR ID ASSIGN exp { $$ = A_VarDec(0, $2, $2, NULL); }
-       | VAR ID COLON ID ASSIGN exp { $$ = A_VarDec(0, $2, $2, $4); }
+// A_dec A_VarDec(A_pos pos, S_symbol var, S_symbol typ, A_exp init)
+vardec : VAR ID ASSIGN exp { printf("vardec - A\n"); $$ = A_VarDec(0, S_Symbol($2), S_Symbol($2), $4); }
+       | VAR ID COLON ID ASSIGN exp { printf("vardec - B\n"); $$ = A_VarDec(0, S_Symbol($2), S_Symbol($4), $6); }
        ;
 
 fundec : FUNCTION ID LPAREN tyfields RPAREN EQ exp

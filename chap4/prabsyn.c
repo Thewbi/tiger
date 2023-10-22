@@ -177,10 +177,16 @@ void pr_exp(FILE *out, A_exp v, int d) {
    break;
 
  case A_letExp:
- printf("A_letExp\n");
+ printf("A_letExp type: %d\n", v->kind);
    fprintf(out, "letExp(\n");
+
+   printf("A_letExp A\n");
    pr_decList(out, v->u.let.decs, d+1); fprintf(out, ",\n");
+
+   printf("A_letExp B\n");
    pr_exp(out, v->u.let.body, d+1); fprintf(out, ")");
+
+   printf("A_letExp C\n");
    break;
 
  case A_arrayExp:
@@ -196,24 +202,41 @@ void pr_exp(FILE *out, A_exp v, int d) {
 }
 
 static void pr_dec(FILE *out, A_dec v, int d) {
+
+  printf("pr_dec\n");
+
  indent(out, d);
  switch (v->kind) {
+
  case A_functionDec:
+ printf("pr_dec - A_functionDec\n");
    fprintf(out, "functionDec(\n"); 
    pr_fundecList(out, v->u.function, d+1); fprintf(out, ")");
    break;
+
  case A_varDec:
+ printf("pr_dec - A_varDec\n");
    fprintf(out, "varDec(%s,\n", S_name(v->u.var.var));
+
+   printf("pr_dec - A_varDec - A\n");
    if (v->u.var.typ) {
+
+    printf("pr_dec - A_varDec - B\n");
      indent(out, d+1); fprintf(out, "%s,\n", S_name(v->u.var.typ)); 
    }
+   printf("pr_dec - A_varDec - C\n");
    pr_exp(out, v->u.var.init, d+1); fprintf(out, ",\n");
+   printf("pr_dec - A_varDec - D\n");
    indent(out, d+1); fprintf(out, "%s", v->u.var.escape ? "TRUE)" : "FALSE)");
+   printf("pr_dec - A_varDec - E\n");
    break;
+
  case A_typeDec:
+ printf("pr_dec - A_typeDec\n");
    fprintf(out, "typeDec(\n"); 
    pr_nametyList(out, v->u.type, d+1); fprintf(out, ")");
    break;
+
  default:
    assert(0); 
  } 
@@ -290,15 +313,34 @@ static void pr_fundecList(FILE *out, A_fundecList v, int d) {
 }
 
 static void pr_decList(FILE *out, A_decList v, int d) {
+
+  printf("pr_decList() A\n");
+
  indent(out, d);
  if (v) {
+
+  printf("pr_decList() B\n");
+
    fprintf(out, "decList(\n"); 
+
+   printf("pr_decList() C\n");
+
    pr_dec(out, v->head, d+1); fprintf(out, ",\n");
+
+   printf("pr_decList() D\n");
+
    pr_decList(out, v->tail, d+1);
+
+   printf("pr_decList() E\n");
+
    fprintf(out, ")");
  }
- else fprintf(out, "decList()"); 
+ else 
+ {
+  printf("pr_decList() C\n");
 
+  fprintf(out, "decList()"); 
+ }
 }
 
 static void pr_namety(FILE *out, A_namety v, int d) {
