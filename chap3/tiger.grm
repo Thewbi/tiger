@@ -91,13 +91,12 @@ exp : lvalue
     | for
     | break
     | let
-//    | parenthesis   
+//    | parenthesis
     ;
 
-lvalue : ID // variable
-       | lvalue DOT ID // record field
-//       | lvalue LBRACK exp RBRACK // array subscript
-       | lvalue array_indexing // array subscript
+lvalue : ID                         // variable
+       | lvalue DOT ID              // record field
+       | lvalue array_indexing      // array subscript
        ;
 
 nil : NIL
@@ -106,8 +105,8 @@ nil : NIL
 sequencing : LPAREN expseq RPAREN
            ;
 
-no_value : LPAREN RPAREN 
-         ;
+//no_value : LPAREN RPAREN
+//         ;
 
 function_call : ID LPAREN RPAREN
               | ID LPAREN expseq_comma RPAREN
@@ -143,7 +142,7 @@ record_creation_assignments : %empty
 record_creation_assignment : ID EQ exp
                            ;
 
-array_creation : ID array_indexing OF exp
+array_creation : lvalue array_indexing OF exp
                ;
 
 array_indexing : LBRACK exp RBRACK
@@ -197,8 +196,7 @@ tyfields : %empty
 tyfield : ID COLON ID
         ;
 
-expseq :
-       | exp
+expseq : exp
        | expseq SEMICOLON exp
        ;
 

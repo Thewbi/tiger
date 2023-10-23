@@ -214,56 +214,56 @@ Then go to type declaractions or function declarations.
 In terms of the testcases provided in the book, the proposed order of testing is:
 
 Atomic Expressions:
-vardec.tig
+vardec.tig          ( parsetest.exe ..\testcases\vardec.tig & cat ast_dump.txt )
 
 Assignments:
-assignment.tig
+assignment.tig      ( parsetest.exe ..\testcases\assignment.tig & cat ast_dump.txt )
 
 Sequences:
-sequencing.tig
+sequencing.tig      ( parsetest.exe ..\testcases\sequencing.tig & cat ast_dump.txt )
 
 Let
-let.tig
+let.tig             ( parsetest.exe ..\testcases\let.tig & cat ast_dump.txt )
 
 All the following tests are in the testcases\book folder
 
 Comparison Operators:
-test13.tig
+test13.tig          ( parsetest.exe ..\testcases\book\test13.tig & cat ast_dump.txt )
 
 Arithmetic Operators:
-test26.tig
+test26.tig          ( parsetest.exe ..\testcases\book\test26.tig & cat ..\testcases\book\test26.tig & cat ast_dump.txt )
 
 if-then-else:
-test8.tig,
-test9.tig,
-test15.tig
+test8.tig,          ( parsetest.exe ..\testcases\book\test8.tig & cat ast_dump.txt )
+test9.tig,          ( parsetest.exe ..\testcases\book\test9.tig & cat ..\testcases\book\test9.tig & cat ast_dump.txt )
+test15.tig          ( parsetest.exe ..\testcases\book\test15.tig & cat ..\testcases\book\test15.tig & cat ast_dump.txt )
 
 while-loops:
-test10.tig
+test10.tig          ( parsetest.exe ..\testcases\book\test10.tig & cat ..\testcases\book\test10.tig & cat ast_dump.txt )
 
 for-loops:
-test11.tig
+test11.tig          ( parsetest.exe ..\testcases\book\test11.tig & cat ..\testcases\book\test11.tig & cat ast_dump.txt )
 
 sequences:
-test20.tig
+test20.tig          ( parsetest.exe ..\testcases\book\test20.tig & cat ..\testcases\book\test20.tig & cat ast_dump.txt )
 
 array-indexing:
-test24.tig
-test32.tig
+test24.tig          ( parsetest.exe ..\testcases\book\test24.tig & cat ..\testcases\book\test24.tig & cat ast_dump.txt )
+test32.tig          ( parsetest.exe ..\testcases\book\test32.tig & cat ..\testcases\book\test32.tig & cat ast_dump.txt )
 
 record field acces:
-test25.tig
+test25.tig          TODO: ( parsetest.exe ..\testcases\book\test25.tig & cat ..\testcases\book\test25.tig & cat ast_dump.txt )
 
 variable declarations:
-test12.tig,
-test31.tig,
+test12.tig,         ( parsetest.exe ..\testcases\book\test12.tig & cat ..\testcases\book\test12.tig & cat ast_dump.txt )
+test31.tig,         ( parsetest.exe ..\testcases\book\test31.tig & cat ..\testcases\book\test31.tig & cat ast_dump.txt )
 test37.tig,
 test41.tig,
 test42.tig,
 test43.tig
 
 record type definitions:
-test33.tig,
+test33.tig,        TODO: ( parsetest.exe ..\testcases\book\test33.tig & cat ..\testcases\book\test33.tig & cat ast_dump.txt )
 test44.tig,
 test45.tig,
 test46.tig,
@@ -271,7 +271,7 @@ test47.tig,
 test49.tig
 
 type definitions:
-test16.tig, 
+test16.tig,         TODO: ( parsetest.exe ..\testcases\book\test16.tig & cat ..\testcases\book\test16.tig & cat ast_dump.txt )
 test1.tig, 
 test2.tig, 
 test3.tig, 
@@ -287,7 +287,7 @@ test38.tig,
 test48.tig
 
 function declarations:
-test4.tig, 
+test4.tig,          TODO: ( parsetest.exe ..\testcases\book\test4.tig & cat ..\testcases\book\test4.tig & cat ast_dump.txt )
 test6.tig, 
 test7.tig, 
 test18.tig, 
@@ -299,7 +299,7 @@ test35.tig,
 test36.tig
 
 function calls:
-test21.tig, 
+test21.tig,         TODO: ( parsetest.exe ..\testcases\book\test21.tig & cat ..\testcases\book\test21.tig & cat ast_dump.txt )
 test27.tig
 
 

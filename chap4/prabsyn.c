@@ -203,6 +203,8 @@ void pr_exp(FILE *out, A_exp v, int d) {
    break;
 
  default:
+
+  printf("Unexpected kind: %d\n", v->kind);
    assert(0); 
  } 
 }
