@@ -71,11 +71,7 @@ static void pr_oper(FILE *out, A_oper d) {
 /* Print A_var types. Indent d spaces. */
 void pr_exp(FILE *out, A_exp v, int d) {
 
-  //printf("pr_exp - X1\n");
-
  indent(out, d);
-
- //printf("pr_exp - v: %d v.kind: %d\n", v, v->kind);
 
  switch (v->kind) {
 
@@ -190,10 +186,20 @@ void pr_exp(FILE *out, A_exp v, int d) {
    break;
 
  case A_arrayExp:
- printf("A_arrayExp\n");
+
+ printf("A_arrayExp - A\n");
+
    fprintf(out, "arrayExp(%s,\n", S_name(v->u.array.typ));
+
+   printf("A_arrayExp - B\n");
+
    pr_exp(out, v->u.array.size, d+1); fprintf(out, ",\n");
+
+   printf("A_arrayExp - C\n");
+
    pr_exp(out, v->u.array.init, d+1); fprintf(out, ")");
+
+   printf("A_arrayExp - D\n");
    break;
 
  default:
@@ -344,12 +350,15 @@ static void pr_decList(FILE *out, A_decList v, int d) {
 }
 
 static void pr_namety(FILE *out, A_namety v, int d) {
+  printf("pr_namety v: %d\n", v);
  indent(out, d);
  fprintf(out, "namety(%s,\n", S_name(v->name)); 
  pr_ty(out, v->ty, d+1); fprintf(out, ")");
 }
 
 static void pr_nametyList(FILE *out, A_nametyList v, int d) {
+
+  printf("pr_nametyList\n");
  indent(out, d);
  if (v) {
    fprintf(out, "nametyList(\n"); 
