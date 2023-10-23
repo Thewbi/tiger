@@ -106,6 +106,9 @@ nil : NIL
 sequencing : LPAREN expseq RPAREN
            ;
 
+no_value : LPAREN RPAREN 
+         ;
+
 function_call : ID LPAREN RPAREN
               | ID LPAREN expseq_comma RPAREN
               ;
@@ -140,8 +143,7 @@ record_creation_assignments : %empty
 record_creation_assignment : ID EQ exp
                            ;
 
-array_creation : lvalue OF exp
-//ID array_indexing OF exp
+array_creation : ID array_indexing OF exp
                ;
 
 array_indexing : LBRACK exp RBRACK
@@ -195,7 +197,7 @@ tyfields : %empty
 tyfield : ID COLON ID
         ;
 
-expseq : %empty
+expseq :
        | exp
        | expseq SEMICOLON exp
        ;
