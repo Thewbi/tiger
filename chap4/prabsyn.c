@@ -42,19 +42,26 @@ static void pr_var(FILE *out, A_var v, int d) {
  printf("%d\n", v->kind);
 
  switch (v->kind) {
+
  case A_simpleVar:
+  printf("A_simpleVar\n");
    fprintf(out, "simpleVar(%s)", S_name(v->u.simple)); 
    break;
+
  case A_fieldVar:
+  printf("A_fieldVar\n");
    fprintf(out, "%s\n", "fieldVar(");
    pr_var(out, v->u.field.var, d+1); fprintf(out, "%s\n", ","); 
    indent(out, d+1); fprintf(out, "%s)", S_name(v->u.field.sym));
    break;
+
  case A_subscriptVar:
+ printf("A_subscriptVar\n");
    fprintf(out, "%s\n", "subscriptVar(");
    pr_var(out, v->u.subscript.var, d+1); fprintf(out, "%s\n", ","); 
    pr_exp(out, v->u.subscript.exp, d+1); fprintf(out, "%s", ")");
    break;
+
  default:
    assert(0); 
  } 
