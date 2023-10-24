@@ -224,6 +224,7 @@ sequencing.tig      ( parsetest.exe ..\testcases\sequencing.tig & cat ast_dump.t
 
 Let
 let.tig             ( parsetest.exe ..\testcases\let.tig & cat ast_dump.txt )
+let_nested.tig      ( parsetest.exe ..\testcases\let_nested.tig & cat ..\testcases\let_nested.tig & cat ast_dump.txt )
 
 All the following tests are in the testcases\book folder
 
@@ -252,13 +253,13 @@ test24.tig          ( parsetest.exe ..\testcases\book\test24.tig & cat ..\testca
 test32.tig          ( parsetest.exe ..\testcases\book\test32.tig & cat ..\testcases\book\test32.tig & cat ast_dump.txt )
 
 record field acces:
-test25.tig          TODO: ( parsetest.exe ..\testcases\book\test25.tig & cat ..\testcases\book\test25.tig & cat ast_dump.txt )
+test25.tig          ( parsetest.exe ..\testcases\book\test25.tig & cat ..\testcases\book\test25.tig & cat ast_dump.txt )
 
 variable declarations:
 test12.tig,         ( parsetest.exe ..\testcases\book\test12.tig & cat ..\testcases\book\test12.tig & cat ast_dump.txt )
 test31.tig,         ( parsetest.exe ..\testcases\book\test31.tig & cat ..\testcases\book\test31.tig & cat ast_dump.txt )
-test37.tig,
-test41.tig,
+test37.tig,         ( parsetest.exe ..\testcases\book\test37.tig & cat ..\testcases\book\test37.tig & cat ast_dump.txt )
+test41.tig,         TODO ( parsetest.exe ..\testcases\book\test41.tig & cat ..\testcases\book\test41.tig & cat ast_dump.txt )
 test42.tig,
 test43.tig
 

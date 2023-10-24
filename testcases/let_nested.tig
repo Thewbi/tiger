@@ -1,0 +1,11 @@
+let
+	var i:int := 5
+    var a := 0
+in
+	let
+        var i:int := 5
+        var a := 0
+    in
+        i
+    end
+end
