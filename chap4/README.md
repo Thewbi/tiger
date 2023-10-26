@@ -259,8 +259,8 @@ variable declarations:
 test12.tig,         ( parsetest.exe ..\testcases\book\test12.tig & cat ..\testcases\book\test12.tig & cat ast_dump.txt )
 test31.tig,         ( parsetest.exe ..\testcases\book\test31.tig & cat ..\testcases\book\test31.tig & cat ast_dump.txt )
 test37.tig,         ( parsetest.exe ..\testcases\book\test37.tig & cat ..\testcases\book\test37.tig & cat ast_dump.txt )
-test41.tig,         TODO ( parsetest.exe ..\testcases\book\test41.tig & cat ..\testcases\book\test41.tig & cat ast_dump.txt )
-test42.tig,
+test41.tig,         ( parsetest.exe ..\testcases\book\test41.tig & cat ..\testcases\book\test41.tig & cat ast_dump.txt )
+test42.tig,         ( parsetest.exe ..\testcases\book\test42.tig & cat ..\testcases\book\test42.tig & cat ast_dump.txt )
 test43.tig
 
 record type definitions:
