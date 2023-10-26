@@ -261,31 +261,31 @@ test31.tig,         ( parsetest.exe ..\testcases\book\test31.tig & cat ..\testca
 test37.tig,         ( parsetest.exe ..\testcases\book\test37.tig & cat ..\testcases\book\test37.tig & cat ast_dump.txt )
 test41.tig,         ( parsetest.exe ..\testcases\book\test41.tig & cat ..\testcases\book\test41.tig & cat ast_dump.txt )
 test42.tig,         ( parsetest.exe ..\testcases\book\test42.tig & cat ..\testcases\book\test42.tig & cat ast_dump.txt )
-test43.tig
+test43.tig          ( parsetest.exe ..\testcases\book\test43.tig & cat ..\testcases\book\test43.tig & cat ast_dump.txt )
 
 record type definitions:
-test33.tig,        TODO: ( parsetest.exe ..\testcases\book\test33.tig & cat ..\testcases\book\test33.tig & cat ast_dump.txt )
-test44.tig,
-test45.tig,
-test46.tig,
-test47.tig,
-test49.tig
+test33.tig,         ( parsetest.exe ..\testcases\book\test33.tig & cat ..\testcases\book\test33.tig & cat ast_dump.txt )
+test44.tig,         ( parsetest.exe ..\testcases\book\test44.tig & cat ..\testcases\book\test44.tig & cat ast_dump.txt )
+test45.tig,         ( parsetest.exe ..\testcases\book\test45.tig & cat ..\testcases\book\test45.tig & cat ast_dump.txt )
+test46.tig,         ( parsetest.exe ..\testcases\book\test46.tig & cat ..\testcases\book\test46.tig & cat ast_dump.txt )
+test47.tig,         ( parsetest.exe ..\testcases\book\test47.tig & cat ..\testcases\book\test47.tig & cat ast_dump.txt )
+test49.tig   OK BECAUSE OF SYNTAX ERROR ( parsetest.exe ..\testcases\book\test49.tig & cat ..\testcases\book\test49.tig & cat ast_dump.txt )
 
 type definitions:
-test16.tig,         TODO: ( parsetest.exe ..\testcases\book\test16.tig & cat ..\testcases\book\test16.tig & cat ast_dump.txt )
-test1.tig, 
-test2.tig, 
-test3.tig, 
-test5.tig, 
-test14.tig, 
-test17.tig, 
-test22.tig, 
-test23.tig, 
-test28.tig, 
-test29.tig, 
-test30.tig, 
-test38.tig, 
-test48.tig
+test16.tig,         ( parsetest.exe ..\testcases\book\test16.tig & cat ..\testcases\book\test16.tig & cat ast_dump.txt )
+test1.tig,          ( parsetest.exe ..\testcases\book\test1.tig & cat ..\testcases\book\test1.tig & cat ast_dump.txt )
+test2.tig,          ( parsetest.exe ..\testcases\book\test2.tig & cat ..\testcases\book\test2.tig & cat ast_dump.txt )
+test3.tig,          ( parsetest.exe ..\testcases\book\test3.tig & cat ..\testcases\book\test3.tig & cat ast_dump.txt )
+test5.tig,          ( parsetest.exe ..\testcases\book\test5.tig & cat ..\testcases\book\test5.tig & cat ast_dump.txt )
+test14.tig,         ( parsetest.exe ..\testcases\book\test14.tig & cat ..\testcases\book\test14.tig & cat ast_dump.txt )
+test17.tig,         ( parsetest.exe ..\testcases\book\test17.tig & cat ..\testcases\book\test17.tig & cat ast_dump.txt )
+test22.tig,         ( parsetest.exe ..\testcases\book\test22.tig & cat ..\testcases\book\test22.tig & cat ast_dump.txt )
+test23.tig,         ( parsetest.exe ..\testcases\book\test23.tig & cat ..\testcases\book\test23.tig & cat ast_dump.txt )
+test28.tig,         ( parsetest.exe ..\testcases\book\test28.tig & cat ..\testcases\book\test28.tig & cat ast_dump.txt )
+test29.tig,         ( parsetest.exe ..\testcases\book\test29.tig & cat ..\testcases\book\test29.tig & cat ast_dump.txt )
+test30.tig,         ( parsetest.exe ..\testcases\book\test30.tig & cat ..\testcases\book\test30.tig & cat ast_dump.txt )
+test38.tig,         ( parsetest.exe ..\testcases\book\test38.tig & cat ..\testcases\book\test38.tig & cat ast_dump.txt )
+test48.tig          TODO ( parsetest.exe ..\testcases\book\test48.tig & cat ..\testcases\book\test48.tig & cat ast_dump.txt )
 
 function declarations:
 test4.tig,          TODO: ( parsetest.exe ..\testcases\book\test4.tig & cat ..\testcases\book\test4.tig & cat ast_dump.txt )
@@ -293,11 +293,11 @@ test6.tig,
 test7.tig, 
 test18.tig, 
 test19.tig, 
-test39.tig, 
-test40.tig,
 test34.tig,
 test35.tig,
-test36.tig
+test36.tig,
+test39.tig, 
+test40.tig
 
 function calls:
 test21.tig,         TODO: ( parsetest.exe ..\testcases\book\test21.tig & cat ..\testcases\book\test21.tig & cat ast_dump.txt )

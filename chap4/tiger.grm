@@ -239,7 +239,7 @@ record_creation : ID LBRACE record_creation_assignments RBRACE { printf("record_
                 }
                 ;
 
-record_creation_assignments : %empty
+record_creation_assignments : %empty { $$ = NULL; }
                             | record_creation_assignment { printf("record_creation_assignments 1\n"); 
                                 //$$ = A_ExpList($1, NULL);
                                 $$ = A_EfieldList($1, NULL);
