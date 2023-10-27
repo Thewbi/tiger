@@ -218,7 +218,7 @@ void pr_exp(FILE *out, A_exp v, int d) {
 
 static void pr_dec(FILE *out, A_dec v, int d) {
 
-  printf("pr_dec\n");
+  printf("pr_dec kind: %lu\n", v->kind);
 
  indent(out, d);
  switch (v->kind) {
