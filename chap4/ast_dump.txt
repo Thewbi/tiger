@@ -1,50 +1,26 @@
  letExp(
   decList(
-   functionDec(
-    fundecList(
-     fundec(do_nothing1,
-      fieldList(
-       field(a,
-        int,
-        TRUE),
-       fieldList(
-        field(b,
-         string,
-         TRUE),
-        fieldList())),
-      callExp(do_nothing2,
-       expList(
-        opExp(
-         PLUS,
-         varExp(
-          simpleVar(a)),
-         intExp(1)),
-        expList()))),
-     fundecList())),
+   varDec(a,
+    intExp(0),
+    TRUE),
    decList(
     functionDec(
      fundecList(
-      fundec(do_nothing2,
+      fundec(g,
        fieldList(
-        field(d,
+        field(a,
          int,
          TRUE),
         fieldList()),
-       callExp(do_nothing1,
-        expList(
-         varExp(
-          simpleVar(d)),
-         expList(
-          stringExp(string),
-          expList())))),
+       int,
+       varExp(
+        simpleVar(a))),
       fundecList())),
     decList())),
   seqExp(
    expList(
-    callExp(do_nothing1,
+    callExp(g,
      expList(
-      intExp(0),
-      expList(
-       stringExp(str2),
-       expList()))),
+      intExp(2),
+      expList())),
     expList())))
