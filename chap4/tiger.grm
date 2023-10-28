@@ -349,7 +349,7 @@ expseq :
        ;
 
 expseq_comma : exp { printf("expseq_comma 1\n"); $$ = A_ExpList($1, NULL); }
-             | expseq_comma COMMA exp { printf("expseq_comma 2\n"); $$ = A_ExpList($1, $3); }
+             | exp COMMA expseq_comma { printf("expseq_comma 2\n"); $$ = A_ExpList($1, $3); }
              ;
 
 // A_dec A_VarDec(A_pos pos, S_symbol var, S_symbol typ, A_exp init)

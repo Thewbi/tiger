@@ -288,8 +288,8 @@ test38.tig,         ( parsetest.exe ..\testcases\book\test38.tig & cat ..\testca
 test48.tig          ( parsetest.exe ..\testcases\book\test48.tig & cat ..\testcases\book\test48.tig & cat ast_dump.txt )
 
 function declarations and function calls:
-test4.tig,          TODO: ( parsetest.exe ..\testcases\book\test4.tig & cat ..\testcases\book\test4.tig & cat ast_dump.txt )
-test6.tig, 
+test4.tig,          ( parsetest.exe ..\testcases\book\test4.tig & cat ..\testcases\book\test4.tig & cat ast_dump.txt )
+test6.tig,          TODO: ( parsetest.exe ..\testcases\book\test6.tig & cat ..\testcases\book\test6.tig & cat ast_dump.txt )
 test7.tig, 
 test18.tig, 
 test19.tig, 
