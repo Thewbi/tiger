@@ -285,9 +285,9 @@ test28.tig,         ( parsetest.exe ..\testcases\book\test28.tig & cat ..\testca
 test29.tig,         ( parsetest.exe ..\testcases\book\test29.tig & cat ..\testcases\book\test29.tig & cat ast_dump.txt )
 test30.tig,         ( parsetest.exe ..\testcases\book\test30.tig & cat ..\testcases\book\test30.tig & cat ast_dump.txt )
 test38.tig,         ( parsetest.exe ..\testcases\book\test38.tig & cat ..\testcases\book\test38.tig & cat ast_dump.txt )
-test48.tig          TODO ( parsetest.exe ..\testcases\book\test48.tig & cat ..\testcases\book\test48.tig & cat ast_dump.txt )
+test48.tig          ( parsetest.exe ..\testcases\book\test48.tig & cat ..\testcases\book\test48.tig & cat ast_dump.txt )
 
-function declarations:
+function declarations and function calls:
 test4.tig,          TODO: ( parsetest.exe ..\testcases\book\test4.tig & cat ..\testcases\book\test4.tig & cat ast_dump.txt )
 test6.tig, 
 test7.tig, 
