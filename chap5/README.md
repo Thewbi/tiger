@@ -1,14 +1,37 @@
 # Chapter 5 on Semantic Analysis
 
-This chapter is a very confusing one. The strategy is to first understand the goals to achieve in this chapter.
-Then once the goals are clear, the next step is to understand the datastructures used to achieve the goal.
+This chapter is a little bit confusing for a student that has never had contact with semantic analysis before. 
+It is confusing because if one has no experience with a subject, the lack of orientation leads to confusion.
+The confusion has to be resolved by determinig the start and the end goal, namely by gaining the orientation 
+that is missing.
+
+When the current situation (start)
+is understood and the end goal is understood, then the student can begin to inch their way forward to close
+the gap between the current state and the goal. The feeling of beeing lost is gone and some kind of routine
+can be achieved which gives the student a feeling of beeing in charge of the situation.
+
+The strategy is to first understand the goals to achieve in this chapter.
+Then, once the goals are clear, the next step is to understand the datastructures used to achieve the goal.
 The last step is to connect the parser via it's exp output to the semantic analysis implementation and to
-test the output of the semantic analysis phase.
+test the output of the semantic analysis phase. Therefore a executable application is created (semanttest.exe)
+which puts all pieces together.
 
 ## Original Files
 
 The files contained in this folder originally are types.h and types.h.
-They contain ...
+They contain the types (int, string, name, record, array, nil, void) out of which all types in the
+tiger language can be constructed.
+
+The types will go into the tenv which is a datastructure filled in by the semantic analysis phase
+as it traverses the AST recursively. The contents are the types and the location of where they have
+been defined.
+
+The functions that perform the semantic analysis AST traversal are contained in the files semant.h and
+semant.c. It is the students task in chapter 5 to implement the semant module (semant.h and semant.c)
+
+Pretty much all files to achieve this goal can be copied over from previous chapters.
+The semant.h and semant.c have to be created manually as they are not part of the book's complementary
+material.
 
 ## Goals of Semantic Analysis
 
@@ -30,7 +53,7 @@ The trans (translate) prefix is due to the fact that these functions are extende
 intermediate code generation. Therefore a general name was choosen and trans stands for translate.
 
 trans functions will walk the AST recursively and they will first perform semantic analysis.
-Therefore they get two environments as parameters. One enviroment is the variable and function environment (vent),
+Therefore they get two environments as parameters. One enviroment is the variable and function environment (venv),
 the other one is the type environment (tenv). Two distinct environments are needed because of applications such as
 
 ```
