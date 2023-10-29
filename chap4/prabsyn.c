@@ -36,10 +36,10 @@ static void pr_var(FILE *out, A_var v, int d) {
 
  indent(out, d);
 
- printf("%d\n", A_simpleVar);
- printf("%d\n", A_fieldVar);
- printf("%d\n", A_subscriptVar);
- printf("%d\n", v->kind);
+ printf("A_simpleVar is kind %d\n", A_simpleVar);
+ printf("A_fieldVar is kind %d\n", A_fieldVar);
+ printf("A_subscriptVar is kind %d\n", A_subscriptVar);
+ printf("incomding v->kind is %d\n", v->kind);
 
  switch (v->kind) {
 
@@ -114,9 +114,21 @@ void pr_exp(FILE *out, A_exp v, int d) {
  case A_opExp:
    printf("A_opExp\n");
    fprintf(out, "opExp(\n");
+
+  if (v->u.op.right == NULL) {
+    indent(out, d+1); 
+    fprintf(out, "UMINUS,\n"); 
+    pr_exp(out, v->u.op.left, d+1); fprintf(out, ")");
+  }
+  else if (v->u.op.left == NULL) {
+    indent(out, d+1); pr_oper(out, v->u.op.oper); fprintf(out, ",\n"); 
+    indent(out, d+1); fprintf(out, "NULL,\n"); 
+    pr_exp(out, v->u.op.right, d+1); fprintf(out, ")");
+  } else {
    indent(out, d+1); pr_oper(out, v->u.op.oper); fprintf(out, ",\n"); 
    pr_exp(out, v->u.op.left, d+1); fprintf(out, ",\n"); 
    pr_exp(out, v->u.op.right, d+1); fprintf(out, ")");
+   }
    break;
 
  case A_recordExp:

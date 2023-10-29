@@ -24,7 +24,7 @@ A_exp parse(string fname)
 
   if (yyparse() == 0) {
 
-    fprintf(stderr,"Parsing successful!\n");
+    fprintf(stderr,"Parsing successful!\n\n\n");
   
     /* parsing worked */
     return absyn_root;
