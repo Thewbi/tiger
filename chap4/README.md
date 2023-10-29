@@ -303,6 +303,16 @@ function calls:
 test21.tig,         ( parsetest.exe ..\testcases\book\test21.tig & cat ..\testcases\book\test21.tig & cat ast_dump.txt )
 test27.tig          ( parsetest.exe ..\testcases\book\test27.tig & cat ..\testcases\book\test27.tig & cat ast_dump.txt )
 
+parsetest.exe ..\testcases\BartVandewoestyne\compilable\array_equality.tig
+parsetest.exe ..\testcases\BartVandewoestyne\compilable\control_characters.tig
+parsetest.exe ..\testcases\BartVandewoestyne\compilable\escape_sequences.tig
+parsetest.exe ..\testcases\BartVandewoestyne\compilable\function.tig
+parsetest.exe ..\testcases\BartVandewoestyne\compilable\negative_int.tig
+parsetest.exe ..\testcases\BartVandewoestyne\compilable\procedure.tig
+parsetest.exe ..\testcases\BartVandewoestyne\compilable\record_equality_test.tig
+parsetest.exe ..\testcases\BartVandewoestyne\compilable\simple_let.tig
+parsetest.exe ..\testcases\BartVandewoestyne\compilable\valid_strings.tig
+
 
 # Implementing Sequences
 
