@@ -37,21 +37,23 @@ int main(int argc, char **argv)
 
     printf("semanttest.c - D\n");
 
-    printf("Dumping the AST ...\n");
+    printf("\n\n\nDumping the AST ...\n");
     pr_exp(out_file, program, 0);
     printf("Dumping the AST done.\n");
 
     printf("semanttest.c - E\n");
 
-    printf("Performing Semantic Analysis ...\n");
+    // close the file
+    fclose(out_file);
+    out_file = NULL;
+
+    printf("semanttest.c - F\n");
+
+    printf("\n\n\nPerforming Semantic Analysis ...\n");
     S_table venv;
     S_table tenv;
     transExp(venv, tenv, program);
     printf("Performing Semantic Analysis done.\n");
-
-    // close the file
-    fclose(out_file);
-    out_file = NULL;
 
     return 0;
 }

@@ -185,3 +185,17 @@ Table is a desctructive / imperative table that uses a stack to roll and unroll 
 ```
 semanttest.exe ..\testcases\addition.tig
 ```
+
+addition.tig looks like this
+
+```
+let
+	var a:int := 2
+    var b:int := 3
+    var c:int := 0
+in
+	c := a + b
+end
+```
+
+The test is successfull if ...
