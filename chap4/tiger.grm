@@ -335,7 +335,8 @@ ty : ID { $$ = A_NameTy(0, S_Symbol($1)); }
    | ARRAY OF ID { $$ = A_ArrayTy(0, S_Symbol($3)); }
    ;
 
-tyfields : tyfield { $$ = A_FieldList($1, NULL); }
+tyfields : %empty { $$ = NULL; }
+         | tyfield { $$ = A_FieldList($1, NULL); }
          | tyfield COMMA tyfields { $$ = A_FieldList($1, $3); }
          ;
 
