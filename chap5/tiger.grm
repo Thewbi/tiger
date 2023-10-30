@@ -14,6 +14,8 @@ void yyerror(char *s)
  EM_error(EM_tokPos, "%s", s);
 }
 
+extern int yylineno;
+
 %}
 
 /* */
@@ -138,8 +140,8 @@ exp : lvalue { printf("exp - lvalue\n"); $$ = $1; printf("exp - lvalue kind: %d\
     | nil { $$ = $1; }
     | sequencing { printf("exp - sequencing\n"); $$ = $1; }
     | no_value { $$ = $1; }
-    | INT { $$ = A_IntExp(0, $1); }
-    | STRING { $$ = A_StringExp(0, $1); }
+    | INT { $$ = A_IntExp(yylineno, $1); }
+    | STRING { $$ = A_StringExp(yylineno, $1); }
 //  | negation
     | function_call { $$ = $1; }
     | arithmetic { $$ = $1; }
@@ -164,7 +166,7 @@ exp : lvalue { printf("exp - lvalue\n"); $$ = $1; printf("exp - lvalue kind: %d\
 
 lvalue : ID { 
             printf("lvalue - ID\n"); 
-            $$ = A_VarExp(0, A_SimpleVar(0, S_Symbol($1)));
+            $$ = A_VarExp(yylineno, A_SimpleVar(yylineno, S_Symbol($1)));
             printf("lvalue - ID kind: %d\n", $$->kind);
             } // variable
 
@@ -176,72 +178,72 @@ lvalue : ID {
             printf("lvalue - DOT ID lvalue kind: %d\n", $1->u.var->kind);
             printf("lvalue - DOT ID lvalue kind: %d\n", $1->u.var->u.simple);
 
-            //$$ = A_VarExp(0, A_FieldVar(0, $1, $3));
-            $$ = A_VarExp(0, A_FieldVar(0, $1->u.var, S_Symbol($3)));
-            //$$ = A_VarExp(0, A_FieldVar(0, A_SimpleVar($1), $3));
-            //$$ = A_VarExp(0, A_FieldVar(0, A_SimpleVar(0, $1), $3));
-            //$$ = A_VarExp(0, A_FieldVar(0, A_SimpleVar(0, $1->u.var.symbol), $3));
+            //$$ = A_VarExp(yylineno, A_FieldVar(yylineno, $1, $3));
+            $$ = A_VarExp(yylineno, A_FieldVar(yylineno, $1->u.var, S_Symbol($3)));
+            //$$ = A_VarExp(yylineno, A_FieldVar(yylineno, A_SimpleVar($1), $3));
+            //$$ = A_VarExp(yylineno, A_FieldVar(yylineno, A_SimpleVar(yylineno, $1), $3));
+            //$$ = A_VarExp(yylineno, A_FieldVar(yylineno, A_SimpleVar(yylineno, $1->u.var.symbol), $3));
 
          } // record field
        | lvalue array_indexing {
 
             printf("lvalue - array_indexing\n");
 
-            //$$ = A_VarExp(0, A_SimpleVar(0, S_Symbol($1)));
-            //$$ = A_ArrayExp(0, A_SimpleVar(0, S_Symbol($1)), $2, NULL);
+            //$$ = A_VarExp(yylineno, A_SimpleVar(yylineno, S_Symbol($1)));
+            //$$ = A_ArrayExp(yylineno, A_SimpleVar(yylineno, S_Symbol($1)), $2, NULL);
 
             printf("LUL %d\n", $1->kind);
 
             if ($1->kind == A_varExp) {
                 printf("LUL\n");
 
-                //$$ = A_SubscriptVar(0, S_Symbol($1), $2);
-                //$$ = A_SubscriptVar(0, S_Symbol($1->u.var->u.simple), $2);
-                //$$ = A_SubscriptVar(0, S_Symbol($1->u.var), $2);
-                //$$ = A_SubscriptVar(0, $1->u.var, $2);
-                //$$ = A_SubscriptVar(0, $1->u.var, $2);
-                //$$ = A_SubscriptVar(0, $1, $2);
+                //$$ = A_SubscriptVar(yylineno, S_Symbol($1), $2);
+                //$$ = A_SubscriptVar(yylineno, S_Symbol($1->u.var->u.simple), $2);
+                //$$ = A_SubscriptVar(yylineno, S_Symbol($1->u.var), $2);
+                //$$ = A_SubscriptVar(yylineno, $1->u.var, $2);
+                //$$ = A_SubscriptVar(yylineno, $1->u.var, $2);
+                //$$ = A_SubscriptVar(yylineno, $1, $2);
 
-                $$ = A_VarExp(0, A_SubscriptVar(0, $1->u.var, $2));
+                $$ = A_VarExp(yylineno, A_SubscriptVar(yylineno, $1->u.var, $2));
             }
 
         } // array subscript
        ;
 
-nil : NIL { $$ = A_NilExp(0); }
+nil : NIL { $$ = A_NilExp(yylineno); }
     ;
 
-sequencing : LPAREN expseq RPAREN { printf("sequencing 1\n"); $$ = A_SeqExp(0, $2); }
+sequencing : LPAREN expseq RPAREN { printf("sequencing 1\n"); $$ = A_SeqExp(yylineno, $2); }
            ;
 
-no_value : LPAREN RPAREN { printf("no_value\n"); $$ = A_NilExp(0); }
+no_value : LPAREN RPAREN { printf("no_value\n"); $$ = A_NilExp(yylineno); }
          ;
 
-function_call : ID LPAREN RPAREN { printf("function_call - A\n"); $$ = A_NilExp(0); A_CallExp(0, S_Symbol($1), NULL); }
-              | ID LPAREN expseq_comma RPAREN { printf("function_call - B\n"); $$ = A_CallExp(0, S_Symbol($1), $3); }
+function_call : ID LPAREN RPAREN { printf("function_call - A\n"); $$ = A_NilExp(yylineno); A_CallExp(yylineno, S_Symbol($1), NULL); }
+              | ID LPAREN expseq_comma RPAREN { printf("function_call - B\n"); $$ = A_CallExp(yylineno, S_Symbol($1), $3); }
               ;
 
-arithmetic : exp PLUS exp { $$ = A_OpExp(0, A_plusOp, $1, $3); }
-           | exp MINUS exp { $$ = A_OpExp(0, A_minusOp, $1, $3); }
-           | exp TIMES exp { $$ = A_OpExp(0, A_timesOp, $1, $3); }
-           | exp DIVIDE exp { $$ = A_OpExp(0, A_divideOp, $1, $3); }
-           | MINUS exp %prec UMINUS { printf("arithmetic UMINUS\n"); $$ = A_OpExp(0, A_minusOp, NULL, $2); }  
+arithmetic : exp PLUS exp { $$ = A_OpExp(yylineno, A_plusOp, $1, $3); }
+           | exp MINUS exp { $$ = A_OpExp(yylineno, A_minusOp, $1, $3); }
+           | exp TIMES exp { $$ = A_OpExp(yylineno, A_timesOp, $1, $3); }
+           | exp DIVIDE exp { $$ = A_OpExp(yylineno, A_divideOp, $1, $3); }
+           | MINUS exp %prec UMINUS { printf("arithmetic UMINUS\n"); $$ = A_OpExp(yylineno, A_minusOp, NULL, $2); }  
            ;
 
-comparison : exp EQ exp { $$ = A_OpExp(0, A_eqOp, $1, $3); }
-           | exp NEQ exp { $$ = A_OpExp(0, A_neqOp, $1, $3); }
-           | exp LT exp { $$ = A_OpExp(0, A_ltOp, $1, $3); }
-           | exp LE exp { $$ = A_OpExp(0, A_leOp, $1, $3); }
-           | exp GT exp { $$ = A_OpExp(0, A_gtOp, $1, $3); }
-           | exp GE exp { $$ = A_OpExp(0, A_geOp, $1, $3); }
+comparison : exp EQ exp { $$ = A_OpExp(yylineno, A_eqOp, $1, $3); }
+           | exp NEQ exp { $$ = A_OpExp(yylineno, A_neqOp, $1, $3); }
+           | exp LT exp { $$ = A_OpExp(yylineno, A_ltOp, $1, $3); }
+           | exp LE exp { $$ = A_OpExp(yylineno, A_leOp, $1, $3); }
+           | exp GT exp { $$ = A_OpExp(yylineno, A_gtOp, $1, $3); }
+           | exp GE exp { $$ = A_OpExp(yylineno, A_geOp, $1, $3); }
            ;
 
-boolean_operators : exp AND exp { $$ = A_OpExp(0, A_andOp, $1, $3); }
-                  | exp OR exp { $$ = A_OpExp(0, A_orOp, $1, $3); }
+boolean_operators : exp AND exp { $$ = A_OpExp(yylineno, A_andOp, $1, $3); }
+                  | exp OR exp { $$ = A_OpExp(yylineno, A_orOp, $1, $3); }
                   ;
 
 record_creation : ID LBRACE record_creation_assignments RBRACE { printf("record_creation\n"); 
-                    $$ = A_RecordExp(0, S_Symbol($1), $3); 
+                    $$ = A_RecordExp(yylineno, S_Symbol($1), $3); 
                 }
                 ;
 
@@ -258,8 +260,8 @@ record_creation_assignments : %empty { $$ = NULL; }
 
 record_creation_assignment : ID EQ exp { 
                                 printf("record_creation_assignment\n");
-                                //$$ = A_AssignExp(0, A_VarDec(0, S_Symbol($1)), $3);
-                                $$ = A_AssignExp(0, A_SimpleVar(0, S_Symbol($1)), $3);
+                                //$$ = A_AssignExp(yylineno, A_VarDec(yylineno, S_Symbol($1)), $3);
+                                $$ = A_AssignExp(yylineno, A_SimpleVar(yylineno, S_Symbol($1)), $3);
 
                                 $$ = A_Efield(S_Symbol($1), $3);
                             }
@@ -267,14 +269,14 @@ record_creation_assignment : ID EQ exp {
 
 array_creation : lvalue array_indexing OF exp { 
                         printf("array_creation\n");
-                        //$$ = A_ArrayExp(0, S_Symbol($1), $2, $4); // works
-                        //$$ = A_ArrayExp(0, $1, $2, $4);
+                        //$$ = A_ArrayExp(yylineno, S_Symbol($1), $2, $4); // works
+                        //$$ = A_ArrayExp(yylineno, $1, $2, $4);
 
                         printf("kindd: %d\n", $1->kind);
                         printf("vall: %s\n", $1->u.var->u.simple);
 
-                        //$$ = A_ArrayExp(0, S_Symbol($1->u.var->u.simple), $2, $4);
-                        $$ = A_ArrayExp(0, $1->u.var->u.simple, $2, $4);
+                        //$$ = A_ArrayExp(yylineno, S_Symbol($1->u.var->u.simple), $2, $4);
+                        $$ = A_ArrayExp(yylineno, $1->u.var->u.simple, $2, $4);
                     }
                ;
 
@@ -285,35 +287,36 @@ array_indexing : LBRACK exp RBRACK {
 
 assignment : lvalue ASSIGN exp 
              { 
-                $$ = A_AssignExp(0, $1->u.var, $3);
+                printf("ahhhhhhahaahahahhah %d\n", yylineno);
+                $$ = A_AssignExp(yylineno, $1->u.var, $3);
              }
            ;
 
-if_then_else : IF exp THEN exp ELSE exp { $$ = A_IfExp(0, $2, $4, $6); }
+if_then_else : IF exp THEN exp ELSE exp { $$ = A_IfExp(yylineno, $2, $4, $6); }
              ;
 
-if_then : IF exp THEN exp { $$ = A_IfExp(0, $2, $4, NULL); }
+if_then : IF exp THEN exp { $$ = A_IfExp(yylineno, $2, $4, NULL); }
         ;
 
-while : WHILE exp DO exp { $$ = A_WhileExp(0, $2, $4); }
+while : WHILE exp DO exp { $$ = A_WhileExp(yylineno, $2, $4); }
       ;
 
 for : FOR assignment TO exp DO exp 
     { 
-        $$ = A_ForExp(0, S_Symbol($2->u.assign.var), $2->u.assign.exp, $4, $6);
+        $$ = A_ForExp(yylineno, S_Symbol($2->u.assign.var), $2->u.assign.exp, $4, $6);
     }
     ;
 
-break : BREAK { $$ = A_BreakExp(0); }
+break : BREAK { $$ = A_BreakExp(yylineno); }
       ;
 
 let : LET decs IN expseq END {
 
         // A_exp A_LetExp(A_pos pos, A_decList decs, A_exp body);
-        //$$ = A_LetExp(0, $2, $4);
+        //$$ = A_LetExp(yylineno, $2, $4);
 
         // A_exp A_SeqExp(A_pos pos, A_expList seq);
-        $$ = A_LetExp(0, $2, A_SeqExp(0, $4));
+        $$ = A_LetExp(yylineno, $2, A_SeqExp(yylineno, $4));
     }
     ;
 
@@ -325,15 +328,15 @@ decs : dec { printf("decs - dec - A\n"); $$ = A_DecList($1, NULL); }
 
 dec : tydec { $$ = $1; }
     | vardec { $$ = $1; }
-    | fundec { printf("dec - fundec\n"); $$ = A_FunctionDec(0, A_FundecList($1, NULL)); }
+    | fundec { printf("dec - fundec\n"); $$ = A_FunctionDec(yylineno, A_FundecList($1, NULL)); }
     ;
 
-tydec : TYPE ID EQ ty { $$ = A_TypeDec(0, A_NametyList(A_Namety(S_Symbol($2), $4), NULL)); }
+tydec : TYPE ID EQ ty { $$ = A_TypeDec(yylineno, A_NametyList(A_Namety(S_Symbol($2), $4), NULL)); }
       ;
 
-ty : ID { $$ = A_NameTy(0, S_Symbol($1)); }
-   | LBRACE tyfields RBRACE { $$ = A_RecordTy(0, $2); }
-   | ARRAY OF ID { $$ = A_ArrayTy(0, S_Symbol($3)); }
+ty : ID { $$ = A_NameTy(yylineno, S_Symbol($1)); }
+   | LBRACE tyfields RBRACE { $$ = A_RecordTy(yylineno, $2); }
+   | ARRAY OF ID { $$ = A_ArrayTy(yylineno, S_Symbol($3)); }
    ;
 
 tyfields : %empty { $$ = NULL; }
@@ -341,7 +344,7 @@ tyfields : %empty { $$ = NULL; }
          | tyfield COMMA tyfields { $$ = A_FieldList($1, $3); }
          ;
 
-tyfield : ID COLON ID { $$ = A_Field(0, S_Symbol($1), S_Symbol($3)); }
+tyfield : ID COLON ID { $$ = A_Field(yylineno, S_Symbol($1), S_Symbol($3)); }
         ;
 
 expseq : 
@@ -357,19 +360,19 @@ expseq_comma : exp { printf("expseq_comma 1\n"); $$ = A_ExpList($1, NULL); }
 // A_dec A_VarDec(A_pos pos, S_symbol var, S_symbol typ, A_exp init)
 vardec : VAR ID ASSIGN exp { 
             printf("vardec - A\n"); 
-            //$$ = A_VarDec(0, S_Symbol($2), S_Symbol($2), $4);
-            $$ = A_VarDec(0, S_Symbol($2), NULL, $4); 
+            //$$ = A_VarDec(yylineno, S_Symbol($2), S_Symbol($2), $4);
+            $$ = A_VarDec(yylineno, S_Symbol($2), NULL, $4); 
         }
        | 
        VAR ID COLON ID ASSIGN exp 
        { 
             printf("vardec - B\n"); 
-            $$ = A_VarDec(0, S_Symbol($2), S_Symbol($4), $6); 
+            $$ = A_VarDec(yylineno, S_Symbol($2), S_Symbol($4), $6); 
         }
        //| VAR ID COLON ASSIGN ID array_creation 
        ;
 
 // A_fundec A_Fundec(A_pos pos, S_symbol name, A_fieldList params, S_symbol result, A_exp body);
-fundec : FUNCTION ID LPAREN tyfields RPAREN EQ exp { printf("fundec A\n"); $$ = A_Fundec(0, S_Symbol($2), $4, NULL, $7); }
-       | FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ exp { printf("fundec B\n"); $$ = A_Fundec(0, S_Symbol($2), $4, S_Symbol($7), $9); }
+fundec : FUNCTION ID LPAREN tyfields RPAREN EQ exp { printf("fundec A\n"); $$ = A_Fundec(yylineno, S_Symbol($2), $4, NULL, $7); }
+       | FUNCTION ID LPAREN tyfields RPAREN COLON ID EQ exp { printf("fundec B\n"); $$ = A_Fundec(yylineno, S_Symbol($2), $4, S_Symbol($7), $9); }
        ;

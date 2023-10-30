@@ -2,8 +2,8 @@ LEXER_GENERATOR = flex
 PARSER_GENERATOR = bison
 CC=gcc
 
-semanttest.exe: semanttest.o y.tab.o lex.yy.o errormsg.o util.o absyn.o prabsyn.o symbol.o parse.o table.o types.o semant.o
-	$(CC) -o semanttest.exe -g semanttest.o y.tab.o lex.yy.o errormsg.o util.o absyn.o prabsyn.o symbol.o parse.o table.o types.o semant.o
+semanttest.exe: semanttest.o y.tab.o lex.yy.o errormsg.o util.o absyn.o prabsyn.o symbol.o parse.o table.o types.o semant.o env.o
+	$(CC) -o semanttest.exe -g semanttest.o y.tab.o lex.yy.o errormsg.o util.o absyn.o prabsyn.o symbol.o parse.o table.o types.o semant.o env.o
 
 semanttest.o: semanttest.c errormsg.h util.h
 	$(CC) -g -c semanttest.c
@@ -32,6 +32,9 @@ types.o: types.c types.h
 semant.o: semant.c semant.h
 	$(CC) -g -c semant.c
 
+env.o: env.c env.h
+	$(CC) -g -c env.c
+
 errormsg.o: errormsg.c errormsg.h util.h
 	$(CC) -g -c errormsg.c
 
@@ -51,4 +54,4 @@ lex.yy.c: tiger.lex
 	$(LEXER_GENERATOR) tiger.lex
 
 clean: 
-	rm -f semanttest.exe semanttest.exe.stackdump a.exe util.o semanttest.o lex.yy.o lex.yy.c errormsg.o y.tab.c y.tab.h y.tab.o tiger.output tiger.tab.grm ast_dump.txt symbol.o absyn.o prabsyn.o table.o y.output parse.o semant.o types.o
+	rm -f semanttest.exe semanttest.exe.stackdump a.exe util.o semanttest.o lex.yy.o lex.yy.c errormsg.o y.tab.c y.tab.h y.tab.o tiger.output tiger.tab.grm ast_dump.txt symbol.o absyn.o prabsyn.o table.o y.output parse.o semant.o types.o env.o

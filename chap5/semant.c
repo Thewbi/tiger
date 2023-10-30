@@ -16,7 +16,9 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
     {
         case A_simpleVar:
             printf("simpleVar 12 - VarName: \"%s\"\n", S_name(v->u.simple));
-            break;
+            E_enventry env_entry = TAB_look(venv, v->u.simple);
+            return expTy(NULL, env_entry->u.var.ty);
+            //break;
 
         case A_fieldVar:
             printf("A_fieldVar 13\n");
@@ -40,24 +42,27 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
     {
         case A_varExp:
             printf("A_varExp 15\n");
-            transVar(venv, tenv, a->u.var);
-            break;
+            return transVar(venv, tenv, a->u.var);
 
         case A_nilExp:
             printf("A_varExp 16\n");
-            break;
+            return expTy(a, Ty_Nil());
+            //break;
 
         case A_intExp:
             printf("A_intExp 17\n");
-            break;
+            return expTy(a, Ty_Int());
+            //break;
 
         case A_stringExp:
             printf("A_stringExp 18\n");
-            break;
+            return expTy(a, Ty_String());
+            //break;
 
         case A_callExp:
             printf("A_callExp 19\n");
-            break;
+            assert(0);
+            //break;
 
         case A_opExp: 
         {
@@ -70,15 +75,17 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             {
                 printf("A_opExp 20 - PLUS \n");
 
-                if (left.ty->kind!=Ty_int)
+                if (left.ty->kind != Ty_int)
                 {
                     EM_error(a->u.op.left->pos, "integer required");
                 }
             
-                if (right.ty->kind!=Ty_int)
+                if (right.ty->kind != Ty_int)
                 {
                     EM_error(a->u.op.right->pos,"integer required");
                 }
+
+                printf("A_opExp 20 - PLUS - Semantically Sane! \n");
             
                 return expTy(NULL, Ty_Int());
             }
@@ -86,7 +93,8 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 
         case A_recordExp:
             printf("A_recordExp 21\n");
-            break;
+            assert(0);
+            //break;
 
         case A_seqExp:
             {
@@ -119,19 +127,23 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 
         case A_ifExp:
             printf("A_ifExp 24\n");
-            break;
+            assert(0);
+            //break;
 
 	    case A_whileExp:
             printf("A_whileExp 25\n");
-            break;
+            assert(0);
+            //break;
 
         case A_forExp:
             printf("A_forExp 26\n");
-            break;
+            assert(0);
+            //break;
 
         case A_breakExp:
             printf("A_breakExp 27\n");
-            break;
+            assert(0);
+            //break;
 
         case A_letExp: 
         {
@@ -153,24 +165,8 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 
         case A_arrayExp:
             printf("A_arrayExp 19: pos: %d\n", a->pos);
-            break;
-
-        // case A_varDec:
-        // {
-        //     printf("A_varDec\n");
-
-        //     // // struct {S_symbol var; S_symbol typ; A_exp init; bool escape;} var;
-        //     // S_symbol var = a->u.var.var;
-        //     // S_symbol typ = a->u.var.typ;
-        //     // A_exp init = a->u.var.init;
-        //     // bool escape = a->u.var.escape;
-        //     transVar(venv, tenv, a);
-        // }
-
-        // case A_decList:
-        // {
-        //     printf("A_decList\n");
-        // }
+            assert(0);
+            //break;
 
         default:
             printf("Unknown expression! kind: %d pos: %d\n", a->kind, a->pos);
@@ -180,9 +176,26 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
     }
 }
 
+/**
+ * transDec - (Trans)late (Dec)larations
+ * 
+ * Processes
+ * - Variable Declarations (e.g. var a:int := 2)
+ */
 void transDec(S_table venv, S_table tenv, A_dec d)
 {
     printf("transDec: pos: %d\n", d->pos);
+
+    // see VARIABLE DECLARATIONS, page 119
+
+    // determine the type of the initialization value
+    struct expty e = transExp(venv, tenv, d->u.var.init);
+
+    S_enter(venv, d->u.var.var, E_VarEntry(e.ty));
+
+    TAB_dump(venv, show);
+
+    printf("transDec done.\n");
 }
 
 // struct Ty_ty transTy(S_table tenv, A_ty a)
@@ -190,3 +203,59 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 //     printf("transTy: pos: %d\n", a->pos);
 //     return Ty_Void();
 // }
+
+/**
+ * Called by TAB_dump() in table.c/h
+ * Outputs a binding stored inside a table environment
+ * 
+ * @param: key is a symbol that can be printed with S_name(key) which converts the symbol into a string
+ * @param: value E_VarEntry
+ */ 
+void show(void *key, void *value)
+{
+    printf("Key: '%s' ", S_name(key));
+
+    E_enventry env_entry = (E_enventry)value;
+    if (E_varEntry == env_entry->kind)
+    {
+        Ty_ty type = env_entry->u.var.ty;
+        switch (type->kind)
+        {
+            case Ty_record:
+                printf("Type: Ty_record\n");
+                break;
+
+            case Ty_nil:
+                printf("Type: Ty_nil\n");
+                break;
+                
+            case Ty_int:
+                printf("Type: Ty_int\n");
+                break;
+                
+            case Ty_string:
+                printf("Type: Ty_string\n");
+                break;
+                
+            case Ty_array:
+                printf("Type: Ty_array\n");
+                break;
+                
+            case Ty_name:
+                printf("Type: Ty_name\n");
+                break;
+                
+            case Ty_void:
+                printf("Type: Ty_void\n");
+                break;
+                
+            default:
+                printf("Type: Unknown type!\n");
+                break;
+        }
+    }
+    else
+    {
+        printf("Unknown kind: %d:\n", env_entry->kind);
+    }
+}

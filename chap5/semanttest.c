@@ -50,8 +50,11 @@ int main(int argc, char **argv)
     printf("semanttest.c - F\n");
 
     printf("\n\n\nPerforming Semantic Analysis ...\n");
-    S_table venv;
-    S_table tenv;
+    S_table venv = S_empty();
+    //S_beginScope(venv);
+    S_table tenv = S_empty();
+    //S_beginScope(tenv);
+
     transExp(venv, tenv, program);
     printf("Performing Semantic Analysis done.\n");
 
