@@ -190,7 +190,7 @@ addition.tig looks like this
 
 ```
 let
-	var a:int := 2
+    var a:int := 2
     var b:int := 3
     var c:int := 0
 in
@@ -198,4 +198,226 @@ in
 end
 ```
 
-The test is successfull if ...
+The test is successfull if the plus operator test determines that both operands are of type int and declares
+the operation sane. The test also has to determine that the assignment of int to c is valid and sane.
+
+# Structure of the Semantic Analysis Module semant.h/semant.c
+
+After a bit of trial-and-error with the semant.h/semant.c, the following can be said about the overall approach.
+
+Firstly, there have to be two environments prepare in the semanttest.c like so:
+
+```
+S_table venv = S_empty();
+S_table tenv = S_empty();
+```
+
+to prevent errors from happening.
+
+To output the tables, the function TAB_dump() from table.h/c is used. The function pointer points to a
+user defined function that performs the output. One sceleton could be:
+
+```
+/**
+ * Called by TAB_dump() in table.c/h
+ * Outputs a binding stored inside a table environment
+ * 
+ * @param: key is a symbol that can be printed with S_name(key) which converts the symbol into a string
+ * @param: value E_VarEntry
+ */ 
+void show(void *key, void *value)
+{
+    printf("Key: '%s' ", S_name(key));
+
+    E_enventry env_entry = (E_enventry)value;
+    if (E_varEntry == env_entry->kind)
+    {
+        Ty_ty type = env_entry->u.var.ty;
+        switch (type->kind)
+        {
+            case Ty_record:
+                printf("Type: Ty_record\n");
+                break;
+
+            case Ty_nil:
+                printf("Type: Ty_nil\n");
+                break;
+                
+            case Ty_int:
+                printf("Type: Ty_int\n");
+                break;
+                
+            case Ty_string:
+                printf("Type: Ty_string\n");
+                break;
+                
+            case Ty_array:
+                printf("Type: Ty_array\n");
+                break;
+                
+            case Ty_name:
+                printf("Type: Ty_name\n");
+                break;
+                
+            case Ty_void:
+                printf("Type: Ty_void\n");
+                break;
+                
+            default:
+                printf("Type: Unknown type!\n");
+                break;
+        }
+    }
+    else
+    {
+        printf("Unknown kind: %d:\n", env_entry->kind);
+    }
+}
+```
+
+I have placed show() into semant.h/.c since it is used there exclusively.
+
+Semant is recursive in that transExp() calls itself and every execution of the semantic analysis phase starts with a call
+to transExp(). transExp() performs a depth-first traversal over the AST. Therefore it will encounter variable declarations
+and variable usages. (And also type declarations and function declarations).
+
+transExp() will fill the environments with entries when it encounters variable declarations. It will then access the
+environments for type checking when it encounters variable usages.
+
+The entry of a binding into an environment is performed in a let expression for example:
+
+```
+    case A_letExp: 
+    {
+        printf("A_letExp 28: pos: %d\n", a->pos);
+
+        A_decList decs = a->u.let.decs;
+        while (decs != NULL) {
+            printf("dec: pos: %d\n", a->pos);
+            transDec(venv, tenv, decs->head);
+            decs = decs->tail;
+        }
+
+        A_exp body = a->u.let.body;
+        if (body != NULL) {
+            printf("body:\n");
+            transExp(venv, tenv, body);
+        }
+    }
+```
+
+The let environment has a declaration section where variables are declared. For each dec in the A_decList, transDec()
+is called. transDec() is part of the semantic analysis module and it enters a binding into the venv (variable enviroment)
+
+```
+/**
+ * transDec - (Trans)late (Dec)larations
+ * 
+ * Processes
+ * - Variable Declarations (e.g. var a:int := 2)
+ */
+void transDec(S_table venv, S_table tenv, A_dec d)
+{
+    printf("transDec: pos: %d\n", d->pos);
+
+    // see VARIABLE DECLARATIONS, page 119
+
+    // determine the type of the initialization value
+    struct expty e = transExp(venv, tenv, d->u.var.init);
+
+    S_enter(venv, d->u.var.var, E_VarEntry(e.ty));
+
+    TAB_dump(venv, show);
+
+    printf("transDec done.\n");
+}
+```
+
+When a + operator is encountered for example, transExp() recursively decends into both branches for the
+left and the right operand.
+
+```
+    case A_opExp: 
+    {
+        printf("A_opExp 20\n");
+
+        A_oper oper = a->u.op.oper;
+        struct expty left = transExp(venv, tenv, a->u.op.left);
+        struct expty right = transExp(venv, tenv, a->u.op.right);
+        if (oper == A_plusOp) 
+        {
+            printf("A_opExp 20 - PLUS \n");
+
+            if (left.ty->kind != Ty_int)
+            {
+                EM_error(a->u.op.left->pos, "integer required");
+            }
+        
+            if (right.ty->kind != Ty_int)
+            {
+                EM_error(a->u.op.right->pos,"integer required");
+            }
+
+            printf("A_opExp 20 - PLUS - Semantically Sane! \n");
+        
+            return expTy(NULL, Ty_Int());
+        }
+    }
+```
+
+The recursive calls to transExp()
+
+```
+struct expty left = transExp(venv, tenv, a->u.op.left);
+struct expty right = transExp(venv, tenv, a->u.op.right);
+```
+
+have to return *struct expty* values. These struct expty values are the types that
+have been inserted into the venv earlier! So here is how entries from the venv are
+retrieved when transExp() encounters a variable usage:
+
+```
+case A_varExp:
+    printf("A_varExp 15\n");
+    return transVar(venv, tenv, a->u.var);
+```
+
+transVar() will retrieve a binding for the variable that is used:
+
+```
+struct expty transVar(S_table venv, S_table tenv, A_var v)
+{
+    printf("transVar\n");
+
+    switch(v->kind) 
+    {
+        case A_simpleVar:
+            printf("simpleVar 12 - VarName: \"%s\"\n", S_name(v->u.simple));
+            E_enventry env_entry = TAB_look(venv, v->u.simple);
+            return expTy(NULL, env_entry->u.var.ty);
+
+    ...
+```
+
+this returned struct expty is the type of the variable that is used in the operator.
+This type is then used to check if both operands to the plus operator are of type int!
+
+```
+if (left.ty->kind != Ty_int)
+{
+    EM_error(a->u.op.left->pos, "integer required");
+}
+
+if (right.ty->kind != Ty_int)
+{
+    EM_error(a->u.op.right->pos,"integer required");
+}
+```
+
+Now the operator itself returns a type of int:
+
+```
+return expTy(NULL, Ty_Int());
+```
+
+This type can then be further used in the recursion.
