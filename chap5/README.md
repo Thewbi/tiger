@@ -212,10 +212,11 @@ S_table venv = S_empty();
 S_table tenv = S_empty();
 ```
 
-to prevent errors from happening.
+to prevent errors from happening. The important part is to call S_empty() so that the end pointers of linked
+lists are set to NULL correctly. venv is the environment for variables and functions. tenv is the environments for types.
 
 To output the tables, the function TAB_dump() from table.h/c is used. The function pointer points to a
-user defined function that performs the output. One sceleton could be:
+user defined function that performs the output. One skeleton could be:
 
 ```
 /**
@@ -275,7 +276,9 @@ void show(void *key, void *value)
 }
 ```
 
-I have placed show() into semant.h/.c since it is used there exclusively.
+I have placed show() into semant.h/.c since it is used there exclusively. You can use TAB_dump()
+to check your intermediate results ant to check what bindings from symbol name to type are stored in
+your environments.
 
 Semant is recursive in that transExp() calls itself and every execution of the semantic analysis phase starts with a call
 to transExp(). transExp() performs a depth-first traversal over the AST. Therefore it will encounter variable declarations
@@ -308,6 +311,7 @@ The entry of a binding into an environment is performed in a let expression for 
 
 The let environment has a declaration section where variables are declared. For each dec in the A_decList, transDec()
 is called. transDec() is part of the semantic analysis module and it enters a binding into the venv (variable enviroment)
+using the S_enter() call. I also print the environment using TAB_dump() whenever a binding is added to the environment.
 
 ```
 /**
@@ -373,7 +377,7 @@ struct expty right = transExp(venv, tenv, a->u.op.right);
 ```
 
 have to return *struct expty* values. These struct expty values are the types that
-have been inserted into the venv earlier! So here is how entries from the venv are
+have been inserted into the venv by transDec() earlier! So here is how entries from the venv are
 retrieved when transExp() encounters a variable usage:
 
 ```
