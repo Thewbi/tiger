@@ -444,6 +444,8 @@ Key: 'a' Type: Ty_int
 Key: 'i' Type: Ty_int
 ```
 
+TODO: test31.tig has to fail since the declared type and the type of the value that is used during initialization differs.
+
 ## Arithmetic Operators
 
 ```
@@ -465,11 +467,64 @@ end
 The test is successfull if the plus operator test determines that both operands are of type int and declares
 the operation sane. The test also has to determine that the assignment of int to c is valid and sane.
 
-## Records
+## Arrays
+
+In the tiger programming language, using arrays is a three-step process.
+
+1. define a (array) type for the array
+1. declare a variable of the (array) type. Optionally initialize all fields during declaration.
+1. assign values to fields of the array variable or access values in fields of the array variable
+
+An example is
+
+```
+let
+	type arrtype1 = array of int
+
+	var arr1: arrtype1 := arrtype1 [10] of 0
+in
+	arr1[0] := 123;
+    arr1[2]
+end
+```
+
+test29.tig type declaration based on arrays.
+
+It is invalid to index a variable that is not an array (test24.tig)
+
+```
+/* error : variable not array */
+let 
+	var d:=0
+in
+	d[3]
+end
+```
+
+## Records / Structs
+
+It is invalid to perform field access on variables that are not structs / records (test25.tig).
+
+```
+/* error : variable not record */
+let 
+	var d:=0
+in
+	d.f 
+end
+```
+
+test28.tig different record types. Tiger defines record equality based on record declaration not 
+record structure. Two structurally equal records are not equal because they are two distinct records.
 
 ## Let-Scopes
 
 As outlined in chapter 5.4 TYPE-CHECKING DECLARATION on page 118, entering a let environment has to 
-lead to S_beginScope() and ultimately to S_endScope() calls for both the venv and the tenv.
+lead to S_beginScope() and ultimately to S_endScope() calls for both the venv and the tenv. Using these
+calls, scopes are implemented and variable can be shadowed.
 
 ## Functions
+
+## Type declarations
+
+test29.tig
