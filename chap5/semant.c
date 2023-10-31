@@ -17,8 +17,11 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
         case A_simpleVar:
             printf("simpleVar 12 - VarName: \"%s\"\n", S_name(v->u.simple));
             E_enventry env_entry = TAB_look(venv, v->u.simple);
+            if (env_entry == NULL) {
+                EM_error(v->pos, "Variable \"%s\" is not declared. The type is unknown! Line: %d\n", S_name(v->u.simple), v->pos);
+                return expTy(NULL, Ty_Nil());
+            }
             return expTy(NULL, env_entry->u.var.ty);
-            //break;
 
         case A_fieldVar:
             printf("A_fieldVar 13\n");
@@ -75,17 +78,23 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             {
                 printf("A_opExp 20 - PLUS \n");
 
+                bool sane = TRUE;
+
                 if (left.ty->kind != Ty_int)
                 {
                     EM_error(a->u.op.left->pos, "integer required");
+                    sane = FALSE;
                 }
             
                 if (right.ty->kind != Ty_int)
                 {
                     EM_error(a->u.op.right->pos,"integer required");
+                    sane = FALSE;
                 }
 
-                printf("A_opExp 20 - PLUS - Semantically Sane! \n");
+                if (sane) {
+                    printf("A_opExp 20 - PLUS - Semantically sane! \n");
+                }
             
                 return expTy(NULL, Ty_Int());
             }
@@ -118,11 +127,24 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             //struct {A_var var; A_exp exp;} assign;
 
             A_var var = a->u.assign.var;
-            transVar(venv, tenv, var);
+            struct expty lvalue = transVar(venv, tenv, var);
+            // if (lvalue == NULL)
+            // {
+            //     printf("NULL!!!!\n");
+            // }
 
             A_exp exp = a->u.assign.exp;
-            transExp(venv, tenv, exp);
+            struct expty rhs_exp = transExp(venv, tenv, exp);
 
+            if (lvalue.ty->kind != rhs_exp.ty->kind)
+            {
+                EM_error(a->u.op.left->pos, "Types used in assignment are incompatible!");
+                return expTy(NULL, Ty_Nil());
+            } 
+            else 
+            {
+                printf("A_assignExp 23 - Semantically sane! \n");
+            }
             break;
 
         case A_ifExp:
@@ -149,6 +171,9 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
         {
             printf("A_letExp 28: pos: %d\n", a->pos);
 
+            S_beginScope(venv);
+            S_beginScope(tenv);
+
             A_decList decs = a->u.let.decs;
             while (decs != NULL) {
                 printf("dec: pos: %d\n", a->pos);
@@ -156,15 +181,22 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
                 decs = decs->tail;
             }
 
+            struct expty exp;
             A_exp body = a->u.let.body;
             if (body != NULL) {
                 printf("body:\n");
-                transExp(venv, tenv, body);
+                exp = transExp(venv, tenv, body);
             }
+
+            S_endScope(tenv);
+            S_endScope(venv);
+
+            return exp;
         }
+        break;
 
         case A_arrayExp:
-            printf("A_arrayExp 19: pos: %d\n", a->pos);
+            printf("A_arrayExp 29: pos: %d\n", a->pos);
             assert(0);
             //break;
 
@@ -213,6 +245,20 @@ void transDec(S_table venv, S_table tenv, A_dec d)
  */ 
 void show(void *key, void *value)
 {
+    //
+    // markers on in the environments require special treatment since they have null values for value
+    //
+
+    S_symbol temp = (S_symbol) key;
+    if (strcmp(S_name(temp), "<mark>") == 0) {
+        printf("<mark>\n");
+        return;
+    }
+
+    //
+    // print normal entries
+    //
+    
     printf("Key: '%s' ", S_name(key));
 
     E_enventry env_entry = (E_enventry)value;

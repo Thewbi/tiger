@@ -70,6 +70,8 @@ void adjust(void)
 
 digits [0-9]+
 
+%option yylineno
+
 %option nounput
 %option noinput
 

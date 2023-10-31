@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include "util.h"
-#include "symbol.h"
 #include "table.h"
+
+#include "symbol.h"
 
 struct S_symbol_ {string name; S_symbol next;};
 
@@ -73,4 +74,3 @@ void S_endScope(S_table t)
 void S_dump(S_table t, void (*show)(S_symbol sym, void *binding)) {
   TAB_dump(t, (void (*)(void *, void *)) show);
 }
-

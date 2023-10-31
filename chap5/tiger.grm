@@ -18,6 +18,8 @@ extern int yylineno;
 
 %}
 
+%locations
+
 /* */
 /* union used for the variable $$, $1, $2, $3, ... */
 /* */

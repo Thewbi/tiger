@@ -6,8 +6,9 @@
  */
 
 #include <stdio.h>
-#include "util.h"
-#include "symbol.h"
+
+
+
 #include "types.h"
 
 static struct Ty_ty_ tynil = {Ty_nil};
@@ -93,3 +94,63 @@ void TyList_print(Ty_tyList list)
   }
 }
 
+
+/**
+ * Called by TAB_dump() in table.c/h
+ * Outputs a binding stored inside a table environment
+ * 
+ * @param: key is a symbol that can be printed with S_name(key) which converts the symbol into a string
+ * @param: value E_VarEntry
+ 
+void show(void *key, void *value)
+{
+    S_symbol temp = (S_symbol) key;
+    if (value == marksym) {
+         return;
+    }
+    printf("Key: '%s' ", S_name(key));
+
+    E_enventry env_entry = (E_enventry)value;
+    if (E_varEntry == env_entry->kind)
+    {
+        Ty_ty type = env_entry->u.var.ty;
+        switch (type->kind)
+        {
+            case Ty_record:
+                printf("Type: Ty_record\n");
+                break;
+
+            case Ty_nil:
+                printf("Type: Ty_nil\n");
+                break;
+                
+            case Ty_int:
+                printf("Type: Ty_int\n");
+                break;
+                
+            case Ty_string:
+                printf("Type: Ty_string\n");
+                break;
+                
+            case Ty_array:
+                printf("Type: Ty_array\n");
+                break;
+                
+            case Ty_name:
+                printf("Type: Ty_name\n");
+                break;
+                
+            case Ty_void:
+                printf("Type: Ty_void\n");
+                break;
+                
+            default:
+                printf("Type: Unknown type!\n");
+                break;
+        }
+    }
+    else
+    {
+        printf("Unknown kind: %d:\n", env_entry->kind);
+    }
+}*/ 

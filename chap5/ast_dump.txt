@@ -1,28 +1,21 @@
  letExp(
   decList(
-   varDec(a,
+   varDec(i,
     int,
-    intExp(2),
+    intExp(5),
     TRUE),
    decList(
-    varDec(b,
-     int,
-     intExp(3),
+    varDec(a,
+     intExp(0),
      TRUE),
     decList(
-     varDec(c,
-      int,
-      intExp(0),
+     varDec(b,
+      stringExp(test),
       TRUE),
      decList()))),
   seqExp(
    expList(
     assignExp(
-     simpleVar(c),
-     opExp(
-      PLUS,
-      varExp(
-       simpleVar(a)),
-      varExp(
-       simpleVar(b)))),
+     simpleVar(a),
+     stringExp(test)),
     expList())))

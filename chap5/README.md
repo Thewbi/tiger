@@ -180,27 +180,6 @@ I copied the files over into the chap5 folder.
 Table is used as the actual implementation of the symbol table in the remainder of the book.
 Table is a desctructive / imperative table that uses a stack to roll and unroll environments as discussed before.
 
-# Testing
-
-```
-semanttest.exe ..\testcases\addition.tig
-```
-
-addition.tig looks like this
-
-```
-let
-    var a:int := 2
-    var b:int := 3
-    var c:int := 0
-in
-	c := a + b
-end
-```
-
-The test is successfull if the plus operator test determines that both operands are of type int and declares
-the operation sane. The test also has to determine that the assignment of int to c is valid and sane.
-
 # Structure of the Semantic Analysis Module semant.h/semant.c
 
 After a bit of trial-and-error with the semant.h/semant.c, the following can be said about the overall approach.
@@ -352,17 +331,23 @@ left and the right operand.
         {
             printf("A_opExp 20 - PLUS \n");
 
+            bool sane = TRUE;
+
             if (left.ty->kind != Ty_int)
             {
                 EM_error(a->u.op.left->pos, "integer required");
+                sane = FALSE;
             }
         
             if (right.ty->kind != Ty_int)
             {
                 EM_error(a->u.op.right->pos,"integer required");
+                sane = FALSE;
             }
 
-            printf("A_opExp 20 - PLUS - Semantically Sane! \n");
+            if (sane) {
+                printf("A_opExp 20 - PLUS - Semantically sane! \n");
+            }
         
             return expTy(NULL, Ty_Int());
         }
@@ -386,7 +371,7 @@ case A_varExp:
     return transVar(venv, tenv, a->u.var);
 ```
 
-transVar() will retrieve a binding for the variable that is used:
+transVar() will retrieve a binding for the used variable by calling TAB_look():
 
 ```
 struct expty transVar(S_table venv, S_table tenv, A_var v)
@@ -425,3 +410,66 @@ return expTy(NULL, Ty_Int());
 ```
 
 This type can then be further used in the recursion.
+
+# Approach Developing and Testing the Software for Chapter 4
+
+## Assignments
+
+Assignments where the left hand side (lhs) type is not known have to fail!
+
+```
+i := 1
+```
+
+Here, i is of unknown type because there is no variable declaration anywhere.
+
+When variables are declared without types but initialized with a value, then the types are
+deduced from the values.
+
+```
+let
+	var i:int := 5
+    var a := 0
+    var b := "test"
+in
+	i
+end
+```
+
+Dumping the variable environment yields:
+
+```
+Key: 'b' Type: Ty_string
+Key: 'a' Type: Ty_int
+Key: 'i' Type: Ty_int
+```
+
+## Arithmetic Operators
+
+```
+semanttest.exe ..\testcases\addition.tig
+```
+
+addition.tig looks like this
+
+```
+let
+    var a:int := 2
+    var b:int := 3
+    var c:int := 0
+in
+	c := a + b
+end
+```
+
+The test is successfull if the plus operator test determines that both operands are of type int and declares
+the operation sane. The test also has to determine that the assignment of int to c is valid and sane.
+
+## Records
+
+## Let-Scopes
+
+As outlined in chapter 5.4 TYPE-CHECKING DECLARATION on page 118, entering a let environment has to 
+lead to S_beginScope() and ultimately to S_endScope() calls for both the venv and the tenv.
+
+## Functions
