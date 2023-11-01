@@ -8,6 +8,9 @@ struct expty expTy(Tr_exp exp, Ty_ty ty)
     return e;
 }
 
+/**
+ * Traverses expressions and performs semantic analysis, makes sure that the types match.
+*/
 struct expty transExp(S_table venv, S_table tenv, A_exp a)
 {
     switch(a->kind) 
@@ -240,6 +243,9 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
  * 
  * Processes
  * - Variable usages
+ * 
+ * has to return the type or a variable usage.
+ * Is used in transExp().
  */
 struct expty transVar(S_table venv, S_table tenv, A_var v)
 {
@@ -277,7 +283,8 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
  * 
  * Processes
  * - variable declarations (e.g. var a:int := 2)
- * - array type declarations
+ * - type declarations (array, records)
+ * - function declarations
  */
 void transDec(S_table venv, S_table tenv, A_dec d)
 {
@@ -348,6 +355,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 //S_enter(venv, d->u.var.var, E_VarEntry(init_type.ty));
                 S_enter(venv, d->u.var.var, init_type.ty);
 
+                // DEBUG
                 printf("\nTAB_DUMP venv\n=============================\n");
                 TAB_dump(venv, show);
                 printf("=============================\n");
@@ -357,11 +365,10 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 
         case A_typeDec:
         {
-            //S_enter(tenv, d->u.type->head->name, transTy(tenv, d->u.type->head->ty));
-
             printf("A Adding to tenv: \"%s\"\n", S_name(d->u.type->head->name));
             S_enter(tenv, d->u.type->head->name, transTy(tenv, d->u.type));
 
+            // DEBUG
             printf("\nTAB_DUMP tenv\n=============================\n");
             TAB_dump(tenv, show);
             printf("=============================\n");
@@ -375,6 +382,10 @@ void transDec(S_table venv, S_table tenv, A_dec d)
     printf("transDec done.\n");
 }
 
+/**
+ * This function takes types and either looks them up in the type environment
+ * or creates types
+*/
 /*struct*/ Ty_ty transTy(S_table tenv, A_ty a)
 {
     A_nametyList named_types_list = a;
@@ -389,7 +400,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
             {
                 printf("A_nameTy - 33 - value: \"%s\"\n", S_name(ty->u.name));
                 // retrieve the referenced type from the tenv
-                void * retrieved_type = TAB_look(tenv, ty->u.name);
+                void *retrieved_type = TAB_look(tenv, ty->u.name);
                 
                 // printf("A Adding to tenv: \"%s\"\n", S_name(named_type->name));
                 // S_enter(tenv, named_type->name, retrieved_type);
@@ -411,9 +422,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 while (field_list != NULL) 
                 {
                     A_namety record_field = field_list->head;
-
                     printf("name: %s type: %s\n", S_name(record_field->name), S_name(record_field->ty));
-
                     // advance iterator
                     field_list = field_list->tail;
                 }

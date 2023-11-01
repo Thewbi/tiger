@@ -1,9 +1,18 @@
  letExp(
   decList(
-   varDec(a,
-    intExp(0),
-    TRUE),
-   decList()),
+   typeDec(
+    nametyList(
+     namety(arrtype1,
+      arrayTy(int)),
+     nametyList())),
+   decList(
+    varDec(arr1,
+     arrtype1,
+     arrayExp(arrtype1,
+      intExp(10),
+      intExp(0)),
+     TRUE),
+    decList())),
   seqExp(
    expList(
     intExp(0),

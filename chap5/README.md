@@ -413,7 +413,9 @@ This type can then be further used in the recursion.
 
 # Approach Developing and Testing the Software for Chapter 4
 
-## Variable Declarations, Variable Initialization
+## Basic Types (int, string)
+
+### Variable Declarations, Variable Initialization of Basic Type (int, string)
 
 Tiger is strictly typed. Variables always have to have a type.
 The type of a variable is determined once during it's declaration.
@@ -463,13 +465,13 @@ in
 end
 ```
 
-### Semantic analysis detects errors here
+#### Semantic analysis detects errors here
 test31.tig
 test31.tig has to fail since the declared type and the type of the value that is used during initialization differs.
 
-### Semantic analysis correct here
+#### Semantic analysis correct here
 
-## Variable Assignments
+### Variable Assignments of Basic Type (int, string)
 
 Assignments where the left hand side (lhs) type is not known have to fail!
 
@@ -556,16 +558,17 @@ the operation sane. The test also has to determine that the assignment of int to
 
 In the tiger programming language, using arrays is a three-step process.
 
-1. define a (array) type
+1. define a (array) type (See type declarations above)
 1. declare a variable of the (array) type. Optionally initialize all fields during declaration.
 1. assign values to fields of the array variable or access values in fields of the array variable
 
-An example is
+An example is arrays.tig:
+
+TODO: arrays.tig
 
 ```
 let
 	type arrtype1 = array of int
-
 	var arr1: arrtype1 := arrtype1 [10] of 0
 in
 	arr1[0] := 123;
@@ -590,7 +593,7 @@ end
 test31.tig
 
 ### Semantic analysis correct here
-TODO: arrays_simple.tig
+arrays_simple.tig
 
 ## Records / Structs
 
@@ -616,4 +619,4 @@ calls, scopes are implemented and variable can be shadowed.
 
 ## Functions
 
-TODO
+TODO work on functions
