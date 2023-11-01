@@ -485,6 +485,8 @@ Here, i is of unknown type because there is no variable declaration anywhere.
 
 ## Type declarations
 
+### Alias for built-in types
+
 The most basic type declaration uses the built-in types 'int' and 'string' to create
 a type that is nothing but an alias to the built-in types 'int' and 'string'.
 
@@ -498,11 +500,26 @@ end
 
 Question: Can a variable of type myint be assigned a int value or assigned a variable of type int?
 
+### Array Types
+
 One step up in complexity is the array type:
 
 ```
 let
 	type arrtype1 = array of int
+    type arrtype2 = array of string
+in
+	0
+end
+```
+
+### Records
+
+Next are records.
+
+```
+let
+	type rectype = { name:string, age:int }
 in
 	0
 end
@@ -511,6 +528,8 @@ end
 typedec_simple.tig
 test29.tig
 arrays_simple.tig
+records_simple.tig
+
 
 ## Arithmetic Operators
 

@@ -256,43 +256,8 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 
         case A_typeDec:
         {
-            A_nametyList named_types_list = d->u.type;
-            while (named_types_list != NULL) {
-
-                A_namety named_type = named_types_list->head;
-                A_ty ty = named_type->ty;
-
-                switch (ty->kind)
-                {
-                    case A_nameTy: //=33,
-                    {
-                        printf("A_nameTy - 33 - value: \"%s\"\n", S_name(ty->u.name));
-                        // retrieve the referenced type from the tenv
-                        void * retrieved_type = TAB_look(tenv, ty->u.name);
-                        S_enter(tenv, named_type->name, E_VarEntry(retrieved_type));
-                        TAB_dump(tenv, show);
-                    }
-                    break;
-
-                    case A_recordTy: //=34,
-                    {
-                        printf("A_recordTy - 34\n");
-                        assert(0);
-                    }
-                    break;
-
-                    case A_arrayTy: //=35
-                    {
-                        printf("A_arrayTy - 35 - value: \"%s\"\n", S_name(ty->u.name));
-                        // retrieve the referenced type from the tenv
-                        void * retrieved_type = TAB_look(tenv, ty->u.name);
-                        S_enter(tenv, named_type->name, E_VarEntry(retrieved_type));
-                        TAB_dump(tenv, show);
-                    }
-                    break;
-                }
-                named_types_list = named_types_list->tail;
-            }
+            //S_enter(tenv, d->u.type->head->name, transTy(tenv, d->u.type->head->ty));
+            S_enter(tenv, d->u.type->head->name, transTy(tenv, d->u.type));
         }
         break;
 
@@ -301,6 +266,70 @@ void transDec(S_table venv, S_table tenv, A_dec d)
     }
 
     printf("transDec done.\n");
+}
+
+/*struct*/ Ty_ty transTy(S_table tenv, A_ty a)
+{
+    //A_nametyList named_types_list = d->u.type;
+    A_nametyList named_types_list = a;
+    while (named_types_list != NULL) {
+
+        A_namety named_type = named_types_list->head;
+        A_ty ty = named_type->ty;
+
+        switch (ty->kind)
+        {
+            case A_nameTy: //=33,
+            {
+                printf("A_nameTy - 33 - value: \"%s\"\n", S_name(ty->u.name));
+                // retrieve the referenced type from the tenv
+                void * retrieved_type = TAB_look(tenv, ty->u.name);
+                S_enter(tenv, named_type->name, E_VarEntry(retrieved_type));
+                TAB_dump(tenv, show);
+            }
+            break;
+
+            case A_recordTy: //=34,
+            {
+                printf("A_recordTy - 34 - named_type - value: \"%s\"\n", S_name(named_type->name));
+                
+                // DEBUG output field list
+                A_fieldList field_list = named_type->ty->u.record;
+                while (field_list != NULL) 
+                {
+                    A_namety record_field = field_list->head;
+
+                    printf("name: %s type: %s\n", S_name(record_field->name), S_name(record_field->ty));
+
+                    // advance iterator
+                    field_list = field_list->tail;
+                }
+
+                // ... turning A_recordTy into Ty_Record ...
+                Ty_ty rec = Ty_Record(named_type->ty->u.record);
+
+                // insert this type and it's fields into tenv
+                S_enter(tenv, named_type->name, E_VarEntry(rec));
+            }
+            break;
+
+            case A_arrayTy: //=35
+            {
+                printf("A_arrayTy - 35 - value: \"%s\"\n", S_name(ty->u.name));
+                // retrieve the referenced type from the tenv
+                void * retrieved_type = TAB_look(tenv, ty->u.name);
+                S_enter(tenv, named_type->name, E_VarEntry(retrieved_type));
+                TAB_dump(tenv, show);
+            }
+            break;
+        }
+
+        // advance iterator
+        named_types_list = named_types_list->tail;
+    }
+
+    //assert(0);
+    //return Ty_Nil();
 }
 
 /**

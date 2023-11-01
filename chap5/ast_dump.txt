@@ -2,16 +2,19 @@
   decList(
    typeDec(
     nametyList(
-     namety(arrtype1,
-      arrayTy(int)),
+     namety(rectype,
+      recordTy(
+       fieldList(
+        field(name,
+         string,
+         TRUE),
+        fieldList(
+         field(age,
+          int,
+          TRUE),
+         fieldList())))),
      nametyList())),
-   decList(
-    typeDec(
-     nametyList(
-      namety(arrtype2,
-       arrayTy(string)),
-      nametyList())),
-    decList())),
+   decList()),
   seqExp(
    expList(
     intExp(0),
