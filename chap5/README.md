@@ -434,6 +434,24 @@ The type specification will determine the type of the variable and the assigned
 value's type has to match it. If there is no type specified, then the type of
 the assigned value is used as the type of the declared variable.
 
+```
+let
+	var i:int := 5
+    var a := 0
+    var b := "test"
+in
+	i
+end
+```
+
+Dumping the variable environment (venv) yields:
+
+```
+Key: 'b' Type: Ty_string
+Key: 'a' Type: Ty_int
+Key: 'i' Type: Ty_int
+```
+
 In this example, the specified type does not match the initialization value's type.
 The semantic analysis has to return an error.
 
@@ -445,10 +463,11 @@ in
 end
 ```
 
-Semantic analysis detects errors here:
+### Semantic analysis detects errors here
 test31.tig
+test31.tig has to fail since the declared type and the type of the value that is used during initialization differs.
 
-Semantic analysis correct here:
+### Semantic analysis correct here
 
 ## Variable Assignments
 
@@ -460,28 +479,27 @@ i := 1
 
 Here, i is of unknown type because there is no variable declaration anywhere.
 
-When variables are declared without types but initialized with a value, then the types are
-deduced from the values.
+
+
+
+
+## Type declarations
+
+The most basic type declaration uses the built-in types 'int' and 'string' to create
+a type that is nothing but an alias to the built-in types 'int' and 'string'.
 
 ```
 let
-	var i:int := 5
-    var a := 0
-    var b := "test"
+	type myint = int
 in
-	i
+	0
 end
 ```
 
-Dumping the variable environment yields:
+Question: Can a variable of type myint be assigned a int value or assigned a variable of type int?
 
-```
-Key: 'b' Type: Ty_string
-Key: 'a' Type: Ty_int
-Key: 'i' Type: Ty_int
-```
-
-test31.tig has to fail since the declared type and the type of the value that is used during initialization differs.
+typedec_simple.tig
+test29.tig
 
 ## Arithmetic Operators
 
@@ -508,7 +526,7 @@ the operation sane. The test also has to determine that the assignment of int to
 
 In the tiger programming language, using arrays is a three-step process.
 
-1. define a (array) type for the array
+1. define a (array) type
 1. declare a variable of the (array) type. Optionally initialize all fields during declaration.
 1. assign values to fields of the array variable or access values in fields of the array variable
 
@@ -538,6 +556,12 @@ in
 end
 ```
 
+### Semantic analysis detects errors here
+test31.tig
+
+### Semantic analysis correct here
+TODO: arrays_simple.tig
+
 ## Records / Structs
 
 It is invalid to perform field access on variables that are not structs / records (test25.tig).
@@ -562,6 +586,4 @@ calls, scopes are implemented and variable can be shadowed.
 
 ## Functions
 
-## Type declarations
-
-test29.tig
+TODO

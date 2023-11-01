@@ -55,6 +55,10 @@ int main(int argc, char **argv)
     S_table tenv = S_empty();
     //S_beginScope(tenv);
 
+    // insert the built in types into the type environment (tenv)
+    S_enter(tenv, S_Symbol("int"), Ty_Int());
+    S_enter(tenv, S_Symbol("string"), Ty_String());
+
     transExp(venv, tenv, program);
     printf("Performing Semantic Analysis done.\n");
 

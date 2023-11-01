@@ -224,42 +224,70 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
 void transDec(S_table venv, S_table tenv, A_dec d)
 {
     printf("transDec: pos: %d\n", d->pos);
-
-    // see VARIABLE DECLARATIONS, page 119
-
-    struct expty init_type = expTy(NULL, Ty_Nil());
-
-    // determine the type of the initialization value
-    if (d->u.var.init != NULL) {
-        init_type = transExp(venv, tenv, d->u.var.init);
-    }
-    else 
-    {
-        printf("No initializer\n");
-    }
-
-    // semantic analysis
     printf("kind: %d\n", d->kind);
 
     switch (d->kind)
     {
         case A_varDec:
+        {
+            // see VARIABLE DECLARATIONS, page 119
+            struct expty init_type = expTy(NULL, Ty_Nil());
+            // determine the type of the initialization value
+            if (d->u.var.init != NULL) {
+                init_type = transExp(venv, tenv, d->u.var.init);
+            }
+            else 
+            {
+                printf("No initializer\n");
+            }
             Ty_ty var_type = d->u.var.typ;
             show_type(var_type);
             if ((init_type.ty != Ty_Nil()) && (var_type != NULL) && (var_type != init_type.ty)) {
                 EM_error(d->pos, "Types used in variable declaration initializer are incompatible!");
                 return expTy(NULL, Ty_Nil());
             }
-            break;
+            // enter binding for the declared variable into the variable environment (venv)
+            // The initializer type is used because the explizit type specifier is optional and
+            // the initializer and specifier types have to match at all times
+            S_enter(venv, d->u.var.var, E_VarEntry(init_type.ty));
+            TAB_dump(venv, show);
+        }
+        break;
+
+        case A_typeDec:
+        {
+            A_nametyList named_types_list = d->u.type;
+            while (named_types_list != NULL) {
+
+                A_namety named_type = named_types_list->head;
+                A_ty ty = named_type->ty;
+
+                switch (ty->kind)
+                {
+                    case A_nameTy: //=33,
+                        printf("A_nameTy - 33 value: \"%s\"\n", S_name(ty->u.name));
+                        // retrieve the referenced type from the tenv
+                        void * retrieved_type = TAB_look(tenv, ty->u.name);
+                        S_enter(tenv, named_type->name, E_VarEntry(retrieved_type));
+                        TAB_dump(tenv, show);
+                        break; 
+                    case A_recordTy: //=34,
+                        printf("A_recordTy - 34\n");
+                        assert(0);
+                        break;
+                    case A_arrayTy: //=35
+                        printf("A_arrayTy - 35\n");
+                        assert(0);
+                        break;
+                }
+                named_types_list = named_types_list->tail;
+            }
+        }
+        break;
 
         default:
             assert(0);
     }
-
-    // enter binding for the declared variable into the variable environment (venv)
-    S_enter(venv, d->u.var.var, E_VarEntry(init_type.ty));
-
-    TAB_dump(venv, show);
 
     printf("transDec done.\n");
 }
@@ -297,7 +325,8 @@ void show(void *key, void *value)
     }
     else
     {
-        printf("Unknown kind: %d:\n", env_entry->kind);
+        show_type(env_entry);
+        //printf("Unknown kind: %d:\n", env_entry->kind);
     }
 }
 
