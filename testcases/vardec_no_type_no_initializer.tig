@@ -1,0 +1,6 @@
+/* Syntax error. Variables always have to have a type. Therefore either a type specifier or a initialization is required */
+let
+	var i
+in
+	0
+end

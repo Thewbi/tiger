@@ -413,7 +413,44 @@ This type can then be further used in the recursion.
 
 # Approach Developing and Testing the Software for Chapter 4
 
-## Assignments
+## Variable Declarations, Variable Initialization
+
+Tiger is strictly typed. Variables always have to have a type.
+The type of a variable is determined once during it's declaration.
+
+The variable declaration always has to contain an assignment.
+The variable declaration optionally can contain a type specification.
+
+```
+let
+    var a := 0
+	var i:int := 5
+in
+	0
+end
+```
+
+The type specification will determine the type of the variable and the assigned
+value's type has to match it. If there is no type specified, then the type of
+the assigned value is used as the type of the declared variable.
+
+In this example, the specified type does not match the initialization value's type.
+The semantic analysis has to return an error.
+
+```
+let
+	var i:int := "this will err"
+in
+	0
+end
+```
+
+Semantic analysis detects errors here:
+test31.tig
+
+Semantic analysis correct here:
+
+## Variable Assignments
 
 Assignments where the left hand side (lhs) type is not known have to fail!
 
@@ -444,7 +481,7 @@ Key: 'a' Type: Ty_int
 Key: 'i' Type: Ty_int
 ```
 
-TODO: test31.tig has to fail since the declared type and the type of the value that is used during initialization differs.
+test31.tig has to fail since the declared type and the type of the value that is used during initialization differs.
 
 ## Arithmetic Operators
 

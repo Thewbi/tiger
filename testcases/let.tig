@@ -1,6 +1,8 @@
+/* Semantic Error: a is declared as int because of the initializer. It is assigned a string later. */
 let
 	var i:int := 5
     var a := 0
+    var b := "test"
 in
-	i
+	a := "test" // semantic error (types do not match)
 end

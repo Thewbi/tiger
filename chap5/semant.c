@@ -8,37 +8,6 @@ struct expty expTy(Tr_exp exp, Ty_ty ty)
     return e;
 }
 
-struct expty transVar(S_table venv, S_table tenv, A_var v)
-{
-    printf("transVar\n");
-
-    switch(v->kind) 
-    {
-        case A_simpleVar:
-            printf("simpleVar 12 - VarName: \"%s\"\n", S_name(v->u.simple));
-            E_enventry env_entry = TAB_look(venv, v->u.simple);
-            if (env_entry == NULL) {
-                EM_error(v->pos, "Variable \"%s\" is not declared. The type is unknown! Line: %d\n", S_name(v->u.simple), v->pos);
-                return expTy(NULL, Ty_Nil());
-            }
-            return expTy(NULL, env_entry->u.var.ty);
-
-        case A_fieldVar:
-            printf("A_fieldVar 13\n");
-            break;
-
-        case A_subscriptVar:
-            printf("A_subscriptVar 14\n");
-            break;
-
-        default:
-            printf("Unknown expression! kind: %d pos: %d\n", v->kind, v->pos);
-            /* should have returned from some clause of the switch */
-            assert(0);
-            break;
-    }
-}
-
 struct expty transExp(S_table venv, S_table tenv, A_exp a)
 {
     switch(a->kind) 
@@ -209,10 +178,48 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 }
 
 /**
+ * transVar - (Trans)late (Var)iables
+ * 
+ * Processes
+ * - Variable usages
+ */
+struct expty transVar(S_table venv, S_table tenv, A_var v)
+{
+    printf("transVar\n");
+
+    switch(v->kind) 
+    {
+        case A_simpleVar:
+            printf("simpleVar 12 - VarName: \"%s\"\n", S_name(v->u.simple));
+            E_enventry env_entry = TAB_look(venv, v->u.simple);
+            if (env_entry == NULL) {
+                EM_error(v->pos, "Variable \"%s\" is not declared. The type is unknown! Line: %d\n", S_name(v->u.simple), v->pos);
+                return expTy(NULL, Ty_Nil());
+            }
+            return expTy(NULL, env_entry->u.var.ty);
+
+        case A_fieldVar:
+            printf("A_fieldVar 13\n");
+            break;
+
+        case A_subscriptVar:
+            printf("A_subscriptVar 14\n");
+            break;
+
+        default:
+            printf("Unknown expression! kind: %d pos: %d\n", v->kind, v->pos);
+            /* should have returned from some clause of the switch */
+            assert(0);
+            break;
+    }
+}
+
+/**
  * transDec - (Trans)late (Dec)larations
  * 
  * Processes
- * - Variable Declarations (e.g. var a:int := 2)
+ * - variable declarations (e.g. var a:int := 2)
+ * - array type declarations
  */
 void transDec(S_table venv, S_table tenv, A_dec d)
 {
@@ -220,21 +227,42 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 
     // see VARIABLE DECLARATIONS, page 119
 
-    // determine the type of the initialization value
-    struct expty e = transExp(venv, tenv, d->u.var.init);
+    struct expty init_type = expTy(NULL, Ty_Nil());
 
-    S_enter(venv, d->u.var.var, E_VarEntry(e.ty));
+    // determine the type of the initialization value
+    if (d->u.var.init != NULL) {
+        init_type = transExp(venv, tenv, d->u.var.init);
+    }
+    else 
+    {
+        printf("No initializer\n");
+    }
+
+    // semantic analysis
+    printf("kind: %d\n", d->kind);
+
+    switch (d->kind)
+    {
+        case A_varDec:
+            Ty_ty var_type = d->u.var.typ;
+            show_type(var_type);
+            if ((init_type.ty != Ty_Nil()) && (var_type != NULL) && (var_type != init_type.ty)) {
+                EM_error(d->pos, "Types used in variable declaration initializer are incompatible!");
+                return expTy(NULL, Ty_Nil());
+            }
+            break;
+
+        default:
+            assert(0);
+    }
+
+    // enter binding for the declared variable into the variable environment (venv)
+    S_enter(venv, d->u.var.var, E_VarEntry(init_type.ty));
 
     TAB_dump(venv, show);
 
     printf("transDec done.\n");
 }
-
-// struct Ty_ty transTy(S_table tenv, A_ty a)
-// {
-//     printf("transTy: pos: %d\n", a->pos);
-//     return Ty_Void();
-// }
 
 /**
  * Called by TAB_dump() in table.c/h
@@ -258,50 +286,59 @@ void show(void *key, void *value)
     //
     // print normal entries
     //
-    
+
     printf("Key: '%s' ", S_name(key));
 
     E_enventry env_entry = (E_enventry)value;
     if (E_varEntry == env_entry->kind)
     {
         Ty_ty type = env_entry->u.var.ty;
-        switch (type->kind)
-        {
-            case Ty_record:
-                printf("Type: Ty_record\n");
-                break;
-
-            case Ty_nil:
-                printf("Type: Ty_nil\n");
-                break;
-                
-            case Ty_int:
-                printf("Type: Ty_int\n");
-                break;
-                
-            case Ty_string:
-                printf("Type: Ty_string\n");
-                break;
-                
-            case Ty_array:
-                printf("Type: Ty_array\n");
-                break;
-                
-            case Ty_name:
-                printf("Type: Ty_name\n");
-                break;
-                
-            case Ty_void:
-                printf("Type: Ty_void\n");
-                break;
-                
-            default:
-                printf("Type: Unknown type!\n");
-                break;
-        }
+        show_type(type);
     }
     else
     {
         printf("Unknown kind: %d:\n", env_entry->kind);
     }
 }
+
+void show_type(Ty_ty type) {
+    if (type == NULL)
+    {
+        printf("No type!\n");
+        return;
+    }
+    switch (type->kind)
+    {
+        case Ty_record:
+            printf("Type: Ty_record\n");
+            break;
+
+        case Ty_nil:
+            printf("Type: Ty_nil\n");
+            break;
+            
+        case Ty_int:
+            printf("Type: Ty_int\n");
+            break;
+            
+        case Ty_string:
+            printf("Type: Ty_string\n");
+            break;
+            
+        case Ty_array:
+            printf("Type: Ty_array\n");
+            break;
+            
+        case Ty_name:
+            printf("Type: Ty_name\n");
+            break;
+            
+        case Ty_void:
+            printf("Type: Ty_void\n");
+            break;
+            
+        default:
+            printf("Type: Unknown type!\n");
+            break;
+    }
+} 

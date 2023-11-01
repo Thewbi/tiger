@@ -1,0 +1,6 @@
+/* syntax error. The initialization is mandatory */
+let
+	var i:int;
+in
+	0
+end
