@@ -62,11 +62,15 @@ void *S_look(S_table t, S_symbol sym) {
 static struct S_symbol_ marksym = {"<mark>",0};
 
 void S_beginScope(S_table t)
-{ S_enter(t,&marksym,NULL);
+{ 
+    printf(">>>>>>> BEGIN_SCOPE\n");
+    S_enter(t,&marksym,NULL);
 }
 
 void S_endScope(S_table t)
-{S_symbol s;
+{
+    printf("<<<<<<< END_SCOPE\n");
+    S_symbol s;
   do s=TAB_pop(t);
   while (s != &marksym);
 }

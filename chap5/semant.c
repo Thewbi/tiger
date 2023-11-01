@@ -93,14 +93,8 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
         case A_assignExp:
             printf("A_assignExp 23: pos: %d\n", a->pos);
 
-            //struct {A_var var; A_exp exp;} assign;
-
             A_var var = a->u.assign.var;
             struct expty lvalue = transVar(venv, tenv, var);
-            // if (lvalue == NULL)
-            // {
-            //     printf("NULL!!!!\n");
-            // }
 
             A_exp exp = a->u.assign.exp;
             struct expty rhs_exp = transExp(venv, tenv, exp);
@@ -165,9 +159,73 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
         break;
 
         case A_arrayExp:
+        {
             printf("A_arrayExp 29: pos: %d\n", a->pos);
-            assert(0);
-            //break;
+
+            // S_symbol typ; A_exp size, init;
+            // struct {S_symbol typ; A_exp size, init;} array;
+            S_symbol typ = a->u.array.typ;
+            A_exp size = a->u.array.size;
+            A_exp init = a->u.array.init;
+
+            printf("typ: \"%s\"\n", S_name(typ));
+            printf("size: %d\n", size->u.intt);
+            printf("init: kind: %d\n", init->kind);
+
+            printf("AAA\n");
+
+            //struct expty typ_exp_type = transExp(venv, tenv, typ);
+            //E_enventry typ_env_entry = TAB_look(tenv, typ);
+            //printf("typ_env_entry: kind: %d\n", typ_env_entry);
+            //printf("typ_env_entry: kind: %d\n", typ_env_entry->kind);
+            //Ty_ty array_type = typ_env_entry->u.var.ty;
+
+            printf("\nTAB_DUMP tenv\n=============================\n");
+            TAB_dump(tenv, show);
+            printf("=============================\n");
+
+            //void* binding_value = TAB_look(tenv, typ);
+            void* binding_value = S_look(tenv, typ);
+            //void* binding_value = S_look(venv, typ);
+            assert(binding_value);
+            printf("binding_value: %d\n", binding_value);
+
+            Ty_ty array_typetttt = (Ty_ty) binding_value;
+            show_type(array_typetttt);
+
+            Ty_ty array_element_type = array_typetttt->u.array;
+            show_type(array_element_type);
+
+            //printf("binding_value: %s\n", S_name(array_typetttt));
+
+            printf("BBB\n");
+
+            struct expty init_exp_type = transExp(venv, tenv, init);
+            show_type(init_exp_type.ty);
+
+            printf("CCC\n");
+
+            if (init_exp_type.ty != array_element_type) {
+                EM_error(a->pos, "Type used in array initialization does not match array type!");
+                return expTy(NULL, Ty_Nil());
+            } else {
+                printf("Array declaration valid\n");
+            }
+
+            // check if the init kind matches the typ of the array
+            //asdf
+
+            //struct expty exp = expTy(a, Ty_Array(typ_env_entry->u.var));
+            //return exp;
+
+            //assert(0);
+
+            //return expTy(a, Ty_Array(array_typetttt));
+            //printf("ZINK %d\n", init_exp_type.ty);
+            return expTy(a, Ty_Array(array_element_type));
+            //return array_typetttt;
+        }
+        break;
 
         default:
             printf("Unknown expression! kind: %d pos: %d\n", a->kind, a->pos);
@@ -232,32 +290,81 @@ void transDec(S_table venv, S_table tenv, A_dec d)
         {
             // see VARIABLE DECLARATIONS, page 119
             struct expty init_type = expTy(NULL, Ty_Nil());
+
             // determine the type of the initialization value
             if (d->u.var.init != NULL) {
                 init_type = transExp(venv, tenv, d->u.var.init);
+                printf("init_type retrieved: %d\n", init_type);
+                show_type(init_type.ty);
             }
             else 
             {
                 printf("No initializer\n");
             }
-            Ty_ty var_type = d->u.var.typ;
-            show_type(var_type);
-            if ((init_type.ty != Ty_Nil()) && (var_type != NULL) && (var_type != init_type.ty)) {
-                EM_error(d->pos, "Types used in variable declaration initializer are incompatible!");
-                return expTy(NULL, Ty_Nil());
+
+            //printf("kind: %d\n", d->kind);
+
+            // the type specifier on a variable is optional
+            S_symbol type_symbol = d->u.var.typ;
+            if (type_symbol == NULL)
+            {
+                S_enter(venv, d->u.var.var, init_type.ty);
+
+                printf("\nTAB_DUMP venv\n=============================\n");
+                TAB_dump(venv, show);
+                printf("=============================\n");
             }
-            // enter binding for the declared variable into the variable environment (venv)
-            // The initializer type is used because the explizit type specifier is optional and
-            // the initializer and specifier types have to match at all times
-            S_enter(venv, d->u.var.var, E_VarEntry(init_type.ty));
-            TAB_dump(venv, show);
+            else
+            {
+                printf("type_symbol: \"%s\"\n", S_name(type_symbol));
+
+                Ty_ty var_type = S_look(tenv, type_symbol);
+                show_type(var_type);
+
+                if ((init_type.ty != Ty_Nil()) && (var_type != Ty_Nil())) {
+
+                    printf("AAAAAA\n");
+
+                    show_type(var_type);
+                    show_type(init_type.ty);
+
+                    printf("%d - %d\n", var_type, init_type.ty);
+
+                    //if (var_type != init_type.ty)
+                    if (var_type->u.array != init_type.ty->u.array)
+                    //if (var_type->u.array != init_type.ty)
+                    {
+
+                        printf("BBBBBB\n");
+
+
+                        EM_error(d->pos, "Types used in variable declaration initializer are incompatible!");
+                        return expTy(NULL, Ty_Nil());
+                    }
+                }
+                // enter binding for the declared variable into the variable environment (venv)
+                // The initializer type is used because the explizit type specifier is optional and
+                // the initializer and specifier types have to match at all times
+                //S_enter(venv, d->u.var.var, E_VarEntry(init_type.ty));
+                S_enter(venv, d->u.var.var, init_type.ty);
+
+                printf("\nTAB_DUMP venv\n=============================\n");
+                TAB_dump(venv, show);
+                printf("=============================\n");
+            }
         }
         break;
 
         case A_typeDec:
         {
             //S_enter(tenv, d->u.type->head->name, transTy(tenv, d->u.type->head->ty));
+
+            printf("A Adding to tenv: \"%s\"\n", S_name(d->u.type->head->name));
             S_enter(tenv, d->u.type->head->name, transTy(tenv, d->u.type));
+
+            printf("\nTAB_DUMP tenv\n=============================\n");
+            TAB_dump(tenv, show);
+            printf("=============================\n");
         }
         break;
 
@@ -270,7 +377,6 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 
 /*struct*/ Ty_ty transTy(S_table tenv, A_ty a)
 {
-    //A_nametyList named_types_list = d->u.type;
     A_nametyList named_types_list = a;
     while (named_types_list != NULL) {
 
@@ -284,8 +390,15 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 printf("A_nameTy - 33 - value: \"%s\"\n", S_name(ty->u.name));
                 // retrieve the referenced type from the tenv
                 void * retrieved_type = TAB_look(tenv, ty->u.name);
-                S_enter(tenv, named_type->name, E_VarEntry(retrieved_type));
-                TAB_dump(tenv, show);
+                
+                // printf("A Adding to tenv: \"%s\"\n", S_name(named_type->name));
+                // S_enter(tenv, named_type->name, retrieved_type);
+
+                // printf("\nTAB_DUMP tenv\n=============================\n");
+                // TAB_dump(tenv, show);
+                // printf("=============================\n");
+
+                return retrieved_type;
             }
             break;
 
@@ -306,20 +419,45 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 }
 
                 // ... turning A_recordTy into Ty_Record ...
-                Ty_ty rec = Ty_Record(named_type->ty->u.record);
+                Ty_ty rec_ty = Ty_Record(named_type->ty->u.record);
 
-                // insert this type and it's fields into tenv
-                S_enter(tenv, named_type->name, E_VarEntry(rec));
+                // // insert this type and it's fields into tenv
+                // //S_enter(tenv, named_type->name, E_VarEntry(rec));
+                // printf("B Adding to tenv: \"%s\"\n", S_name(named_type->name));
+                // S_enter(tenv, named_type->name, rec_ty);
+
+                return rec_ty;
             }
             break;
 
             case A_arrayTy: //=35
             {
                 printf("A_arrayTy - 35 - value: \"%s\"\n", S_name(ty->u.name));
+
                 // retrieve the referenced type from the tenv
                 void * retrieved_type = TAB_look(tenv, ty->u.name);
-                S_enter(tenv, named_type->name, E_VarEntry(retrieved_type));
-                TAB_dump(tenv, show);
+
+                //A_ty t = A_ArrayTy(a->pos, ty->u.name);
+
+                printf("hohohoh\n");
+                show_type(retrieved_type);
+
+                Ty_ty array_ty = Ty_Array(retrieved_type);
+
+                // printf("C Adding to tenv: \"%s\"\n", S_name(named_type->name));
+                // //S_enter(tenv, named_type->name, E_VarEntry(retrieved_type));
+                // //S_enter(tenv, named_type->name, E_VarEntry(array));
+                // S_enter(tenv, named_type->name, array_ty);
+
+                // // check
+                // void* binding_value = S_look(tenv, named_type->name);
+                // assert(binding_value);
+
+                // printf("\nTAB_DUMP tenv\n=============================\n");
+                // TAB_dump(tenv, show);
+                // printf("=============================\n");
+                
+                return array_ty;
             }
             break;
         }
@@ -327,9 +465,6 @@ void transDec(S_table venv, S_table tenv, A_dec d)
         // advance iterator
         named_types_list = named_types_list->tail;
     }
-
-    //assert(0);
-    //return Ty_Nil();
 }
 
 /**
@@ -357,17 +492,19 @@ void show(void *key, void *value)
 
     printf("Key: '%s' ", S_name(key));
 
-    E_enventry env_entry = (E_enventry)value;
-    if (E_varEntry == env_entry->kind)
-    {
-        Ty_ty type = env_entry->u.var.ty;
-        show_type(type);
-    }
-    else
-    {
-        show_type(env_entry);
-        //printf("Unknown kind: %d:\n", env_entry->kind);
-    }
+    show_type(value);
+
+    // E_enventry env_entry = (E_enventry)value;
+    // if (E_varEntry == env_entry->kind)
+    // {
+    //     Ty_ty type = env_entry->u.var.ty;
+    //     show_type(type);
+    // }
+    // else
+    // {
+    //     show_type(env_entry);
+    //     //printf("Unknown kind: %d:\n", env_entry->kind);
+    // }
 }
 
 void show_type(Ty_ty type) {

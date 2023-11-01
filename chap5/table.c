@@ -43,7 +43,9 @@ TAB_table TAB_empty(void)
  */
 
 void TAB_enter(TAB_table t, void *key, void *value)
-{int index;
+{
+    printf("TAB_enter() key \"%s\"\n", S_name(key));
+    int index;
  assert(t && key);
  index = ((unsigned)key) % TABSIZE;
  t->table[index] = Binder(key, value, t->table[index], t->top);
@@ -51,13 +53,26 @@ void TAB_enter(TAB_table t, void *key, void *value)
 }
 
 void *TAB_look(TAB_table t, void *key)
-{int index;
- binder b;
- assert(t && key);
- index=((unsigned)key) % TABSIZE;
- for(b=t->table[index]; b; b=b->next)
-   if (b->key==key) return b->value;
- return NULL;
+{
+    printf("TAB_look for \"%s\"\n", S_name(key));
+
+    int index;
+    binder b;
+
+    assert(t && key);
+
+    index = ((unsigned) key) % TABSIZE;
+    for (b = t->table[index]; b; b=b->next)
+    {
+        if (b->key == key) 
+        {
+            printf("Type \"%s\" found! Binding is: %d\n", S_name(key), b->value);
+            return b->value;
+        }
+    }
+
+    printf("Type \"%s\" not found!\n", S_name(key));
+    return NULL;
 }
 
 void *TAB_pop(TAB_table t) {

@@ -1,19 +1,8 @@
  letExp(
   decList(
-   typeDec(
-    nametyList(
-     namety(rectype,
-      recordTy(
-       fieldList(
-        field(name,
-         string,
-         TRUE),
-        fieldList(
-         field(age,
-          int,
-          TRUE),
-         fieldList())))),
-     nametyList())),
+   varDec(a,
+    intExp(0),
+    TRUE),
    decList()),
   seqExp(
    expList(
