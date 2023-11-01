@@ -1,5 +1,6 @@
 let
 	type arrtype1 = array of int
+    type arrtype2 = array of string
 in
 	0
 end

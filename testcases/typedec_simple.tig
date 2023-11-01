@@ -1,0 +1,5 @@
+let
+	type myint = int
+in
+	0
+end

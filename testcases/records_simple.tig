@@ -1,0 +1,5 @@
+let
+	type rectype = { name:string, age:int }
+in
+	0
+end
