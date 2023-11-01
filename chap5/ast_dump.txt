@@ -2,10 +2,16 @@
   decList(
    typeDec(
     nametyList(
-     namety(myint,
-      nameTy(int)),
+     namety(arrtype1,
+      arrayTy(int)),
      nametyList())),
-   decList()),
+   decList(
+    typeDec(
+     nametyList(
+      namety(arrtype2,
+       arrayTy(string)),
+      nametyList())),
+    decList())),
   seqExp(
    expList(
     intExp(0),

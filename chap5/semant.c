@@ -265,20 +265,31 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 switch (ty->kind)
                 {
                     case A_nameTy: //=33,
-                        printf("A_nameTy - 33 value: \"%s\"\n", S_name(ty->u.name));
+                    {
+                        printf("A_nameTy - 33 - value: \"%s\"\n", S_name(ty->u.name));
                         // retrieve the referenced type from the tenv
                         void * retrieved_type = TAB_look(tenv, ty->u.name);
                         S_enter(tenv, named_type->name, E_VarEntry(retrieved_type));
                         TAB_dump(tenv, show);
-                        break; 
+                    }
+                    break;
+
                     case A_recordTy: //=34,
+                    {
                         printf("A_recordTy - 34\n");
                         assert(0);
-                        break;
+                    }
+                    break;
+
                     case A_arrayTy: //=35
-                        printf("A_arrayTy - 35\n");
-                        assert(0);
-                        break;
+                    {
+                        printf("A_arrayTy - 35 - value: \"%s\"\n", S_name(ty->u.name));
+                        // retrieve the referenced type from the tenv
+                        void * retrieved_type = TAB_look(tenv, ty->u.name);
+                        S_enter(tenv, named_type->name, E_VarEntry(retrieved_type));
+                        TAB_dump(tenv, show);
+                    }
+                    break;
                 }
                 named_types_list = named_types_list->tail;
             }

@@ -498,8 +498,19 @@ end
 
 Question: Can a variable of type myint be assigned a int value or assigned a variable of type int?
 
+One step up in complexity is the array type:
+
+```
+let
+	type arrtype1 = array of int
+in
+	0
+end
+```
+
 typedec_simple.tig
 test29.tig
+arrays_simple.tig
 
 ## Arithmetic Operators
 
