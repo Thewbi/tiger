@@ -25,13 +25,15 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             //break;
 
         case A_intExp:
-            printf("A_intExp 17\n");
-            return expTy(a, Ty_Int());
+            printf("aaa A_intExp 17\n");
+            //return expTy(a, Ty_Int());
+            return expTy(a, TAB_look(tenv, S_Symbol("int")));
             //break;
 
         case A_stringExp:
             printf("A_stringExp 18\n");
-            return expTy(a, Ty_String());
+            //return expTy(a, Ty_String());
+            return expTy(a, TAB_look(tenv, S_Symbol("string")));
             //break;
 
         case A_callExp:
@@ -94,13 +96,20 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             break;
 
         case A_assignExp:
-            printf("A_assignExp 23: pos: %d\n", a->pos);
+            printf("A A_assignExp 23: pos: %d\n", a->pos);
 
             A_var var = a->u.assign.var;
             struct expty lvalue = transVar(venv, tenv, var);
 
+            printf("B A_assignExp 23: pos: %d\n", a->pos);
+
             A_exp exp = a->u.assign.exp;
             struct expty rhs_exp = transExp(venv, tenv, exp);
+
+            printf("lvalue: %d rhs_exp: %d\n", lvalue, rhs_exp);
+            printf("lvalue.ty: %d rhs_exp.ty: %d\n", lvalue.ty, rhs_exp.ty);
+
+            printf("C A_assignExp 23: pos: %d\n", a->pos);
 
             if (lvalue.ty->kind != rhs_exp.ty->kind)
             {
@@ -111,6 +120,8 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             {
                 printf("A_assignExp 23 - Semantically sane! \n");
             }
+
+            printf("D A_assignExp 23: pos: %d\n", a->pos);
             break;
 
         case A_ifExp:
@@ -255,12 +266,19 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
     {
         case A_simpleVar:
             printf("simpleVar 12 - VarName: \"%s\"\n", S_name(v->u.simple));
-            E_enventry env_entry = TAB_look(venv, v->u.simple);
-            if (env_entry == NULL) {
+
+            printf("\nTAB_DUMP venv\n=============================\n");
+            TAB_dump(venv, show);
+            printf("=============================\n");
+
+            Ty_ty ty = TAB_look(venv, v->u.simple);
+            show(v->u.simple, ty);
+
+            if (ty == NULL) {
                 EM_error(v->pos, "Variable \"%s\" is not declared. The type is unknown! Line: %d\n", S_name(v->u.simple), v->pos);
                 return expTy(NULL, Ty_Nil());
             }
-            return expTy(NULL, env_entry->u.var.ty);
+            return expTy(NULL, ty);
 
         case A_fieldVar:
             printf("A_fieldVar 13\n");

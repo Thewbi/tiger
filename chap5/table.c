@@ -52,8 +52,13 @@ void TAB_enter(TAB_table t, void *key, void *value)
  t->top = key;
 }
 
+/**
+ * @param key has to be of type Symbol (e.g. S_Symbol("int"))
+ * @returns Ty_ty
+*/
 void *TAB_look(TAB_table t, void *key)
 {
+    printf("TAB_look key: %d\n", key);
     printf("TAB_look for \"%s\"\n", S_name(key));
 
     int index;
@@ -67,6 +72,8 @@ void *TAB_look(TAB_table t, void *key)
         if (b->key == key) 
         {
             printf("Type \"%s\" found! Binding is: %d\n", S_name(key), b->value);
+            show(key, b->value);
+            printf(".........\n");
             return b->value;
         }
     }
