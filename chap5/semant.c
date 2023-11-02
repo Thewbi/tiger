@@ -204,10 +204,10 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             assert(binding_value);
             printf("binding_value: %d\n", binding_value);
 
-            Ty_ty array_typetttt = (Ty_ty) binding_value;
-            show_type(array_typetttt);
+            Ty_ty array_type = (Ty_ty) binding_value;
+            show_type(array_type);
 
-            Ty_ty array_element_type = array_typetttt->u.array;
+            Ty_ty array_element_type = array_type->u.array;
             show_type(array_element_type);
 
             //printf("binding_value: %s\n", S_name(array_typetttt));
@@ -281,12 +281,34 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
             return expTy(NULL, ty);
 
         case A_fieldVar:
-            printf("A_fieldVar 13\n");
-            break;
+            //printf("A_fieldVar 13 - VarName: \"%s\"\n", S_name(v->u.field.));
+            assert(0);
+            //break;
 
         case A_subscriptVar:
-            printf("A_subscriptVar 14\n");
-            break;
+            printf("A_subscriptVar 14 - VarName: \"%s\"\n", S_name(v->u.subscript.var->u.simple));
+
+            // this is the name of the array type:
+            printf("Array Variable Name: %s\n", S_name(v->u.subscript.var->u.simple));
+
+            Ty_ty array_type = TAB_look(venv, v->u.subscript.var->u.simple);
+            show_type(array_type);
+
+            //Ty_ty array_type = TAB_look(venv, v->u.subscript.var->u.simple);
+            //show_type(array_type);
+            
+            Ty_ty array_element_type = array_type->u.array;
+            show_type(array_element_type);
+
+            // if (array_element_type != )
+            // {
+
+            // }
+
+            //assert(0);
+            //break;
+
+            return expTy(NULL, array_element_type);
 
         default:
             printf("Unknown expression! kind: %d pos: %d\n", v->kind, v->pos);

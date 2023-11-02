@@ -26,7 +26,11 @@ TAB_table TAB_empty(void);
  */
 void TAB_enter(TAB_table t, void *key, void *value);
 
-/* Look up the most recent binding for "key" in table "t" */
+/**
+ *  Look up the most recent binding for "key" in table "t"
+ * @param key has to be of type S_Symbol (e.g. S_Symbol("int"))
+ * @returns is of type Ty_ty
+*/
 void *TAB_look(TAB_table t, void *key);
 
 /* Pop the most recent binding and return its key.

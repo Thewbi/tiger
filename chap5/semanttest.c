@@ -21,6 +21,12 @@ int main(int argc, char **argv)
     A_exp program = parse(argv[1]);
     printf("Parsing the input done.\n");
 
+    if (program == NULL)
+    {
+        printf("No root exp retrieved! Aborting!\n");
+        return 0;
+    }
+
     printf("\n\n\nDumping the AST ...\n");
     // open a file in write only mode
     FILE *out_file = fopen("ast_dump.txt", "w"); 
