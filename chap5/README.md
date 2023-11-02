@@ -564,7 +564,7 @@ In the tiger programming language, using arrays is a three-step process.
 
 An example is arrays.tig:
 
-TODO: arrays.tig
+arrays.tig
 
 ```
 let

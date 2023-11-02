@@ -294,6 +294,12 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
             Ty_ty array_type = TAB_look(venv, v->u.subscript.var->u.simple);
             show_type(array_type);
 
+            // subscripts are only allowd on Ty_array
+            if (array_type->kind != Ty_array)
+            {
+                EM_error(v->pos, "Subscript used on variable \"%s\". Variable is not an array! Line: %d\n", S_name(v->u.subscript.var->u.simple), v->pos);
+            }
+
             //Ty_ty array_type = TAB_look(venv, v->u.subscript.var->u.simple);
             //show_type(array_type);
             
