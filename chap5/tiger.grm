@@ -289,7 +289,6 @@ array_indexing : LBRACK exp RBRACK {
 
 assignment : lvalue ASSIGN exp 
              { 
-                printf("ahhhhhhahaahahahhah %d\n", yylineno);
                 $$ = A_AssignExp(yylineno, $1->u.var, $3);
              }
            ;

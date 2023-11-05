@@ -214,7 +214,7 @@ Then go to type declaractions or function declarations.
 In terms of the testcases provided in the book, the proposed order of testing is:
 
 Atomic Expressions:
-vardec.tig          ( parsetest.exe ..\testcases\vardec.tig & cat ast_dump.txt )
+vardec_no_type_and_initializer.tig          ( parsetest.exe ..\testcases\vardec_no_type_and_initializer.tig & cat ast_dump.txt )
 
 Assignments:
 assignment.tig      ( parsetest.exe ..\testcases\assignment.tig & cat ast_dump.txt )

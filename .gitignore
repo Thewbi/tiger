@@ -41,3 +41,6 @@ y.output
 y.tab.c
 y.tab.h
 chap5/ast_dump.txt
+
+# winmerge creates .bak files
+*.bak

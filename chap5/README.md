@@ -411,6 +411,11 @@ return expTy(NULL, Ty_Int());
 
 This type can then be further used in the recursion.
 
+
+
+
+
+
 # Approach Developing and Testing the Software for Chapter 4
 
 ## Basic Types (int, string)
@@ -465,9 +470,71 @@ in
 end
 ```
 
+### Type shadowing
+
+When declaring types, the type declarations form "batches".
+A batch is a consecutive list of type decalarations:
+
+```
+type a = int
+type a = string
+```
+
+A batch is interrupted by variable declarations. After the 
+variable declaration, the next batch starts:
+
+```
+type a = int
+var b := 4
+type a = string
+```
+
+A language feature in tiger says: It is allowed to redeclare a
+type within one batch! It is not allowed to redeclare a type 
+in another batch!
+
+Make sure that redeclaring a variable is allowed if and only if, there
+is no other variable in between the redeclared variables!
+
+THIS IS LEGAL:
+
+test38.tig
+
+```
+/* This is illegal, since there are two types with the same name
+    in the same (consecutive) batch of mutually recursive types. 
+    See also test47  */
+let
+	type a = int
+	type a = string
+in
+	0
+end
+```
+
+THIS IS ILLEGAL:
+
+test47.tig,         ( semanttest.exe ..\testcases\book\test47.tig )
+
+```
+/* This is legal. The second type "a" simply hides the first one.
+   Because of the intervening variable declaration, the two "a" types
+   are not in the same batch of mutually recursive types.
+   See also test38 */
+let
+	type a = int
+	var b := 4
+	type a = string
+in
+	0
+end
+```
+
+
+
 #### Semantic analysis detects errors here
-test31.tig
-test31.tig has to fail since the declared type and the type of the value that is used during initialization differs.
+TODO: test31.tig
+TODO: test31.tig has to fail since the declared type and the type of the value that is used during initialization differs.
 
 #### Semantic analysis correct here
 
@@ -508,6 +575,8 @@ Question: Can a variable of type myint be assigned a int value or assigned a var
 
 One step up in complexity is the array type:
 
+arrays_simple.tig
+
 ```
 let
 	type arrtype1 = array of int
@@ -516,6 +585,11 @@ in
 	0
 end
 ```
+
+arrays_simple.tig
+TODO: arrays.tig
+test24.tig
+test29.tig
 
 ### Records
 
@@ -530,9 +604,9 @@ end
 ```
 
 records_simple.tig
-TODO: records_var_declaration.tig
-TODO: records_field_assignment.tig
-TODO: book\test3.tig
+records_var_declaration.tig
+records_field_assignment.tig
+book\test3.tig
 
 ## Arithmetic Operators
 
@@ -623,3 +697,113 @@ calls, scopes are implemented and variable can be shadowed.
 ## Functions
 
 TODO work on functions
+
+
+
+
+
+# Tests
+
+
+
+Atomic Expressions:
+vardec_no_type_and_initializer.tig          ( semanttest.exe ..\testcases\vardec_no_type_and_initializer.tig & cat ast_dump.txt )
+vardec_no_type_no_initializer.tig   SYNTAX_ERROR        ( semanttest.exe ..\testcases\vardec_no_type_no_initializer.tig
+vardec_type_no_initialization.tig   SYNTAX_ERROR        ( semanttest.exe ..\testcases\vardec_type_no_initialization.tig
+
+Assignments:
+assignment.tig   SEMANTIC_ERROR (no type specified)   ( semanttest.exe ..\testcases\assignment.tig & cat ast_dump.txt )
+
+Sequences:
+sequencing.tig   SEMANTIC_ERROR   ( semanttest.exe ..\testcases\sequencing.tig & cat ast_dump.txt )
+
+Let
+let.tig             ( semanttest.exe ..\testcases\let.tig & cat ast_dump.txt )
+let_nested.tig      ( semanttest.exe ..\testcases\let_nested.tig & cat ..\testcases\let_nested.tig & cat ast_dump.txt )
+
+All the following tests are in the testcases\book folder
+
+Comparison Operators:
+test13.tig          ( semanttest.exe ..\testcases\book\test13.tig & cat ast_dump.txt )
+
+Arithmetic Operators:
+test26.tig          ( semanttest.exe ..\testcases\book\test26.tig & cat ..\testcases\book\test26.tig & cat ast_dump.txt )
+
+if-then-else:
+test8.tig,          ( semanttest.exe ..\testcases\book\test8.tig & cat ast_dump.txt )
+test9.tig,          ( semanttest.exe ..\testcases\book\test9.tig & cat ..\testcases\book\test9.tig & cat ast_dump.txt )
+test15.tig          ( semanttest.exe ..\testcases\book\test15.tig & cat ..\testcases\book\test15.tig & cat ast_dump.txt )
+
+while-loops:
+test10.tig          ( semanttest.exe ..\testcases\book\test10.tig & cat ..\testcases\book\test10.tig & cat ast_dump.txt )
+
+for-loops:
+test11.tig          ( semanttest.exe ..\testcases\book\test11.tig & cat ..\testcases\book\test11.tig & cat ast_dump.txt )
+
+sequences:
+test20.tig          ( semanttest.exe ..\testcases\book\test20.tig & cat ..\testcases\book\test20.tig & cat ast_dump.txt )
+
+array-indexing:
+test24.tig          ( semanttest.exe ..\testcases\book\test24.tig & cat ..\testcases\book\test24.tig & cat ast_dump.txt )
+test32.tig          ( semanttest.exe ..\testcases\book\test32.tig & cat ..\testcases\book\test32.tig & cat ast_dump.txt )
+
+record field acces:
+test25.tig          ( semanttest.exe ..\testcases\book\test25.tig & cat ..\testcases\book\test25.tig & cat ast_dump.txt )
+
+variable declarations:
+test12.tig,         ( semanttest.exe ..\testcases\book\test12.tig & cat ..\testcases\book\test12.tig & cat ast_dump.txt )
+test31.tig,         ( semanttest.exe ..\testcases\book\test31.tig & cat ..\testcases\book\test31.tig & cat ast_dump.txt )
+test37.tig,         ( semanttest.exe ..\testcases\book\test37.tig & cat ..\testcases\book\test37.tig & cat ast_dump.txt )
+test41.tig,         ( semanttest.exe ..\testcases\book\test41.tig & cat ..\testcases\book\test41.tig & cat ast_dump.txt )
+test42.tig,         ( semanttest.exe ..\testcases\book\test42.tig & cat ..\testcases\book\test42.tig & cat ast_dump.txt )
+test43.tig          ( semanttest.exe ..\testcases\book\test43.tig & cat ..\testcases\book\test43.tig & cat ast_dump.txt )
+
+record type definitions:
+test33.tig,         ( semanttest.exe ..\testcases\book\test33.tig & cat ..\testcases\book\test33.tig & cat ast_dump.txt )
+test44.tig,         ( semanttest.exe ..\testcases\book\test44.tig & cat ..\testcases\book\test44.tig & cat ast_dump.txt )
+test45.tig,         ( semanttest.exe ..\testcases\book\test45.tig & cat ..\testcases\book\test45.tig & cat ast_dump.txt )
+test46.tig,         ( semanttest.exe ..\testcases\book\test46.tig & cat ..\testcases\book\test46.tig & cat ast_dump.txt )
+test47.tig,         ( semanttest.exe ..\testcases\book\test47.tig & cat ..\testcases\book\test47.tig & cat ast_dump.txt )
+test49.tig   OK BECAUSE OF SYNTAX ERROR ( semanttest.exe ..\testcases\book\test49.tig & cat ..\testcases\book\test49.tig & cat ast_dump.txt )
+
+type definitions:
+test16.tig,         ( semanttest.exe ..\testcases\book\test16.tig & cat ..\testcases\book\test16.tig & cat ast_dump.txt )
+test1.tig,          ( semanttest.exe ..\testcases\book\test1.tig & cat ..\testcases\book\test1.tig & cat ast_dump.txt )
+test2.tig,          ( semanttest.exe ..\testcases\book\test2.tig & cat ..\testcases\book\test2.tig & cat ast_dump.txt )
+test3.tig,          ( semanttest.exe ..\testcases\book\test3.tig & cat ..\testcases\book\test3.tig & cat ast_dump.txt )
+test5.tig,          ( semanttest.exe ..\testcases\book\test5.tig & cat ..\testcases\book\test5.tig & cat ast_dump.txt )
+test14.tig,         ( semanttest.exe ..\testcases\book\test14.tig & cat ..\testcases\book\test14.tig & cat ast_dump.txt )
+test17.tig,         ( semanttest.exe ..\testcases\book\test17.tig & cat ..\testcases\book\test17.tig & cat ast_dump.txt )
+test22.tig,         ( semanttest.exe ..\testcases\book\test22.tig & cat ..\testcases\book\test22.tig & cat ast_dump.txt )
+test23.tig,         ( semanttest.exe ..\testcases\book\test23.tig & cat ..\testcases\book\test23.tig & cat ast_dump.txt )
+test28.tig,         ( semanttest.exe ..\testcases\book\test28.tig & cat ..\testcases\book\test28.tig & cat ast_dump.txt )
+test29.tig,         ( semanttest.exe ..\testcases\book\test29.tig & cat ..\testcases\book\test29.tig & cat ast_dump.txt )
+test30.tig,         ( semanttest.exe ..\testcases\book\test30.tig & cat ..\testcases\book\test30.tig & cat ast_dump.txt )
+test38.tig,         ( semanttest.exe ..\testcases\book\test38.tig & cat ..\testcases\book\test38.tig & cat ast_dump.txt )
+test48.tig          ( semanttest.exe ..\testcases\book\test48.tig & cat ..\testcases\book\test48.tig & cat ast_dump.txt )
+
+function declarations and function calls:
+test4.tig,          ( semanttest.exe ..\testcases\book\test4.tig & cat ..\testcases\book\test4.tig & cat ast_dump.txt )
+test6.tig,          ( semanttest.exe ..\testcases\book\test6.tig & cat ..\testcases\book\test6.tig & cat ast_dump.txt )
+test7.tig,          ( semanttest.exe ..\testcases\book\test7.tig & cat ..\testcases\book\test7.tig & cat ast_dump.txt )
+test18.tig,         ( semanttest.exe ..\testcases\book\test18.tig & cat ..\testcases\book\test18.tig & cat ast_dump.txt )
+test19.tig,         ( semanttest.exe ..\testcases\book\test19.tig & cat ..\testcases\book\test19.tig & cat ast_dump.txt )
+test34.tig,         ( semanttest.exe ..\testcases\book\test34.tig & cat ..\testcases\book\test34.tig & cat ast_dump.txt )
+test35.tig,         ( semanttest.exe ..\testcases\book\test35.tig & cat ..\testcases\book\test35.tig & cat ast_dump.txt )
+test36.tig,         ( semanttest.exe ..\testcases\book\test36.tig & cat ..\testcases\book\test36.tig & cat ast_dump.txt )
+test39.tig,         ( semanttest.exe ..\testcases\book\test39.tig & cat ..\testcases\book\test39.tig & cat ast_dump.txt )
+test40.tig          ( semanttest.exe ..\testcases\book\test40.tig & cat ..\testcases\book\test40.tig & cat ast_dump.txt )
+
+function calls:
+test21.tig,         ( semanttest.exe ..\testcases\book\test21.tig & cat ..\testcases\book\test21.tig & cat ast_dump.txt )
+test27.tig          ( semanttest.exe ..\testcases\book\test27.tig & cat ..\testcases\book\test27.tig & cat ast_dump.txt )
+
+semanttest.exe ..\testcases\BartVandewoestyne\compilable\array_equality.tig
+semanttest.exe ..\testcases\BartVandewoestyne\compilable\control_characters.tig
+semanttest.exe ..\testcases\BartVandewoestyne\compilable\escape_sequences.tig
+semanttest.exe ..\testcases\BartVandewoestyne\compilable\function.tig
+semanttest.exe ..\testcases\BartVandewoestyne\compilable\negative_int.tig
+semanttest.exe ..\testcases\BartVandewoestyne\compilable\procedure.tig
+semanttest.exe ..\testcases\BartVandewoestyne\compilable\record_equality_test.tig
+semanttest.exe ..\testcases\BartVandewoestyne\compilable\simple_let.tig
+semanttest.exe ..\testcases\BartVandewoestyne\compilable\valid_strings.tig
