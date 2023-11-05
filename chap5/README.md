@@ -492,6 +492,8 @@ Here, i is of unknown type because there is no variable declaration anywhere.
 The most basic type declaration uses the built-in types 'int' and 'string' to create
 a type that is nothing but an alias to the built-in types 'int' and 'string'.
 
+An example is in typedec_simple.tig:
+
 ```
 let
 	type myint = int
@@ -527,11 +529,10 @@ in
 end
 ```
 
-typedec_simple.tig
-test29.tig
-arrays_simple.tig
 records_simple.tig
-
+TODO: records_var_declaration.tig
+TODO: records_field_assignment.tig
+TODO: book\test3.tig
 
 ## Arithmetic Operators
 
@@ -576,6 +577,8 @@ in
 end
 ```
 
+Another example is arrays_simple.tig
+
 test29.tig type declaration based on arrays.
 
 It is invalid to index a variable that is not an array (test24.tig)
@@ -590,7 +593,7 @@ end
 ```
 
 ### Semantic analysis detects errors here
-test31.tig
+TODO test31.tig
 
 ### Semantic analysis correct here
 arrays_simple.tig
