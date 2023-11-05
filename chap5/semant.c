@@ -67,6 +67,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
                 return expTy(NULL, Ty_Int());
             }
         }
+        break;
 
         case A_recordExp:
         {
@@ -88,22 +89,23 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
         break;
 
         case A_seqExp:
-            {
-                printf("A_seqExp 22\n");
+        {
+            printf("A_seqExp 22\n");
 
-                A_expList seq = a->u.seq;
-                while (seq != NULL) {
-                    if (seq->head != NULL)
-                    {
-                        printf("A_seqExp:\n");
-                        transExp(venv, tenv, seq->head);
-                    }
-                    seq = seq->tail;
+            A_expList seq = a->u.seq;
+            while (seq != NULL) {
+                if (seq->head != NULL)
+                {
+                    printf("A_seqExp:\n");
+                    transExp(venv, tenv, seq->head);
                 }
+                seq = seq->tail;
             }
-            break;
+        }
+        break;
 
         case A_assignExp:
+        {
             printf("A A_assignExp 23: pos: %d\n", a->pos);
 
             A_var var = a->u.assign.var;
@@ -130,7 +132,8 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             }
 
             printf("D A_assignExp 23: pos: %d\n", a->pos);
-            break;
+        }
+        break;
 
         case A_ifExp:
             printf("A_ifExp 24\n");
@@ -219,7 +222,9 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             } else {
                 printf("Array declaration valid\n");
             }
-            return expTy(a, array_element_type);
+            //return expTy(a, array_element_type);
+
+            return expTy(a, array_type);
         }
         break;
 
@@ -359,6 +364,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 printf("d->u.var.init - kind: %d\n", d->u.var.init->kind);
 
                 init_type = transExp(venv, tenv, d->u.var.init);
+
                 printf("init_type retrieved: %d\n", init_type);
                 show_type(init_type.ty);
             }
