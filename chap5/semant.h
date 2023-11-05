@@ -26,6 +26,8 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a);
 void transDec(S_table venv, S_table tenv, A_dec d);
 /*struct*/ Ty_ty transTy (S_table tenv, A_ty a);
 
+Ty_tyList makeFormalTyList(S_table tenv, A_fieldList params);
+
 void show(void *key, void *value);
 void show_type(Ty_ty type);
 

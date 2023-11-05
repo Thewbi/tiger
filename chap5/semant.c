@@ -459,11 +459,88 @@ void transDec(S_table venv, S_table tenv, A_dec d)
         }
         break;
 
+        case A_functionDec:
+        {
+            printf("A_functionDec\n");
+
+            A_fundecList fundecList = d->u.function;
+
+            while (fundecList != NULL) 
+            {
+                A_fundec fundec = fundecList->head;
+                printf("fundec: pos: %d\n", fundec->pos);
+                printf("fundec: name: %s\n", S_name(fundec->name));
+
+                Ty_ty resultTy = S_look(tenv, fundec->result);
+                Ty_tyList formalTys = makeFormalTyList(tenv, fundec->params);
+
+                // ???
+                S_enter(venv, fundec->name, E_FunEntry(formalTys, resultTy));
+
+                // start parameter scope
+                S_beginScope(venv);
+
+                {
+                    A_fieldList l;
+                    Ty_tyList t;
+                    for (l = fundec->params, t = formalTys; l; l = l->tail, t = t->tail)
+                    {
+                        printf("param: %s\n", S_name(l->head->name));
+                        S_enter(venv, l->head->name, E_VarEntry(t->head));
+                    }
+                }
+
+                // DEBUG
+                printf("\n123 TAB_DUMP venv\n=============================\n");
+                TAB_dump(venv, show);
+                printf("=============================\n");
+
+                // process the body
+                transExp(venv, tenv, fundec->body);
+
+                // remove parameter scope
+                S_endScope(venv);
+
+                fundecList = fundecList->tail;
+            }
+        }
+        break;
+
         default:
             assert(0);
     }
 
     printf("transDec done.\n");
+}
+
+/**
+ * First, transDec looks up the result-type identifier "rt" in the type environment. 
+ * Then it calls the local function makeFormalTyList(), which traverses the list of 
+ * formal parameters and returns a list of their types (by looking each
+ * parameter type-id in the tenv).
+ */
+Ty_tyList makeFormalTyList(S_table tenv, A_fieldList params)
+{
+    printf("makeFormalTyList() \n");
+
+    Ty_tyList result = NULL;
+
+    while (params != NULL)
+    {
+        A_field param = params->head;
+        printf("param: %s\n", S_name(param->name));
+
+        Ty_ty paramTy = S_look(tenv, param->typ);
+        show_type(paramTy);
+
+        result = Ty_TyList(paramTy, result);
+
+        params = params->tail;
+    }
+
+    printf("makeFormalTyList() done.\n");
+
+    return result;
 }
 
 /**
@@ -564,14 +641,55 @@ void show(void *key, void *value)
     show_type(value);
 }
 
-void show_type(Ty_ty type) {
+void show_type(Ty_ty type)
+{
     if (type == NULL)
     {
         printf("No type!\n");
         return;
     }
+    
     switch (type->kind)
     {
+        case E_varEntry:
+        {
+            printf("Type: E_varEntry\n");
+
+            E_enventry enventry = (E_enventry) type;
+
+            show_type(enventry->u.var.ty);
+
+            // Ty_tyList formals = enventry->u.fun.formals;
+            // while (formals != NULL) {
+            //     show_type(formals->head);
+            //     formals = formals->tail;
+            // }
+
+        }
+        break;
+
+        case E_funEntry:
+        {
+            printf("Type: E_funEntry\n");
+
+            E_enventry enventry = (E_enventry) type;
+
+            printf("Result-");
+            show_type(enventry->u.fun.result);
+
+            int param_idx = 1;
+            Ty_tyList formals = enventry->u.fun.formals;
+            while (formals != NULL) {
+                
+                printf("Param-%d: ", param_idx);
+                param_idx = param_idx + 1;
+                show_type(formals->head);
+                formals = formals->tail;
+            }
+        }
+        break;
+
+        // 0
         case Ty_record:
         {
             printf("Type: Ty_record\n");
