@@ -32,8 +32,51 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             return expTy(a, TAB_look(tenv, S_Symbol("string")));
 
         case A_callExp:
+        {
             printf("A_callExp 19\n");
-            assert(0);
+
+            // struct {S_symbol func; A_expList args;} call;
+            S_symbol func = a->u.call.func;
+            A_expList args = a->u.call.args;
+
+            // retrieve the function declaration
+            Ty_ty func_ty = TAB_look(venv, func);
+            show(func, func_ty);
+
+            E_enventry enventry = (E_enventry) func_ty;
+
+            printf("Result-");
+            show_type(enventry->u.fun.result);
+
+            int param_idx = 1;
+            Ty_tyList formals = enventry->u.fun.formals;
+            while (formals != NULL) {
+
+                Ty_ty formal_param_ty = formals->head;
+                
+                // conver the expression into a type
+                struct expty actual_param_expTy = transExp(venv, tenv, args->head);
+                Ty_ty actual_param_ty = actual_param_expTy.ty;
+
+                // DEBUG
+                printf("Formal Param-%d: ", param_idx);
+                show_type(formal_param_ty);
+                printf("Actual Param-%d: ", param_idx);
+                show_type(actual_param_ty);
+
+                // check the types
+                if (formal_param_ty != actual_param_ty)
+                {
+                    EM_error(a->pos, "Actual and formal parameter %d are of incompatible types!\n", param_idx);
+                }
+
+                param_idx = param_idx + 1;
+
+                formals = formals->tail;
+                args = args->tail;
+            }
+        }
+        break;
 
         case A_opExp: 
         {
@@ -50,13 +93,13 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 
                 if (left.ty->kind != Ty_int)
                 {
-                    EM_error(a->u.op.left->pos, "integer required");
+                    EM_error(a->u.op.left->pos, "left operand invalid - integer required");
                     sane = FALSE;
                 }
             
                 if (right.ty->kind != Ty_int)
                 {
-                    EM_error(a->u.op.right->pos,"integer required");
+                    EM_error(a->u.op.right->pos, "right operand invalid - integer required");
                     sane = FALSE;
                 }
 
