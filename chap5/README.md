@@ -730,7 +730,7 @@ function f(i:int) =
     )
 ```
 
-here, the last statement is a if-then. The if-then statement does not return a value so the function f does
+here, the last statement is an if-then. The if-then statement does not return a value so the function f can
 not return a value.
 
 Looking at another function:
@@ -757,10 +757,11 @@ The then and else branches have to return the same type.
 This is illegal:
 
 ```
-if (5>4) then 13 else  " "
+if (5>4) then 13 else " "
 ```
 
 An example for a if-then-else statement that produces no value is
+
 ```
 if l=nil then 
     print("\n")
@@ -770,7 +771,7 @@ else
     printlist(l.rest))
 ```
 
-The last three statements for a sequence and are all executed by the else-branch!
+The last three statements form a sequence and are all executed by the else-branch!
 
 It is illegal to return a non-unit as in test15.tig, meaning
 that the the if-then statement (the variant without an else) is not allowed to produce a type!

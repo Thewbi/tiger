@@ -1,7 +1,7 @@
 let
 	function g( a:int ):int = a
     //function g( a:int, b:int ):int = a
-    //function do_nothing1(a: int, b: string):int= a
+    //function do_nothing1(a: int, b: string):int = a
 in
     g(2)
     //g("simple")

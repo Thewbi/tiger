@@ -42,11 +42,15 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             // retrieve the function declaration
             Ty_ty func_ty = TAB_look(venv, func);
             show(func, func_ty);
+            printf("\n");
 
             E_enventry enventry = (E_enventry) func_ty;
 
             printf("Result-");
             show_type(enventry->u.fun.result);
+            printf("\n");
+
+            printf("A_callExp 19 - A\n");
 
             int param_idx = 1;
             Ty_tyList formals = enventry->u.fun.formals;
@@ -54,15 +58,16 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 
                 Ty_ty formal_param_ty = formals->head;
                 
-                // conver the expression into a type
+                // convert the expression into a type
                 struct expty actual_param_expTy = transExp(venv, tenv, args->head);
                 Ty_ty actual_param_ty = actual_param_expTy.ty;
 
                 // DEBUG
                 printf("Formal Param-%d: ", param_idx);
                 show_type(formal_param_ty);
-                printf("Actual Param-%d: ", param_idx);
+                printf(" Actual Param-%d: ", param_idx);
                 show_type(actual_param_ty);
+                printf("\n");
 
                 // check the types
                 if (formal_param_ty != actual_param_ty)
@@ -76,6 +81,14 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
                 args = args->tail;
             }
 
+            printf("A_callExp 19 - B\n");
+
+            // the return value of the call is the return type of the function declaration.
+            // functions do not always have to have a return type!
+            if (enventry->u.fun.result == NULL)
+            {
+                return expTy(a, Ty_Nil());
+            }
             return transExp(venv, tenv, enventry->u.fun.result);
         }
         break;
@@ -87,7 +100,10 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             A_oper oper = a->u.op.oper;
             struct expty left = transExp(venv, tenv, a->u.op.left);
             struct expty right = transExp(venv, tenv, a->u.op.right);
-            if (oper == A_plusOp) 
+            if (
+                (oper == A_plusOp) || (oper == A_minusOp) || (oper == A_timesOp) || (oper == A_divideOp) ||
+                (oper == A_ltOp) || (oper == A_leOp) || (oper == A_gtOp) || (oper == A_geOp)
+            )
             {
                 printf("A_opExp 20 - PLUS \n");
 
@@ -95,6 +111,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 
                 if (left.ty->kind != Ty_int)
                 {
+                    printf("Kind: %d\n", left.ty->kind);
                     EM_error(a->u.op.left->pos, "left operand invalid - integer required");
                     sane = FALSE;
                 }
@@ -109,8 +126,11 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
                     printf("A_opExp 20 - PLUS - Semantically sane! \n");
                 }
             
-                return expTy(NULL, Ty_Int());
+                return expTy(a, Ty_Int());
             }
+
+            printf("Unknown operator! A_oper kind: %d\n", a->u.op.oper);
+            assert(0);
         }
         break;
 
@@ -166,7 +186,8 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 
             printf("C A_assignExp 23: pos: %d\n", a->pos);
 
-            if (lvalue.ty->kind != rhs_exp.ty->kind)
+            //if (lvalue.ty->kind != rhs_exp.ty->kind)
+            if (lvalue.ty != rhs_exp.ty)
             {
                 EM_error(a->u.op.left->pos, "Types used in assignment are incompatible!");
                 return expTy(NULL, Ty_Nil());
@@ -181,8 +202,41 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
         break;
 
         case A_ifExp:
+        {
             printf("A_ifExp 24\n");
-            assert(0);
+
+            // struct {A_exp test, then, elsee;} iff; /* elsee is optional */
+            A_exp test = a->u.iff.test;
+            A_exp then = a->u.iff.then;
+            A_exp elsee = a->u.iff.elsee;
+
+            struct expty test_Ty = transExp(venv, tenv, test);
+            struct expty then_Ty = transExp(venv, tenv, then);
+
+            if (elsee == NULL) {
+                // a if-then statement (without else) has no type because the 
+                // else case is undefined. A function that has if-else as it's
+                // last statement is not fully defined in the else case! Therefore
+                // return nil
+                return expTy(a, Ty_Nil());
+            } else {
+                struct expty elsee_Ty = transExp(venv, tenv, elsee);
+
+                printf("if-then type: ");
+                show_type(then_Ty.ty);
+                printf(" else type: ");
+                show_type(elsee_Ty.ty);
+                printf("\n");
+
+                if (then_Ty.ty != elsee_Ty.ty)
+                {
+                    EM_error(a->pos, "if-then-else invalid! then and else are of different type!");
+                    return expTy(NULL, Ty_Nil());
+                }
+            }
+            return expTy(a, then_Ty.ty);
+        }
+        break;
 
 	    case A_whileExp:
             printf("A_whileExp 25\n");
@@ -304,13 +358,20 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
             printf("=============================\n");
 
             Ty_ty ty = TAB_look(venv, v->u.simple);
+
+            printf("VVVVVVVAR is of type: ");
             show(v->u.simple, ty);
+            printf("\n");
 
             if (ty == NULL) {
                 EM_error(v->pos, "Variable \"%s\" is not declared. The type is unknown! Line: %d\n", S_name(v->u.simple), v->pos);
                 return expTy(NULL, Ty_Nil());
             }
-            return expTy(NULL, ty);
+
+            //return expTy(v, ty);
+
+            E_enventry enventry = (E_enventry) ty;
+            return expTy(v, enventry->u.var.ty);
 
         case A_fieldVar:
         {
@@ -516,16 +577,25 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 printf("fundec: pos: %d\n", fundec->pos);
                 printf("fundec: name: %s\n", S_name(fundec->name));
 
-                Ty_ty resultTy = S_look(tenv, fundec->result);
                 Ty_tyList formalTys = makeFormalTyList(tenv, fundec->params);
 
-                // ???
-                S_enter(venv, fundec->name, E_FunEntry(formalTys, resultTy));
+                // functions do not have to return a value. They can be without return type!
+                if (fundec->result == NULL)
+                {
+                    S_enter(venv, fundec->name, E_FunEntry(formalTys, NULL));
+                }
+                else
+                {
+                    Ty_ty resultTy = S_look(tenv, fundec->result);
+                    S_enter(venv, fundec->name, E_FunEntry(formalTys, resultTy));
+                }
 
                 // start parameter scope
                 S_beginScope(venv);
 
                 {
+                    printf("Processing formal function parameters ...\n");
+
                     A_fieldList l;
                     Ty_tyList t;
                     for (l = fundec->params, t = formalTys; l; l = l->tail, t = t->tail)
@@ -533,6 +603,8 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                         printf("param: %s\n", S_name(l->head->name));
                         S_enter(venv, l->head->name, E_VarEntry(t->head));
                     }
+
+                    printf("Processing formal function parameters done.\n");
                 }
 
                 // DEBUG
@@ -541,7 +613,9 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 printf("=============================\n");
 
                 // process the body
+                printf(">>>+++>>>> Processing function body...\n");
                 transExp(venv, tenv, fundec->body);
+                printf("<<<+++<<< Processing function body done.\n");
 
                 // remove parameter scope
                 S_endScope(venv);
@@ -690,7 +764,7 @@ void show_type(Ty_ty type)
 {
     if (type == NULL)
     {
-        printf("No type!\n");
+        printf(" No type!");
         return;
     }
     
@@ -698,35 +772,28 @@ void show_type(Ty_ty type)
     {
         case E_varEntry:
         {
-            printf("Type: E_varEntry\n");
+            printf(" E_varEntry");
 
             E_enventry enventry = (E_enventry) type;
 
             show_type(enventry->u.var.ty);
-
-            // Ty_tyList formals = enventry->u.fun.formals;
-            // while (formals != NULL) {
-            //     show_type(formals->head);
-            //     formals = formals->tail;
-            // }
-
         }
         break;
 
         case E_funEntry:
         {
-            printf("Type: E_funEntry\n");
+            printf(" E_funEntry");
 
             E_enventry enventry = (E_enventry) type;
 
-            printf("Result-");
+            printf(" Result-");
             show_type(enventry->u.fun.result);
 
             int param_idx = 1;
             Ty_tyList formals = enventry->u.fun.formals;
             while (formals != NULL) {
                 
-                printf("Param-%d: ", param_idx);
+                printf(" Param-%d: ", param_idx);
                 param_idx = param_idx + 1;
                 show_type(formals->head);
                 formals = formals->tail;
@@ -737,14 +804,14 @@ void show_type(Ty_ty type)
         // 0
         case Ty_record:
         {
-            printf("Type: Ty_record\n");
+            printf(" Ty_record ");
 
             // DEBUG print all the records fields, their names and types
             A_fieldList field_list = type->u.record;
             while (field_list != NULL) 
             {
                 A_namety record_field = field_list->head;
-                printf("name: %s type: %s\n", S_name(record_field->name), S_name(record_field->ty));
+                printf(" name: %s type: %s", S_name(record_field->name), S_name(record_field->ty));
 
                 // advance iterator
                 field_list = field_list->tail;
@@ -753,31 +820,31 @@ void show_type(Ty_ty type)
         break;
 
         case Ty_nil:
-            printf("Type: Ty_nil\n");
+            printf(" Ty_nil");
             break;
             
         case Ty_int:
-            printf("Type: Ty_int\n");
+            printf(" Ty_int");
             break;
             
         case Ty_string:
-            printf("Type: Ty_string\n");
+            printf(" Ty_string");
             break;
             
         case Ty_array:
-            printf("Type: Ty_array\n");
+            printf(" Ty_array");
             break;
             
         case Ty_name:
-            printf("Type: Ty_name\n");
+            printf(" Ty_name");
             break;
             
         case Ty_void:
-            printf("Type: Ty_void\n");
+            printf(" Ty_void");
             break;
             
         default:
-            printf("Type: Unknown type!\n");
+            printf(" Unknown type!");
             break;
     }
 } 

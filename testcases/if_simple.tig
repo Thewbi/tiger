@@ -1,8 +1,11 @@
 // valid
 //if n = 0 then 1 else n * nfactor(n-1)
+//if n = 0 then 1 else 2
 
 // valid
-if (10 > 20) then 30 else 40
+//if (10 > 20) then 30 else 40
 
 // invalid
 //if (5>4) then 13 else  " "
+
+if i>0 then 1

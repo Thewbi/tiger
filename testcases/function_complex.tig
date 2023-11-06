@@ -1,0 +1,12 @@
+let 
+    function f(i:int) = 
+        if i>0 then 
+        (
+            f(i/10);
+            //f(1);
+            //print(chr(i-i/10*10+ord("0")))
+            0
+        )
+in 
+    0
+end
