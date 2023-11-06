@@ -694,6 +694,117 @@ As outlined in chapter 5.4 TYPE-CHECKING DECLARATION on page 118, entering a let
 lead to S_beginScope() and ultimately to S_endScope() calls for both the venv and the tenv. Using these
 calls, scopes are implemented and variable can be shadowed.
 
+## if then else
+
+Here is the definition of if-then and if-then-else from page 524 of the book:
+
+```
+If-then-else: The if-expression 'if exp1 then exp2 else exp3' evaluates the integer expression exp1. 
+If the result is nonzero it yields the result of evaluating exp2; otherwise it yields the result of exp3. 
+The expressions exp2 and exp3 must have the same type, which is also the type of the entire if-expression 
+(or both expressions must produce no value).
+```
+
+```
+If-then: The if-expression 'if exp1 then exp2' evaluates the integer expression exp1. 
+If the result is nonzero, then exp2 (which must produce no value) is evaluated. 
+The entire if-expression produces no value.
+```
+
+One important question to ask is why do if-then and if-then-else statements even return values?
+The answer is that the tiger programming language does not have a return keyword. The return value
+of a function body is the value that the last statement returns. 
+
+If an if-then-else statement is used as the last expression in a function body it has to return a value!
+If an if-then statement is used as the last expression in a function, the function is not allowed to
+have a return value since the book defines that the if-then statement does not return a type!
+
+Looking at a function declaration:
+
+```
+function f(i:int) = 
+    if i>0 then 
+    (
+        f(i/10); 
+        print(chr(i-i/10*10+ord("0")))
+    )
+```
+
+here, the last statement is a if-then. The if-then statement does not return a value so the function f does
+not return a value.
+
+Looking at another function:
+
+```
+type list = {first: int, rest: list}
+
+function readlist() : list =
+    let 
+        var any := any{any=0}
+        var i := readint(any)
+    in 
+        if any.any
+        then list{first=i,rest=readlist()}
+        else nil
+    end
+```
+
+The last statement is the if-then-else and it has to either return nil of a list record.
+
+### Semantic Analysis for if-then and if-then-else
+
+The then and else branches have to return the same type. 
+This is illegal:
+
+```
+if (5>4) then 13 else  " "
+```
+
+An example for a if-then-else statement that produces no value is
+```
+if l=nil then 
+    print("\n")
+else 
+    (printint(l.first); 
+    print(" "); 
+    printlist(l.rest))
+```
+
+The last three statements for a sequence and are all executed by the else-branch!
+
+It is illegal to return a non-unit as in test15.tig, meaning
+that the the if-then statement (the variant without an else) is not allowed to produce a type!
+
+```
+/* error : if-then returns non unit */
+
+if 20 then 3
+```
+
+A valid if-then is:
+It does not produce a type since, print does not return a type.
+
+```
+if i>0 then 
+(
+    f(i/10); 
+    print(chr(i-i/10*10+ord("0")))
+)
+```
+
+It is illegal to compare two nil values since nil should only be used where
+at least one concrete type is present.
+```
+if nil = nil then ...
+```
+
+test4.tig,
+test8.tig,          ( parsetest.exe ..\testcases\book\test8.tig & cat ast_dump.txt )
+test9.tig,          ( parsetest.exe ..\testcases\book\test9.tig & cat ..\testcases\book\test9.tig & cat ast_dump.txt )
+test14.tig
+test15.tig          ( parsetest.exe ..\testcases\book\test15.tig & cat ..\testcases\book\test15.tig & cat ast_dump.txt )
+test21.tig
+
 ## Functions
 
 test4.tig,          ( semanttest.exe ..\testcases\book\test4.tig & cat ..\testcases\book\test4.tig & cat ast_dump.txt )
@@ -710,7 +821,7 @@ test40.tig          ( semanttest.exe ..\testcases\book\test40.tig & cat ..\testc
 
 ```
 let
-	function g(a:int):int = a 
+	function g(a:int):int = a
 in
     //g(2)
     0

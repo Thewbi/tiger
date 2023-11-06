@@ -75,6 +75,8 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
                 formals = formals->tail;
                 args = args->tail;
             }
+
+            return transExp(venv, tenv, enventry->u.fun.result);
         }
         break;
 
