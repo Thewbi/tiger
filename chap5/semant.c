@@ -101,10 +101,11 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             
             if (
                 (oper == A_plusOp) || (oper == A_minusOp) || (oper == A_timesOp) || (oper == A_divideOp) ||
-                (oper == A_ltOp) || (oper == A_leOp) || (oper == A_gtOp) || (oper == A_geOp)
+                (oper == A_ltOp) || (oper == A_leOp) || (oper == A_gtOp) || (oper == A_geOp) ||
+
+                (oper == A_andOp) || (oper == A_orOp)
             )
             {
-
                 printf("A_opExp 20 - OPERAND A \n");
 
                 struct expty left = transExp(venv, tenv, a->u.op.left);
