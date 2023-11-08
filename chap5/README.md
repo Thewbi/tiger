@@ -806,6 +806,30 @@ test14.tig
 test15.tig          ( parsetest.exe ..\testcases\book\test15.tig & cat ..\testcases\book\test15.tig & cat ast_dump.txt )
 test21.tig
 
+
+## for-loop
+
+test12.tig
+
+The low index and the high index have to be of type int.
+It is not allowed to assign values to the iterator variable (I will ignore this limitation)
+
+The returned type of a for-loop is the last type of the body.
+
+```
+/* valid for and let */
+
+let
+	var a:= 0
+in 
+	for i:=0 to 100 do (a:=a+1;())
+end
+```
+## while-loop
+
+test10.tig
+test20.tig
+
 ## Functions
 
 test4.tig,          ( semanttest.exe ..\testcases\book\test4.tig & cat ..\testcases\book\test4.tig & cat ast_dump.txt )

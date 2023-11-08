@@ -304,7 +304,11 @@ while : WHILE exp DO exp { $$ = A_WhileExp(yylineno, $2, $4); }
 
 for : FOR assignment TO exp DO exp 
     { 
-        $$ = A_ForExp(yylineno, S_Symbol($2->u.assign.var), $2->u.assign.exp, $4, $6);
+        A_var vvar = $2->u.assign.var;
+        $$ = A_ForExp(yylineno, vvar->u.simple, $2->u.assign.exp, $4, $6);
+        //$$ = A_ForExp(yylineno, S_Symbol($2->u.assign.var), $2->u.assign.exp, $4, $6);
+        //$$ = A_ForExp(yylineno, S_Symbol($2->u.assign.var->simple), $2->u.assign.exp, $4, $6);
+        //$$ = A_ForExp(yylineno, $2->u.assign.var, $2->u.assign.exp, $4, $6);
     }
     ;
 

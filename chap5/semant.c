@@ -98,14 +98,19 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             printf("A_opExp 20\n");
 
             A_oper oper = a->u.op.oper;
-            struct expty left = transExp(venv, tenv, a->u.op.left);
-            struct expty right = transExp(venv, tenv, a->u.op.right);
+            
             if (
                 (oper == A_plusOp) || (oper == A_minusOp) || (oper == A_timesOp) || (oper == A_divideOp) ||
                 (oper == A_ltOp) || (oper == A_leOp) || (oper == A_gtOp) || (oper == A_geOp)
             )
             {
-                printf("A_opExp 20 - PLUS \n");
+
+                printf("A_opExp 20 - OPERAND A \n");
+
+                struct expty left = transExp(venv, tenv, a->u.op.left);
+                struct expty right = transExp(venv, tenv, a->u.op.right);
+
+                printf("A_opExp 20 - OPERAND B left: %d, right: %d, left-ty: %d, right-ty: %d\n", left, right, left.ty, right.ty);
 
                 bool sane = TRUE;
 
@@ -115,6 +120,8 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
                     EM_error(a->u.op.left->pos, "left operand invalid - integer required");
                     sane = FALSE;
                 }
+
+                printf("A_opExp 20 - OPERAND C \n");
             
                 if (right.ty->kind != Ty_int)
                 {
@@ -122,9 +129,13 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
                     sane = FALSE;
                 }
 
+                printf("A_opExp 20 - OPERAND D \n");
+
                 if (sane) {
                     printf("A_opExp 20 - PLUS - Semantically sane! \n");
                 }
+
+                printf("A_opExp 20 - OPERAND D \n");
             
                 return expTy(a, Ty_Int());
             }
@@ -239,12 +250,53 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
         break;
 
 	    case A_whileExp:
+        {
             printf("A_whileExp 25\n");
-            assert(0);
+
+            //struct {A_exp test, body;} whilee;
+
+            A_exp test = a->u.whilee.test;
+            A_exp body = a->u.whilee.body;
+
+            struct expty test_Ty = transExp(venv, tenv, test);
+
+            return transExp(venv, tenv, body);
+        }
+        break;
 
         case A_forExp:
+        {
             printf("A_forExp 26\n");
-            assert(0);
+
+            // struct {S_symbol var; A_exp lo,hi,body; bool escape;} forr;
+
+            S_symbol var = a->u.forr.var;
+            A_exp lo = a->u.forr.lo;
+            A_exp hi = a->u.forr.hi;
+            A_exp body = a->u.forr.body;
+
+            // DEBUG
+            printf("A_forExp 26 - var %s\n", S_name(var));
+
+            // lo has to be int
+            struct expty lo_ty = transExp(venv, tenv, lo);
+            if (lo_ty.ty->kind != Ty_int)
+            {
+                EM_error(a->pos, "lo invalid - integer required");
+                return expTy(NULL, Ty_Nil());
+            }
+
+            // hi has to be int
+            struct expty hi_ty = transExp(venv, tenv, hi);
+            if (hi_ty.ty->kind != Ty_int)
+            {
+                EM_error(a->pos, "lo invalid - integer required");
+                return expTy(NULL, Ty_Nil());
+            }
+
+            return transExp(venv, tenv, body);
+        }
+        break;
 
         case A_breakExp:
             printf("A_breakExp 27\n");
@@ -321,7 +373,6 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             } else {
                 printf("Array declaration valid\n");
             }
-            //return expTy(a, array_element_type);
 
             return expTy(a, array_type);
         }
@@ -351,6 +402,7 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
     switch(v->kind) 
     {
         case A_simpleVar:
+        {
             printf("simpleVar 12 - VarName: \"%s\"\n", S_name(v->u.simple));
 
             printf("\nTAB_DUMP venv\n=============================\n");
@@ -368,10 +420,21 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
                 return expTy(NULL, Ty_Nil());
             }
 
-            //return expTy(v, ty);
+            if (ty->kind == E_varEntry) {
+                E_enventry enventry = (E_enventry) ty;
+                Ty_ty var_ty = enventry->u.var.ty;
 
-            E_enventry enventry = (E_enventry) ty;
-            return expTy(v, enventry->u.var.ty);
+                printf("sssbbb: %d\n", var_ty);
+                return expTy(v, var_ty);
+            } else if (ty->kind == E_funEntry) {
+                assert(0);
+            } else {
+                return expTy(v, ty);
+            }
+
+            assert(0);
+        }
+        break;
 
         case A_fieldVar:
         {
@@ -415,8 +478,10 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
 
             assert(0);
         }
+        break;
 
         case A_subscriptVar:
+        {
             printf("A_subscriptVar 14 - VarName: \"%s\"\n", S_name(v->u.subscript.var->u.simple));
 
             // this is the name of the array type:
@@ -435,6 +500,8 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
             show_type(array_element_type);
 
             return expTy(NULL, array_element_type);
+        }
+        break;
 
         default:
             printf("Unknown expression! kind: %d pos: %d\n", v->kind, v->pos);
@@ -820,31 +887,31 @@ void show_type(Ty_ty type)
         break;
 
         case Ty_nil:
-            printf(" Ty_nil");
+            printf("Ty_nil");
             break;
             
         case Ty_int:
-            printf(" Ty_int");
+            printf("Ty_int");
             break;
             
         case Ty_string:
-            printf(" Ty_string");
+            printf("Ty_string");
             break;
             
         case Ty_array:
-            printf(" Ty_array");
+            printf("Ty_array");
             break;
             
         case Ty_name:
-            printf(" Ty_name");
+            printf("Ty_name");
             break;
             
         case Ty_void:
-            printf(" Ty_void");
+            printf("Ty_void");
             break;
             
         default:
-            printf(" Unknown type!");
+            printf("Unknown type!");
             break;
     }
 } 
