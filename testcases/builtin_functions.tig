@@ -1,0 +1,34 @@
+/** Semantic Analysis has to create a variable "buffer" of type string! */
+
+let
+
+    var i: int := 0
+
+    var buffer := getchar()
+
+    var first_char_of_strint_to_ascii := ord("hello world")
+
+    var ascii_to_string := chr(65)
+
+    var string_size := size("hello_world")
+
+    var substring_test := substring("this_is_a_test", 10, 4)
+
+    var concatenated := concat("hello", concat(" ", "world"))
+
+    var not_i := not(5)
+
+in
+
+    (
+
+        print("hello world");
+
+        flush();
+
+        exit(0);
+
+        0
+
+    )
+end

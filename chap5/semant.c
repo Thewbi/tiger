@@ -13,6 +13,8 @@ struct expty expTy(Tr_exp exp, Ty_ty ty)
 */
 struct expty transExp(S_table venv, S_table tenv, A_exp a)
 {
+    printf("transExp A - a->kind: %d\n", a->kind);
+
     switch(a->kind) 
     {
         case A_varExp:
@@ -73,6 +75,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
                 if (formal_param_ty != actual_param_ty)
                 {
                     EM_error(a->pos, "Actual and formal parameter %d are of incompatible types!\n", param_idx);
+                    assert(0);
                 }
 
                 param_idx = param_idx + 1;
@@ -87,9 +90,15 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             // functions do not always have to have a return type!
             if (enventry->u.fun.result == NULL)
             {
+                printf("A_callExp 19 - C\n");
                 return expTy(a, Ty_Nil());
             }
-            return transExp(venv, tenv, enventry->u.fun.result);
+
+            printf("A_callExp 19 - D - result: %d\n", enventry->u.fun.result);
+
+            //return transExp(venv, tenv, enventry->u.fun.result); // why was this line here?
+
+            return expTy(a, enventry->u.fun.result); // this line is here because of getchar.tig
         }
         break;
 
@@ -119,6 +128,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
                 {
                     printf("Kind: %d\n", left.ty->kind);
                     EM_error(a->u.op.left->pos, "left operand invalid - integer required");
+                    assert(0);
                     sane = FALSE;
                 }
 
@@ -127,6 +137,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
                 if (right.ty->kind != Ty_int)
                 {
                     EM_error(a->u.op.right->pos, "right operand invalid - integer required");
+                    assert(0);
                     sane = FALSE;
                 }
 
@@ -202,6 +213,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             if (lvalue.ty != rhs_exp.ty)
             {
                 EM_error(a->u.op.left->pos, "Types used in assignment are incompatible!");
+                assert(0);
                 return expTy(NULL, Ty_Nil());
             } 
             else 
@@ -243,6 +255,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
                 if (then_Ty.ty != elsee_Ty.ty)
                 {
                     EM_error(a->pos, "if-then-else invalid! then and else are of different type!");
+                    assert(0);
                     return expTy(NULL, Ty_Nil());
                 }
             }
@@ -284,6 +297,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             if (lo_ty.ty->kind != Ty_int)
             {
                 EM_error(a->pos, "lo invalid - integer required");
+                assert(0);
                 return expTy(NULL, Ty_Nil());
             }
 
@@ -292,6 +306,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             if (hi_ty.ty->kind != Ty_int)
             {
                 EM_error(a->pos, "lo invalid - integer required");
+                assert(0);
                 return expTy(NULL, Ty_Nil());
             }
 
@@ -370,6 +385,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 
             if (init_exp_type.ty != array_element_type) {
                 EM_error(a->pos, "Type used in array initialization does not match array type!");
+                assert(0);
                 return expTy(NULL, Ty_Nil());
             } else {
                 printf("Array declaration valid\n");
@@ -418,6 +434,7 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
 
             if (ty == NULL) {
                 EM_error(v->pos, "Variable \"%s\" is not declared. The type is unknown! Line: %d\n", S_name(v->u.simple), v->pos);
+                assert(0);
                 return expTy(NULL, Ty_Nil());
             }
 
@@ -495,6 +512,7 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
             if (array_type->kind != Ty_array)
             {
                 EM_error(v->pos, "Subscript used on variable \"%s\". Variable is not an array! Line: %d\n", S_name(v->u.subscript.var->u.simple), v->pos);
+                assert(0);
             }
             
             Ty_ty array_element_type = array_type->u.array;
@@ -569,21 +587,35 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 TAB_dump(tenv, show);
                 printf("=============================\n");
 
-                printf("type_symbol: \"%s\"\n", S_name(type_symbol));
-
                 Ty_ty var_type = S_look(tenv, type_symbol);
+                
+                printf("type_symbol: \"%s\"\n", S_name(type_symbol));
                 show_type(var_type);
+                printf("\n");
 
                 if ((init_type.ty != Ty_Nil()) && (var_type != Ty_Nil())) {
 
                     printf("AAAAAA\n");
 
+                    printf("var_type: ");
                     show_type(var_type);
+                    printf("\n");
+
+                    printf("init_type.ty: ");
                     show_type(init_type.ty);
+                    printf("\n");
 
                     printf("%d - %d\n", var_type, init_type.ty);
 
                     switch (var_type->kind) {
+
+                        case Ty_nil:
+                        case Ty_string:
+                        case Ty_name:
+                        case Ty_void:
+                        case Ty_int:
+                            //return expTy(NULL, Ty_Int());
+                            return;
 
                         case Ty_array:
                             if (var_type->u.array != init_type.ty->u.array)
@@ -591,7 +623,9 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                                 printf("BBBBBB\n");
 
                                 EM_error(d->pos, "Types used in variable declaration initializer are incompatible!");
-                                return expTy(NULL, Ty_Nil());
+                                assert(0);
+                                //return expTy(NULL, Ty_Nil());
+                                return;
                             }
                             break;
 
@@ -601,7 +635,9 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                                 printf("CCCCCCCC\n");
 
                                 EM_error(d->pos, "Types used in variable declaration initializer are incompatible!");
-                                return expTy(NULL, Ty_Nil());
+                                assert(0);
+                                //return expTy(NULL, Ty_Nil());
+                                return;
                             }
                             break;
 

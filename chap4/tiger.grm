@@ -221,7 +221,10 @@ sequencing : LPAREN expseq RPAREN { printf("sequencing 1\n"); $$ = A_SeqExp(yyli
 no_value : LPAREN RPAREN { printf("no_value\n"); $$ = A_NilExp(yylineno); }
          ;
 
-function_call : ID LPAREN RPAREN { printf("function_call - A\n"); $$ = A_NilExp(yylineno); A_CallExp(yylineno, S_Symbol($1), NULL); }
+function_call : ID LPAREN RPAREN { printf("function_call - A\n"); 
+                //$$ = A_NilExp(yylineno); 
+                $$ = A_CallExp(yylineno, S_Symbol($1), NULL); 
+              }
               | ID LPAREN expseq_comma RPAREN { printf("function_call - B\n"); $$ = A_CallExp(yylineno, S_Symbol($1), $3); }
               ;
 

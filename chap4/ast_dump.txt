@@ -1,7 +1,8 @@
  letExp(
   decList(
    varDec(buffer,
-    nilExp(),
+    callExp(getchar,
+     expList()),
     TRUE),
    decList()),
   seqExp(
