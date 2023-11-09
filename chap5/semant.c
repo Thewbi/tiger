@@ -529,6 +529,8 @@ void transDec(S_table venv, S_table tenv, A_dec d)
     {
         case A_varDec:
         {
+            printf("transDec: A_varDec\n");
+
             // see VARIABLE DECLARATIONS, page 119
             struct expty init_type = expTy(NULL, Ty_Nil());
 
@@ -539,8 +541,9 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 
                 init_type = transExp(venv, tenv, d->u.var.init);
 
-                printf("init_type retrieved: %d\n", init_type);
+                printf("init_type retrieved: %d - ", init_type);
                 show_type(init_type.ty);
+                printf("\n");
             }
             else 
             {
@@ -658,9 +661,18 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                     S_enter(venv, fundec->name, E_FunEntry(formalTys, resultTy));
                 }
 
+                //
+                // Perform the semantic analysis on the body.
+                //
+                // Because the body may make use of the formal parameters, 
+                // the semantic analysis first creates a new scope for the
+                // function body and inserts all formal parameters into it.
+                //
+
                 // start parameter scope
                 S_beginScope(venv);
 
+                // insert formal parameters into the scope
                 {
                     printf("Processing formal function parameters ...\n");
 
@@ -824,8 +836,8 @@ void show(void *key, void *value)
     //
 
     printf("Key: '%s' ", S_name(key));
-
     show_type(value);
+    printf("\n");
 }
 
 void show_type(Ty_ty type)

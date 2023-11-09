@@ -1,0 +1,7 @@
+/** Semantic Analysis has to create a variable "buffer" of type string! */
+
+let 
+    var buffer := getchar()
+in
+    0
+end
