@@ -144,12 +144,43 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
                 printf("A_opExp 20 - OPERAND D \n");
 
                 if (sane) {
-                    printf("A_opExp 20 - PLUS - Semantically sane! \n");
+                    printf("A_opExp 20 - Semantically sane! \n");
                 }
 
                 printf("A_opExp 20 - OPERAND D \n");
             
                 return expTy(a, Ty_Int());
+            }
+            else if 
+            (
+                (oper == A_eqOp)
+            )
+            {
+                printf("A_opExp 20 - OPERAND F \n");
+
+                struct expty left = transExp(venv, tenv, a->u.op.left);
+                struct expty right = transExp(venv, tenv, a->u.op.right);
+
+                printf("A_opExp 20 - OPERAND G left: %d, right: %d, left-ty: %d, right-ty: %d\n", left, right, left.ty, right.ty);
+
+                bool sane = TRUE;
+
+                if (left.ty->kind != right.ty->kind)
+                {
+                    EM_error(a->u.op.right->pos, "operand types do not match!");
+                    assert(0);
+                    sane = FALSE;
+                }
+
+                printf("A_opExp 20 - OPERAND H \n");
+
+                if (sane) {
+                    printf("A_opExp 20 - Semantically sane! \n");
+                }
+
+                printf("A_opExp 20 - OPERAND I \n");
+            
+                return expTy(a, Ty_Int()); // 0 == false, everything else is true
             }
 
             printf("Unknown operator! A_oper kind: %d\n", a->u.op.oper);

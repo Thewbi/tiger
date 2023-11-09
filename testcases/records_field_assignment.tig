@@ -7,3 +7,17 @@ in
     //rec1.name := 1;
 	rec1
 end
+
+
+/*
+let 
+
+    type any = {any : int}
+    var any:any := any { any=1 }
+
+in
+
+    any.any := 4
+
+end
+*/
