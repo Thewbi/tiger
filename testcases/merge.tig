@@ -1,6 +1,7 @@
 let 
 
-    type any = {any : int}
+    type any = { any : int }
+
     var buffer := getchar()
 
     function readint(any: any) : int =
@@ -27,19 +28,30 @@ let
         i
     end
 
-/*    type list = {first: int, rest: list}
+    type list = { first: int, rest: list }
 
     function readlist() : list =
     let 
-        var any := any{any=0}
+        var any := any { any=0 }
         var i := readint(any)
     in 
+
+        // TODO semantic analysis fails. It says types in if and else differ
+        // BUT: in the then branch, the a anonymous list variable is declared and nil has to match any type!!!!!!
         if any.any
-        then list{first=i,rest=readlist()}
+        then list { first=i, rest=readlist() }
         else nil
+
+        //if any.any
+        //then nil
+        //else nil
+
+        //list{first=i,rest=readlist()}
+
+        //nil
     end
 
-    function merge(a: list, b: list) : list =
+/*    function merge(a: list, b: list) : list =
         if a=nil 
         then b
         else 

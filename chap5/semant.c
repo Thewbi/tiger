@@ -499,8 +499,8 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
             printf("transVar() - record_variable_name: %s\n", S_name(record_variable_name));
 
             // this is the field's name that is accessed within the record variable
-            S_symbol symm = v->u.field.sym;
-            printf("transVar() - A_fieldVar 13 - symm: \"%s\"\n", S_name(symm));
+            S_symbol record_variable_used_field_name = v->u.field.sym;
+            printf("transVar() - A_fieldVar 13 - symm: \"%s\"\n", S_name(record_variable_used_field_name));
 
             
 
@@ -556,10 +556,23 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
             //assert(0);
 
             printf("xxxxxxxxxxxxxxxxxx \n");
+
+            A_fieldList field_list = NULL;
+
+            if (record_var_type->kind == E_varEntry) {
+
             
+            // if the type is taken from a formal parameter, the type is wrapped in an E_enventry
+            // if the type is taken from a local or global variable, the type is a normal record type
             E_enventry enventry = (E_enventry) record_var_type;
-            Ty_ty lol = enventry->u.var.ty;
-            A_fieldList field_list = lol->u.record;
+                Ty_ty unwrapped_type = enventry->u.var.ty;
+                field_list = unwrapped_type->u.record;
+            } else {
+                field_list = record_var_type->u.record;
+            }
+
+            printf("field_list: %d \n", field_list);
+
             while (field_list != NULL) 
             {
                 A_namety record_field = field_list->head;
@@ -570,8 +583,13 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
 
                 printf("transVar() - name: %s type: %s\n", S_name(record_field->name), S_name(record_field->ty));
 
+
+                 printf("transVar() - COMPARING record_variable_used_field_name: %s record_field->name: %s\n", 
+                     S_name(record_variable_used_field_name), S_name(record_field->name));
+
                 // iterate until the field in the record is found, return it's type
-                if (v->u.field.sym == record_field->name) {
+                if (record_variable_used_field_name == record_field->name) {
+                //if (strcmp(S_name(record_variable_used_field_name), S_name(record_field->name)) == 0) {
                     printf("transVar() - returning\n");
                     return expTy(v, TAB_look(tenv, record_field->ty));
                 }
@@ -581,6 +599,8 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
             }
 
             printf("yyyyyyyyyyyyyyy \n");
+
+            EM_error(v->pos, "Field \"%s\" is not present in record type! Line: %d\n", S_name(record_variable_used_field_name), v->pos);
 
             assert(0);
         }
@@ -1010,7 +1030,7 @@ void show_type(Ty_ty type)
         {
             printf(" Ty_record ");
 
-            // DEBUG print all the records fields, their names and types
+            // print all the records fields, their names and types
             A_fieldList field_list = type->u.record;
             while (field_list != NULL) 
             {

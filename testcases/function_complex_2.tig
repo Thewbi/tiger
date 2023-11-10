@@ -1,0 +1,47 @@
+let 
+
+    type any_record = { any_field : int }
+
+    type list = { first: int, rest: list }
+
+    function readlist() : list =
+    let 
+        var any_var := any_record { any_field = 0 }
+    in 
+        if any_var.any_field
+        then nil
+        else nil
+    end
+
+in
+    0
+end
+
+
+
+
+
+
+/*
+
+let 
+
+    type any = { any : int }
+
+    type list = { first: int, rest: list }
+
+    function readlist() : list =
+    let 
+        var any := any { any=0 }
+    in 
+        if any.any
+        then nil
+        else nil
+    end
+
+in
+    0
+end
+
+
+*/

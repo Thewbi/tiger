@@ -1,0 +1,25 @@
+let 
+
+    type any = { any : int }
+
+    type list = { first: int, rest: list }
+
+    function readlist() : list =
+    let 
+        var any := any { any=0 }
+        var i := 0
+    in 
+
+        // TODO semantic analysis fails. It says types in if and else differ
+        // BUT: in the 'then' branch, a anonymous variable of type list is declared and nil has to match any type!!!!!!
+        // Because nil matches any type, the else branch has the same type as the then branch and the if-then-else is
+        // semantically correct!
+        if any.any
+        then list { first=i, rest=readlist() }
+        else nil
+    end
+
+in
+    0
+end
+

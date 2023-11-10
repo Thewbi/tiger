@@ -8,10 +8,11 @@ let
         var i := 0
     in 
         (
-        // any is the formal parameter of this function
-        //any.any_field := isdigit(buffer);
-        any_formal_parameter.any_field := 1;
-        i
+            any_formal_parameter.any_field := 1;
+
+            if any_formal_parameter.any_field
+            then 1
+            else 2
         )
     end
 
