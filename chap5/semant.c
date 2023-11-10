@@ -122,7 +122,10 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
                     return expTy(a, Ty_Int());
                 }
 
+                printf("A_opExp left transExp()\n");
                 struct expty left = transExp(venv, tenv, a->u.op.left);
+
+                printf("A_opExp right transExp()\n");
                 struct expty right = transExp(venv, tenv, a->u.op.right);
 
                 printf("A_opExp 20 - OPERAND B left: %d, right: %d, left-ty: %d, right-ty: %d\n", left, right, left.ty, right.ty);
@@ -328,33 +331,69 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 
             // struct {S_symbol var; A_exp lo,hi,body; bool escape;} forr;
 
+            printf("A_forExp A\n");
+            
+            S_beginScope(venv);
+
+            printf("A_forExp B\n");
+
             S_symbol var = a->u.forr.var;
             A_exp lo = a->u.forr.lo;
             A_exp hi = a->u.forr.hi;
             A_exp body = a->u.forr.body;
 
+            printf("A_forExp C\n");
+
             // DEBUG
             printf("A_forExp 26 - var %s\n", S_name(var));
+
+            printf("A_forExp D\n");
+
+
+
+            // insert iterator variable with type int into the for-loops venv
+            S_enter(venv, var, Ty_Int());
+
+            printf("A_forExp E\n");
+
 
             // lo has to be int
             struct expty lo_ty = transExp(venv, tenv, lo);
             if (lo_ty.ty->kind != Ty_int)
             {
+                S_endScope(venv);
+
                 EM_error(a->pos, "lo invalid - integer required");
                 assert(0);
                 return expTy(NULL, Ty_Nil());
             }
+
+            printf("A_forExp F\n");
 
             // hi has to be int
             struct expty hi_ty = transExp(venv, tenv, hi);
+
+            printf("ZUZUZUZUZUZUZU\n");
+            show_type(hi_ty.ty);
+            printf("\n");
             if (hi_ty.ty->kind != Ty_int)
             {
+                S_endScope(venv);
+
                 EM_error(a->pos, "lo invalid - integer required");
                 assert(0);
                 return expTy(NULL, Ty_Nil());
             }
 
-            return transExp(venv, tenv, body);
+            printf("A_forExp G\n");
+
+            struct expty for_loop_expty = transExp(venv, tenv, body);
+
+            S_endScope(venv);
+
+            printf("A_forExp H\n");
+
+            return for_loop_expty;
         }
         break;
 
@@ -1024,6 +1063,8 @@ void show(void *key, void *value)
 
 void show_type(Ty_ty type)
 {
+    //printf("show_type\n");
+
     if (type == NULL)
     {
         printf(" No type!");
