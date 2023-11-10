@@ -1,0 +1,10 @@
+let
+    type list = { first: int, rest: list }
+
+    function merge(a: list, b: list) : list =
+        if a = nil 
+        then b
+        else b
+in
+    0
+end

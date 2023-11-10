@@ -108,7 +108,7 @@ int main(int argc, char **argv)
     A_field chr_first_formal_param = A_Field(0, S_Symbol("i"), S_Symbol("int"));
     A_fieldList chr_params = A_FieldList(chr_first_formal_param, NULL);
     Ty_tyList chr_formals = makeFormalTyList(tenv, chr_params);
-    Ty_ty chr_result_ty = Ty_Int();
+    Ty_ty chr_result_ty = Ty_String();
     S_enter(venv, S_Symbol("chr"), E_FunEntry(chr_formals, chr_result_ty));
 
     // function size(s: string) : int

@@ -1,0 +1,11 @@
+let
+    type list = { first: int, rest: list }
+
+    var a:list := nil
+    var b:list := nil
+    var c:list := nil
+in
+	if a=nil 
+        then b
+        else c
+end

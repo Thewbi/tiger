@@ -1,0 +1,8 @@
+/* There was a bug where a had the type nil in venv instead of list */
+let
+    type list = { first: int, rest: list }
+
+    var a:list := nil
+in
+	0
+end

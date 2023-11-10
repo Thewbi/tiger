@@ -72,7 +72,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
                 printf("\n");
 
                 // check the types
-                if (formal_param_ty != actual_param_ty)
+                if (formal_param_ty->kind != actual_param_ty->kind)
                 {
                     EM_error(a->pos, "Actual and formal parameter %d are of incompatible types!\n", param_idx);
                     assert(0);
@@ -115,7 +115,12 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
                 (oper == A_andOp) || (oper == A_orOp)
             )
             {
-                printf("A_opExp 20 - OPERAND A \n");
+                printf("A_opExp 20 - OPERAND A exp-left: %d, exp-right: %d\n", a->u.op.left, a->u.op.right);
+
+                // Special case: Unary minus
+                if ((a->u.op.left == NULL) && oper == A_minusOp) {
+                    return expTy(a, Ty_Int());
+                }
 
                 struct expty left = transExp(venv, tenv, a->u.op.left);
                 struct expty right = transExp(venv, tenv, a->u.op.right);
@@ -165,7 +170,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 
                 bool sane = TRUE;
 
-                if (left.ty->kind != right.ty->kind)
+                if ((left.ty->kind != Ty_nil) && (right.ty->kind != Ty_nil) && (left.ty->kind != right.ty->kind))
                 {
                     EM_error(a->u.op.right->pos, "operand types do not match!");
                     assert(0);
@@ -211,15 +216,24 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
         {
             printf("A_seqExp 22\n");
 
+            struct expty last_type;
+            last_type.ty = Ty_nil;
+
             A_expList seq = a->u.seq;
             while (seq != NULL) {
+
                 if (seq->head != NULL)
                 {
                     printf("A_seqExp:\n");
-                    transExp(venv, tenv, seq->head);
+                    last_type = transExp(venv, tenv, seq->head);
                 }
+
+                // advance iterator
                 seq = seq->tail;
             }
+
+            // the sequence adopts the type of it's last expression
+            return expTy(a, last_type.ty);
         }
         break;
 
@@ -276,13 +290,13 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             } else {
                 struct expty elsee_Ty = transExp(venv, tenv, elsee);
 
-                printf("if-then type: ");
+                printf("if-then type: [");
                 show_type(then_Ty.ty);
-                printf(" else type: ");
+                printf("] else type: [");
                 show_type(elsee_Ty.ty);
-                printf("\n");
+                printf("]\n");
 
-                if (then_Ty.ty != elsee_Ty.ty)
+                if ((then_Ty.ty->kind != Ty_nil) && (elsee_Ty.ty->kind != Ty_nil) && (then_Ty.ty->kind != elsee_Ty.ty->kind))
                 {
                     EM_error(a->pos, "if-then-else invalid! then and else are of different type!");
                     assert(0);
@@ -688,7 +702,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
             }
             else
             {
-                printf("Current tenv\n");
+                printf("Current tenv :\n");
 
                 // DEBUG
                 printf("\nTAB_DUMP tenv\n=============================\n");
@@ -701,7 +715,12 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 show_type(var_type);
                 printf("\n");
 
-                if ((init_type.ty != Ty_Nil()) && (var_type != Ty_Nil())) {
+                bool init_type_is_nil = init_type.ty->kind == Ty_nil;
+                bool var_type_is_nil = var_type->kind == Ty_nil;
+
+                printf("init_type_is_nil: %d, var_type_is_nil: %d\n", init_type_is_nil, var_type_is_nil);
+
+                if ((init_type.ty->kind != Ty_nil) && (var_type->kind != Ty_nil)) {
 
                     printf("AAAAAA\n");
 
@@ -722,8 +741,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                         case Ty_name:
                         case Ty_void:
                         case Ty_int:
-                            //return expTy(NULL, Ty_Int());
-                            return;
+                            break;
 
                         case Ty_array:
                             if (var_type->u.array != init_type.ty->u.array)
@@ -753,12 +771,32 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                             printf("Unknown var type: %d\n", var_type->kind);
                             assert(0);
                     }
+
+                    printf("ahahaahaahh\n");
+
+                    // enter binding for the declared variable into the variable environment (venv)
+                    // The initializer type is used because the explizit type specifier is optional and
+                    // the initializer and specifier types have to match at all times
+                    S_enter(venv, d->u.var.var, init_type.ty);
+
+                    printf("Current venv :\n");
+
+                    // DEBUG
+                    printf("\nTAB_DUMP venv\n=============================\n");
+                    TAB_dump(venv, show);
+                    printf("=============================\n");
                 }
-                // enter binding for the declared variable into the variable environment (venv)
-                // The initializer type is used because the explizit type specifier is optional and
-                // the initializer and specifier types have to match at all times
-                //S_enter(venv, d->u.var.var, E_VarEntry(init_type.ty));
-                S_enter(venv, d->u.var.var, init_type.ty);
+                else if (var_type->kind != Ty_nil)
+                {
+                    S_enter(venv, d->u.var.var, var_type);
+
+                    // DEBUG
+                    printf("\nTAB_DUMP venv\n=============================\n");
+                    TAB_dump(venv, show);
+                    printf("=============================\n");
+                } else {
+                    assert(0);
+                }
 
                 // DEBUG
                 printf("\nTAB_DUMP venv\n=============================\n");

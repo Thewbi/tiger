@@ -1,0 +1,13 @@
+let
+    var i:int := 0
+
+    function f(i:int):int = 0
+
+in
+/**/
+	if i < 0 
+        then ( print("-"); f(-i) )
+        //then ( print("-"); f(1) )
+        //then 0
+        else 0
+end
