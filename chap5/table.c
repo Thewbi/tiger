@@ -58,8 +58,8 @@ void TAB_enter(TAB_table t, void *key, void *value)
 */
 void *TAB_look(TAB_table t, void *key)
 {
-    printf("TAB_look key: %d\n", key);
-    printf("TAB_look for \"%s\"\n", S_name(key));
+    printf("TAB_look() key: %d\n", key);
+    printf("TAB_look() for \"%s\"\n", S_name(key));
 
     int index;
     binder b;

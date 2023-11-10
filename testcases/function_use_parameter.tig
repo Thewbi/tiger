@@ -1,0 +1,21 @@
+let 
+
+    type any_record = { any_field : int }
+    var buffer := getchar()
+
+    function readint(any_formal_parameter: any_record) : int =
+    let 
+        var i := 0
+    in 
+        (
+        // any is the formal parameter of this function
+        //any.any_field := isdigit(buffer);
+        any_formal_parameter.any_field := 1;
+        i
+        )
+    end
+
+in
+    0
+end
+

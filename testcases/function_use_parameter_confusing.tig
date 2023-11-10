@@ -1,0 +1,21 @@
+let 
+
+    type any = { any : int }
+    var buffer := getchar()
+
+    function readint(any: any) : int =
+    let 
+        var i := 0
+    in 
+        (
+        // any is the formal parameter of this function
+        any.any := isdigit(buffer);
+        //any.any := 1;
+        i
+        )
+    end
+
+in
+    0
+end
+

@@ -16,12 +16,14 @@ let
     in 
         skipto();
 
-        // TODO: this fails
-        // any is the formal parameter of this function
         any.any := isdigit(buffer);
 
-        //while isdigit(buffer)
-        //do (i := i*10+ord(buffer)-ord("0"); buffer := getchar());
+        while isdigit(buffer)
+        do (
+            i := i*10 + ord(buffer) - ord("0"); 
+            buffer := getchar()
+        );
+
         i
     end
 
