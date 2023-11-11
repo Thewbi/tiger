@@ -71,7 +71,7 @@ int main(int argc, char **argv)
     S_table venv = S_empty();
 
     // The base_venv environment contains bindings for predefined functions
-    // flush, ord, chr, size, and so on, described in Appendix A
+    // flush, ord, chr, size, and so on, described in Appendix A - A.4 Standard Library - Page 525
     //
     // Several functions are predefined:
 

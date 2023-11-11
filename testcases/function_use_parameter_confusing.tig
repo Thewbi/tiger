@@ -8,10 +8,10 @@ let
         var i := 0
     in 
         (
-        // any is the formal parameter of this function
-        any.any := isdigit(buffer);
-        //any.any := 1;
-        i
+            // any is the formal parameter of this function
+            any.any := isdigit(buffer);
+            //any.any := 1;
+            i
         )
     end
 

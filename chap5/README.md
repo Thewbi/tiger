@@ -872,8 +872,39 @@ Sequences:
 sequencing.tig   SEMANTIC_ERROR   ( semanttest.exe ..\testcases\sequencing.tig & cat ast_dump.txt )
 
 Let
-let.tig             ( semanttest.exe ..\testcases\let.tig & cat ast_dump.txt )
-let_nested.tig      ( semanttest.exe ..\testcases\let_nested.tig & cat ..\testcases\let_nested.tig & cat ast_dump.txt )
+let.tig             ( semanttest.exe ..\testcases\let.tig           & cat ..\testcases\let.tig           & cat ast_dump.txt ) // SEM-ERROR
+let_nested.tig      ( semanttest.exe ..\testcases\let_nested.tig    & cat ..\testcases\let_nested.tig    & cat ast_dump.txt ) // OK
+
+Operators
+addition.tig        ( semanttest.exe ..\testcases\addition.tig      & cat ..\testcases\addition.tig      & cat ast_dump.txt ) // OK
+
+Assignment
+assignment.tig      ( semanttest.exe ..\testcases\assignment.tig    & cat ..\testcases\assignment.tig    & cat ast_dump.txt ) // SEM-ERROR
+
+Arrays
+arrays.tig          ( semanttest.exe ..\testcases\arrays.tig        & cat ..\testcases\arrays.tig        & cat ast_dump.txt ) // OK
+arrays_simple.tig   ( semanttest.exe ..\testcases\arrays_simple.tig & cat ..\testcases\arrays_simple.tig & cat ast_dump.txt ) // OK
+
+Built-In functions
+builtin_functions.tig ( semanttest.exe ..\testcases\builtin_functions.tig & cat ..\testcases\builtin_functions.tig & cat ast_dump.txt ) // OK
+
+For-Loop
+forloop_simple.tig      ( semanttest.exe ..\testcases\forloop_simple.tig ) // SEM-ERROR, hi is not of type int
+forloop_non_declared_variable.tig  ( semanttest.exe ..\testcases\forloop_non_declared_variable.tig ) // OK
+
+Functions
+( semanttest.exe ..\testcases\function_complex_2.tig ) // OK
+( semanttest.exe ..\testcases\function_complex_3.tig ) // OK
+( semanttest.exe ..\testcases\function_complex.tig ) // OK
+( semanttest.exe ..\testcases\function_simple.tig ) // OK
+( semanttest.exe ..\testcases\function_use_parameter_confusing.tig ) // TODO: compiler seg-fault! Undefined function isdigit() causes seg-fault!
+( semanttest.exe ..\testcases\function_use_parameter.tig ) // OK
+( semanttest.exe ..\testcases\function.tig ) // OK
+
+Applications
+fact.tig            ( semanttest.exe ..\testcases\fact.tig ) // SEM-ERROR, print_int not defined
+merge.tig           ( semanttest.exe ..\testcases\merge.tig
+queens.tig          ( semanttest.exe ..\testcases\queens.tig
 
 All the following tests are in the testcases\book folder
 
@@ -884,8 +915,8 @@ Arithmetic Operators:
 test26.tig          ( semanttest.exe ..\testcases\book\test26.tig & cat ..\testcases\book\test26.tig & cat ast_dump.txt )
 
 if-then-else:
-test8.tig,          ( semanttest.exe ..\testcases\book\test8.tig & cat ast_dump.txt )
-test9.tig,          ( semanttest.exe ..\testcases\book\test9.tig & cat ..\testcases\book\test9.tig & cat ast_dump.txt )
+test8.tig,          ( semanttest.exe ..\testcases\book\test8.tig  & cat ast_dump.txt )
+test9.tig,          ( semanttest.exe ..\testcases\book\test9.tig  & cat ..\testcases\book\test9.tig & cat ast_dump.txt )
 test15.tig          ( semanttest.exe ..\testcases\book\test15.tig & cat ..\testcases\book\test15.tig & cat ast_dump.txt )
 
 while-loops:
@@ -922,10 +953,10 @@ test49.tig   OK BECAUSE OF SYNTAX ERROR ( semanttest.exe ..\testcases\book\test4
 
 type definitions:
 test16.tig,         ( semanttest.exe ..\testcases\book\test16.tig & cat ..\testcases\book\test16.tig & cat ast_dump.txt )
-test1.tig,          ( semanttest.exe ..\testcases\book\test1.tig & cat ..\testcases\book\test1.tig & cat ast_dump.txt )
-test2.tig,          ( semanttest.exe ..\testcases\book\test2.tig & cat ..\testcases\book\test2.tig & cat ast_dump.txt )
-test3.tig,          ( semanttest.exe ..\testcases\book\test3.tig & cat ..\testcases\book\test3.tig & cat ast_dump.txt )
-test5.tig,          ( semanttest.exe ..\testcases\book\test5.tig & cat ..\testcases\book\test5.tig & cat ast_dump.txt )
+test1.tig,          ( semanttest.exe ..\testcases\book\test1.tig  & cat ..\testcases\book\test1.tig & cat ast_dump.txt )
+test2.tig,          ( semanttest.exe ..\testcases\book\test2.tig  & cat ..\testcases\book\test2.tig & cat ast_dump.txt )
+test3.tig,          ( semanttest.exe ..\testcases\book\test3.tig  & cat ..\testcases\book\test3.tig & cat ast_dump.txt )
+test5.tig,          ( semanttest.exe ..\testcases\book\test5.tig  & cat ..\testcases\book\test5.tig & cat ast_dump.txt )
 test14.tig,         ( semanttest.exe ..\testcases\book\test14.tig & cat ..\testcases\book\test14.tig & cat ast_dump.txt )
 test17.tig,         ( semanttest.exe ..\testcases\book\test17.tig & cat ..\testcases\book\test17.tig & cat ast_dump.txt )
 test22.tig,         ( semanttest.exe ..\testcases\book\test22.tig & cat ..\testcases\book\test22.tig & cat ast_dump.txt )
@@ -937,9 +968,9 @@ test38.tig,         ( semanttest.exe ..\testcases\book\test38.tig & cat ..\testc
 test48.tig          ( semanttest.exe ..\testcases\book\test48.tig & cat ..\testcases\book\test48.tig & cat ast_dump.txt )
 
 function declarations and function calls:
-test4.tig,          ( semanttest.exe ..\testcases\book\test4.tig & cat ..\testcases\book\test4.tig & cat ast_dump.txt )
-test6.tig,          ( semanttest.exe ..\testcases\book\test6.tig & cat ..\testcases\book\test6.tig & cat ast_dump.txt )
-test7.tig,          ( semanttest.exe ..\testcases\book\test7.tig & cat ..\testcases\book\test7.tig & cat ast_dump.txt )
+test4.tig,          ( semanttest.exe ..\testcases\book\test4.tig  & cat ..\testcases\book\test4.tig & cat ast_dump.txt )
+test6.tig,          ( semanttest.exe ..\testcases\book\test6.tig  & cat ..\testcases\book\test6.tig & cat ast_dump.txt )
+test7.tig,          ( semanttest.exe ..\testcases\book\test7.tig  & cat ..\testcases\book\test7.tig & cat ast_dump.txt )
 test18.tig,         ( semanttest.exe ..\testcases\book\test18.tig & cat ..\testcases\book\test18.tig & cat ast_dump.txt )
 test19.tig,         ( semanttest.exe ..\testcases\book\test19.tig & cat ..\testcases\book\test19.tig & cat ast_dump.txt )
 test34.tig,         ( semanttest.exe ..\testcases\book\test34.tig & cat ..\testcases\book\test34.tig & cat ast_dump.txt )
