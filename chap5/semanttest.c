@@ -83,6 +83,10 @@ int main(int argc, char **argv)
     Ty_ty print_result_ty = NULL;
     S_enter(venv, S_Symbol("print"), E_FunEntry(print_formals, print_result_ty));
 
+    // from https://www.haber-kucharsky.com/proj/fang/tiger.html
+    //print_int(x: int) – Print an integer in base-10 to the standard output device. If there's a system error, the program aborts.
+    //print_line() – Print a newline character to the standard output device. If there's a system error, the program aborts.
+
     // function flush()
     // Flush the standard output buffer.
     Ty_tyList flush_formals = NULL;
@@ -94,6 +98,9 @@ int main(int argc, char **argv)
     Ty_tyList getchar_formals = NULL;
     Ty_ty getchar_result_ty = Ty_String();
     S_enter(venv, S_Symbol("getchar"), E_FunEntry(getchar_formals, getchar_result_ty));
+
+    // from https://www.haber-kucharsky.com/proj/fang/tiger.html
+    //read_char(): string – Read a single-character string from the standard input device. If no character is available, the result is the empty string. If there's a system error, the program aborts.
 
     // function ord(s: string) : int
     // Give ASCII value of first character of s; yields -1 if s is empty string.
@@ -141,6 +148,9 @@ int main(int argc, char **argv)
     Ty_ty concat_result_ty = Ty_String();
     S_enter(venv, S_Symbol("concat"), E_FunEntry(concat_formals, concat_result_ty));
 
+    // from https://www.haber-kucharsky.com/proj/fang/tiger.html
+    //len(s: string): int – The number of ASCII characters in a string.
+
     // function not(i : integer) : integer
     // Return (i=0).
     A_field not_first_formal_param = A_Field(0, S_Symbol("i"), S_Symbol("int"));
@@ -157,6 +167,18 @@ int main(int argc, char **argv)
     Ty_ty exit_result_ty = NULL;
     S_enter(venv, S_Symbol("exit"), E_FunEntry(exit_formals, exit_result_ty));
 
+    // from https://www.haber-kucharsky.com/proj/fang/tiger.html
+    //random(a: int, b: int): int – Compute a pseudo-random value in the range [a,b). If the range is invalid, the program aborts.
+    //seed(x: int) – Seed the random generator.
+    //error(message: string) – Abort the program with a user-defined message.
+
+    
+    
+    
+    
+    
+    
+    
     // DEBUG
     printf("\nINITIAL TAB_DUMP venv\n=============================\n");
     TAB_dump(venv, show);

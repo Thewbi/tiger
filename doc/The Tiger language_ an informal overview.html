@@ -1,0 +1,862 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0052)https://www.haber-kucharsky.com/proj/fang/tiger.html -->
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!-- 2022-06-12 Sun 15:35 -->
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Tiger language: an informal overview</title>
+<meta name="generator" content="Org mode">
+<meta name="author" content="Jesse Haber-Kucharsky">
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:e95b018ef3580986a04669f1b5879592219e2a7a&dn=public-domain.txt Public Domain
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+<script type="text/x-mathjax-config;executed=true">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+<style type="text/css">.MathJax_Hover_Frame {border-radius: .25em; -webkit-border-radius: .25em; -moz-border-radius: .25em; -khtml-border-radius: .25em; box-shadow: 0px 0px 15px #83A; -webkit-box-shadow: 0px 0px 15px #83A; -moz-box-shadow: 0px 0px 15px #83A; -khtml-box-shadow: 0px 0px 15px #83A; border: 1px solid #A6D ! important; display: inline-block; position: absolute}
+.MathJax_Menu_Button .MathJax_Hover_Arrow {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px; font-family: 'Courier New',Courier; font-size: 9px; color: #F0F0F0}
+.MathJax_Menu_Button .MathJax_Hover_Arrow span {display: block; background-color: #AAA; border: 1px solid; border-radius: 3px; line-height: 0; padding: 4px}
+.MathJax_Hover_Arrow:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_Hover_Arrow:hover span {background-color: #CCC!important}
+</style><style type="text/css">#MathJax_About {position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: #DDDDDD; color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; -webkit-border-radius: 15px; -moz-border-radius: 15px; -khtml-border-radius: 15px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_About.MathJax_MousePost {outline: none}
+.MathJax_Menu {position: absolute; background-color: white; color: black; width: auto; padding: 2px; border: 1px solid #CCCCCC; margin: 0; cursor: default; font: menu; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+.MathJax_MenuItem {padding: 2px 2em; background: transparent}
+.MathJax_MenuArrow {position: absolute; right: .5em; padding-top: .25em; color: #666666; font-size: .75em}
+.MathJax_MenuActive .MathJax_MenuArrow {color: white}
+.MathJax_MenuArrow.RTL {left: .5em; right: auto}
+.MathJax_MenuCheck {position: absolute; left: .7em}
+.MathJax_MenuCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuRadioCheck {position: absolute; left: 1em}
+.MathJax_MenuRadioCheck.RTL {right: 1em; left: auto}
+.MathJax_MenuLabel {padding: 2px 2em 4px 1.33em; font-style: italic}
+.MathJax_MenuRule {border-top: 1px solid #CCCCCC; margin: 4px 1px 0px}
+.MathJax_MenuDisabled {color: GrayText}
+.MathJax_MenuActive {background-color: Highlight; color: HighlightText}
+.MathJax_MenuDisabled:focus, .MathJax_MenuLabel:focus {background-color: #E8E8E8}
+.MathJax_ContextMenu:focus {outline: none}
+.MathJax_ContextMenu .MathJax_MenuItem:focus {outline: none}
+#MathJax_AboutClose {top: .2em; right: .2em}
+.MathJax_Menu .MathJax_MenuClose {top: -10px; left: -10px}
+.MathJax_MenuClose {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; font-family: 'Courier New',Courier; font-size: 24px; color: #F0F0F0}
+.MathJax_MenuClose span {display: block; background-color: #AAA; border: 1.5px solid; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; line-height: 0; padding: 8px 0 6px}
+.MathJax_MenuClose:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_MenuClose:hover span {background-color: #CCC!important}
+.MathJax_MenuClose:hover:focus {outline: none}
+</style><style type="text/css">.MathJax_Preview .MJXf-math {color: inherit!important}
+</style><style type="text/css">.MJX_Assistive_MathML {position: absolute!important; top: 0; left: 0; clip: rect(1px, 1px, 1px, 1px); padding: 1px 0 0 0!important; border: 0!important; height: 1px!important; width: 1px!important; overflow: hidden!important; display: block!important; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none}
+.MJX_Assistive_MathML.MJX_Assistive_MathML_Block {width: 100%!important}
+</style><style type="text/css">#MathJax_Zoom {position: absolute; background-color: #F0F0F0; overflow: auto; display: block; z-index: 301; padding: .5em; border: 1px solid black; margin: 0; font-weight: normal; font-style: normal; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; -webkit-box-sizing: content-box; -moz-box-sizing: content-box; box-sizing: content-box; box-shadow: 5px 5px 15px #AAAAAA; -webkit-box-shadow: 5px 5px 15px #AAAAAA; -moz-box-shadow: 5px 5px 15px #AAAAAA; -khtml-box-shadow: 5px 5px 15px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_ZoomOverlay {position: absolute; left: 0; top: 0; z-index: 300; display: inline-block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+#MathJax_ZoomFrame {position: relative; display: inline-block; height: 0; width: 0}
+#MathJax_ZoomEventTrap {position: absolute; left: 0; top: 0; z-index: 302; display: inline-block; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+</style><style type="text/css">.MathJax_Preview {color: #888}
+#MathJax_Message {position: fixed; left: 1em; bottom: 1.5em; background-color: #E6E6E6; border: 1px solid #959595; margin: 0px; padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto; white-space: nowrap}
+#MathJax_MSIE_Frame {position: absolute; top: 0; left: 0; width: 0px; z-index: 101; border: 0px; margin: 0px; padding: 0px}
+.MathJax_Error {color: #CC0000; font-style: italic}
+</style><style type="text/css">.MJXp-script {font-size: .8em}
+.MJXp-right {-webkit-transform-origin: right; -moz-transform-origin: right; -ms-transform-origin: right; -o-transform-origin: right; transform-origin: right}
+.MJXp-bold {font-weight: bold}
+.MJXp-italic {font-style: italic}
+.MJXp-scr {font-family: MathJax_Script,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-frak {font-family: MathJax_Fraktur,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-sf {font-family: MathJax_SansSerif,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-cal {font-family: MathJax_Caligraphic,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-mono {font-family: MathJax_Typewriter,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-largeop {font-size: 150%}
+.MJXp-largeop.MJXp-int {vertical-align: -.2em}
+.MJXp-math {display: inline-block; line-height: 1.2; text-indent: 0; font-family: 'Times New Roman',Times,STIXGeneral,serif; white-space: nowrap; border-collapse: collapse}
+.MJXp-display {display: block; text-align: center; margin: 1em 0}
+.MJXp-math span {display: inline-block}
+.MJXp-box {display: block!important; text-align: center}
+.MJXp-box:after {content: " "}
+.MJXp-rule {display: block!important; margin-top: .1em}
+.MJXp-char {display: block!important}
+.MJXp-mo {margin: 0 .15em}
+.MJXp-mfrac {margin: 0 .125em; vertical-align: .25em}
+.MJXp-denom {display: inline-table!important; width: 100%}
+.MJXp-denom > * {display: table-row!important}
+.MJXp-surd {vertical-align: top}
+.MJXp-surd > * {display: block!important}
+.MJXp-script-box > *  {display: table!important; height: 50%}
+.MJXp-script-box > * > * {display: table-cell!important; vertical-align: top}
+.MJXp-script-box > *:last-child > * {vertical-align: bottom}
+.MJXp-script-box > * > * > * {display: block!important}
+.MJXp-mphantom {visibility: hidden}
+.MJXp-munderover {display: inline-table!important}
+.MJXp-over {display: inline-block!important; text-align: center}
+.MJXp-over > * {display: block!important}
+.MJXp-munderover > * {display: table-row!important}
+.MJXp-mtable {vertical-align: .25em; margin: 0 .125em}
+.MJXp-mtable > * {display: inline-table!important; vertical-align: middle}
+.MJXp-mtr {display: table-row!important}
+.MJXp-mtd {display: table-cell!important; text-align: center; padding: .5em 0 0 .5em}
+.MJXp-mtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-mlabeledtr {display: table-row!important}
+.MJXp-mlabeledtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mlabeledtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MJXp-scale0 {-webkit-transform: scaleX(.0); -moz-transform: scaleX(.0); -ms-transform: scaleX(.0); -o-transform: scaleX(.0); transform: scaleX(.0)}
+.MJXp-scale1 {-webkit-transform: scaleX(.1); -moz-transform: scaleX(.1); -ms-transform: scaleX(.1); -o-transform: scaleX(.1); transform: scaleX(.1)}
+.MJXp-scale2 {-webkit-transform: scaleX(.2); -moz-transform: scaleX(.2); -ms-transform: scaleX(.2); -o-transform: scaleX(.2); transform: scaleX(.2)}
+.MJXp-scale3 {-webkit-transform: scaleX(.3); -moz-transform: scaleX(.3); -ms-transform: scaleX(.3); -o-transform: scaleX(.3); transform: scaleX(.3)}
+.MJXp-scale4 {-webkit-transform: scaleX(.4); -moz-transform: scaleX(.4); -ms-transform: scaleX(.4); -o-transform: scaleX(.4); transform: scaleX(.4)}
+.MJXp-scale5 {-webkit-transform: scaleX(.5); -moz-transform: scaleX(.5); -ms-transform: scaleX(.5); -o-transform: scaleX(.5); transform: scaleX(.5)}
+.MJXp-scale6 {-webkit-transform: scaleX(.6); -moz-transform: scaleX(.6); -ms-transform: scaleX(.6); -o-transform: scaleX(.6); transform: scaleX(.6)}
+.MJXp-scale7 {-webkit-transform: scaleX(.7); -moz-transform: scaleX(.7); -ms-transform: scaleX(.7); -o-transform: scaleX(.7); transform: scaleX(.7)}
+.MJXp-scale8 {-webkit-transform: scaleX(.8); -moz-transform: scaleX(.8); -ms-transform: scaleX(.8); -o-transform: scaleX(.8); transform: scaleX(.8)}
+.MJXp-scale9 {-webkit-transform: scaleX(.9); -moz-transform: scaleX(.9); -ms-transform: scaleX(.9); -o-transform: scaleX(.9); transform: scaleX(.9)}
+.MathJax_PHTML .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style><style type="text/css">.MathJax_Display {text-align: center; margin: 1em 0em; position: relative; display: block!important; text-indent: 0; max-width: none; max-height: none; min-width: 0; min-height: 0; width: 100%}
+.MathJax .merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MathJax .MJX-monospace {font-family: monospace}
+.MathJax .MJX-sans-serif {font-family: sans-serif}
+#MathJax_Tooltip {background-color: InfoBackground; color: InfoText; border: 1px solid black; box-shadow: 2px 2px 5px #AAAAAA; -webkit-box-shadow: 2px 2px 5px #AAAAAA; -moz-box-shadow: 2px 2px 5px #AAAAAA; -khtml-box-shadow: 2px 2px 5px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true'); padding: 3px 4px; z-index: 401; position: absolute; left: 0; top: 0; width: auto; height: auto; display: none}
+.MathJax {display: inline; font-style: normal; font-weight: normal; line-height: normal; font-size: 100%; font-size-adjust: none; text-indent: 0; text-align: left; text-transform: none; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; direction: ltr; max-width: none; max-height: none; min-width: 0; min-height: 0; border: 0; padding: 0; margin: 0}
+.MathJax:focus, body :focus .MathJax {display: inline-table}
+.MathJax.MathJax_FullWidth {text-align: center; display: table-cell!important; width: 10000em!important}
+.MathJax img, .MathJax nobr, .MathJax a {border: 0; padding: 0; margin: 0; max-width: none; max-height: none; min-width: 0; min-height: 0; vertical-align: 0; line-height: normal; text-decoration: none}
+img.MathJax_strut {border: 0!important; padding: 0!important; margin: 0!important; vertical-align: 0!important}
+.MathJax span {display: inline; position: static; border: 0; padding: 0; margin: 0; vertical-align: 0; line-height: normal; text-decoration: none}
+.MathJax nobr {white-space: nowrap!important}
+.MathJax img {display: inline!important; float: none!important}
+.MathJax * {transition: none; -webkit-transition: none; -moz-transition: none; -ms-transition: none; -o-transition: none}
+.MathJax_Processing {visibility: hidden; position: fixed; width: 0; height: 0; overflow: hidden}
+.MathJax_Processed {display: none!important}
+.MathJax_ExBox {display: block!important; overflow: hidden; width: 1px; height: 60ex; min-height: 0; max-height: none}
+.MathJax .MathJax_EmBox {display: block!important; overflow: hidden; width: 1px; height: 60em; min-height: 0; max-height: none}
+.MathJax_LineBox {display: table!important}
+.MathJax_LineBox span {display: table-cell!important; width: 10000em!important; min-width: 0; max-width: none; padding: 0; border: 0; margin: 0}
+.MathJax .MathJax_HitBox {cursor: text; background: white; opacity: 0; filter: alpha(opacity=0)}
+.MathJax .MathJax_HitBox * {filter: none; opacity: 1; background: transparent}
+#MathJax_Tooltip * {filter: none; opacity: 1; background: transparent}
+@font-face {font-family: MathJax_Main; src: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/fonts/HTML-CSS/TeX/woff/MathJax_Main-Regular.woff?V=2.7.0') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/fonts/HTML-CSS/TeX/otf/MathJax_Main-Regular.otf?V=2.7.0') format('opentype')}
+@font-face {font-family: MathJax_Main-bold; src: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/fonts/HTML-CSS/TeX/woff/MathJax_Main-Bold.woff?V=2.7.0') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/fonts/HTML-CSS/TeX/otf/MathJax_Main-Bold.otf?V=2.7.0') format('opentype')}
+@font-face {font-family: MathJax_Main-italic; src: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/fonts/HTML-CSS/TeX/woff/MathJax_Main-Italic.woff?V=2.7.0') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/fonts/HTML-CSS/TeX/otf/MathJax_Main-Italic.otf?V=2.7.0') format('opentype')}
+@font-face {font-family: MathJax_Math-italic; src: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/fonts/HTML-CSS/TeX/woff/MathJax_Math-Italic.woff?V=2.7.0') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/fonts/HTML-CSS/TeX/otf/MathJax_Math-Italic.otf?V=2.7.0') format('opentype')}
+@font-face {font-family: MathJax_Caligraphic; src: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/fonts/HTML-CSS/TeX/woff/MathJax_Caligraphic-Regular.woff?V=2.7.0') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/fonts/HTML-CSS/TeX/otf/MathJax_Caligraphic-Regular.otf?V=2.7.0') format('opentype')}
+@font-face {font-family: MathJax_Size1; src: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/fonts/HTML-CSS/TeX/woff/MathJax_Size1-Regular.woff?V=2.7.0') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/fonts/HTML-CSS/TeX/otf/MathJax_Size1-Regular.otf?V=2.7.0') format('opentype')}
+@font-face {font-family: MathJax_Size2; src: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/fonts/HTML-CSS/TeX/woff/MathJax_Size2-Regular.woff?V=2.7.0') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/fonts/HTML-CSS/TeX/otf/MathJax_Size2-Regular.otf?V=2.7.0') format('opentype')}
+@font-face {font-family: MathJax_Size3; src: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/fonts/HTML-CSS/TeX/woff/MathJax_Size3-Regular.woff?V=2.7.0') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/fonts/HTML-CSS/TeX/otf/MathJax_Size3-Regular.otf?V=2.7.0') format('opentype')}
+@font-face {font-family: MathJax_Size4; src: url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/fonts/HTML-CSS/TeX/woff/MathJax_Size4-Regular.woff?V=2.7.0') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/fonts/HTML-CSS/TeX/otf/MathJax_Size4-Regular.otf?V=2.7.0') format('opentype')}
+.MathJax .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style></head>
+<body><div style="visibility: hidden; overflow: hidden; position: absolute; top: 0px; height: 1px; width: auto; padding: 0px; border: 0px; margin: 0px; text-align: left; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal;"><div id="MathJax_Hidden"></div></div><div id="MathJax_Message" style="display: none;"></div>
+<div id="content">
+<h1 class="title">The Tiger language: an informal overview</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="https://www.haber-kucharsky.com/proj/fang/tiger.html#orgdd8af48">1. The language</a>
+<ul>
+<li><a href="https://www.haber-kucharsky.com/proj/fang/tiger.html#org1281ba2">1.1. Sequencing</a></li>
+<li><a href="https://www.haber-kucharsky.com/proj/fang/tiger.html#org2f9c4ac">1.2. Variables</a></li>
+<li><a href="https://www.haber-kucharsky.com/proj/fang/tiger.html#org1998ced">1.3. Functions</a></li>
+<li><a href="https://www.haber-kucharsky.com/proj/fang/tiger.html#org58f742e">1.4. Types</a>
+<ul>
+<li><a href="https://www.haber-kucharsky.com/proj/fang/tiger.html#org2d646d2">1.4.1. Arrays</a></li>
+<li><a href="https://www.haber-kucharsky.com/proj/fang/tiger.html#org3eed8fd">1.4.2. Records</a></li>
+<li><a href="https://www.haber-kucharsky.com/proj/fang/tiger.html#org758b509">1.4.3. Aliases</a></li>
+<li><a href="https://www.haber-kucharsky.com/proj/fang/tiger.html#orgfacea80">1.4.4. Mutually-recursive types</a></li>
+</ul>
+</li>
+<li><a href="https://www.haber-kucharsky.com/proj/fang/tiger.html#orgfbc4525">1.5. Values</a>
+<ul>
+<li><a href="https://www.haber-kucharsky.com/proj/fang/tiger.html#org5df0fef">1.5.1. Integers and strings</a></li>
+<li><a href="https://www.haber-kucharsky.com/proj/fang/tiger.html#org4bc9a38">1.5.2. <code>while</code>-loops and <code>break</code></a></li>
+<li><a href="https://www.haber-kucharsky.com/proj/fang/tiger.html#orgdc9dca4">1.5.3. <code>for</code> loops</a></li>
+<li><a href="https://www.haber-kucharsky.com/proj/fang/tiger.html#org29c45b9">1.5.4. Comparisons</a></li>
+<li><a href="https://www.haber-kucharsky.com/proj/fang/tiger.html#org0edc418">1.5.5. Operator precedence</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="https://www.haber-kucharsky.com/proj/fang/tiger.html#org1785802">2. Built-ins</a></li>
+</ul>
+</div>
+</div>
+<p>
+Tiger is a small typed programming language similar to <a href="https://en.wikipedia.org/wiki/Pascal_(programming_language)">Pascal</a>. It was created by Andrew Appel for his compiler books. This variant of Tiger differs very slightly from the one described by Appel.
+</p>
+
+<p>
+This document describes the language informally, mostly by example.
+</p>
+
+<div id="outline-container-orgdd8af48" class="outline-2">
+<h2 id="orgdd8af48"><span class="section-number-2">1</span> The language</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+A Tiger program is an <i>expression</i> that results in a <i>value</i>. This is a Tiger program:
+</p>
+
+<pre class="example">42
+</pre>
+
+<p>
+This program computes a value of the built-in type <code>int</code>.
+</p>
+
+<p>
+This is also a Tiger program:
+</p>
+<pre class="example">print("Hi!\n")
+</pre>
+
+<p>
+This program computes a value of type <code>unit</code>, which is the "value-less" type. An expression of type <code>unit</code> is most often useful because of the <i>side-effects</i> it performs.
+</p>
+
+<p>
+Larger Tiger programs are the result of composing expressions together.
+</p>
+</div>
+
+<div id="outline-container-org1281ba2" class="outline-3">
+<h3 id="org1281ba2"><span class="section-number-3">1.1</span> Sequencing</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+If <code>e1</code>, <code>e2</code>, and <code>e3</code> are arbitrary expressions then the expression <code>(e1; e2; e3)</code> evaluates to the value of <code>e3</code> after first evaluating <code>e1</code> and <code>e2</code> and ignoring their values.
+</p>
+
+<p>
+For example,
+</p>
+<pre class="example">(42;
+ print("Hi!\n");
+ "abc";
+ 10)
+</pre>
+
+<p>
+results in the value <code>10</code> and prints the string <code>"Hi!\n"</code> to the standard output device.
+</p>
+
+<p>
+The "empty" sequence (<code>()</code>) is of type <code>unit</code>.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org2f9c4ac" class="outline-3">
+<h3 id="org2f9c4ac"><span class="section-number-3">1.2</span> Variables</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+The Tiger expression
+</p>
+<pre class="example">let
+  d1
+  d2
+  ...
+in
+  e
+end
+</pre>
+<p>
+introduces a <i>scope</i> in which the <i>declarations</i> <code>d1</code>, <code>d2</code>, etc apply in the evaluation of the expression <code>e</code>.
+</p>
+
+<p>
+There are three kinds of declarations: <i>variables</i>, <i>types</i>, and <i>functions</i>. We'll start with variables.
+</p>
+
+<p>
+A variable declaration assigns the result of an expression to a name. The type of the expression can be explicitly marked, but most often it's optional.
+</p>
+
+<p>
+For example,
+</p>
+<pre class="example">let
+  var x: int := 10
+  var y := x + 1
+  var z: string := "abc"
+in
+  x + y
+end
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org1998ced" class="outline-3">
+<h3 id="org1998ced"><span class="section-number-3">1.3</span> Functions</h3>
+<div class="outline-text-3" id="text-1-3">
+<p>
+This is a Tiger program with a simple function:
+</p>
+<pre class="example">let
+  function add(x: int, y: int): int = x + y
+in
+  add(2, 3)
+end
+</pre>
+
+<p>
+Functions with a result-type of <code>unit</code> are called <i>procedures</i> and written as follows:
+</p>
+<pre class="example">let
+  function greet(name: string) = (print("Hi, "); print(name); print("!\n"))
+in
+  greet("Joe")
+end
+</pre>
+
+<p>
+A collection of functions may be grouped with the <code>and</code> keyword to make them <i>mutally-recursive</i>:
+</p>
+<pre class="example">let
+  function is_even(x: int): int = if x = 0 then 1 else is_odd(x - 1)
+  and function is_odd(x: int): int = if x = 0 then 0 else is_even(x - 1)
+in
+  is_even(41)
+end
+</pre>
+
+<p>
+Functions may be <i>nested</i> inside of other functions arbitrarily:
+</p>
+<pre class="example">let
+  function triple(s: string): string =
+    let
+      var buffer := ""
+      function append(s: string) = buffer := concat(buffer, s)
+    in
+      append(s);
+      append(s);
+      append(s);
+      buffer
+    end
+in
+  triple("abc")
+end
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org58f742e" class="outline-3">
+<h3 id="org58f742e"><span class="section-number-3">1.4</span> Types</h3>
+<div class="outline-text-3" id="text-1-4">
+<p>
+There are two built-in types in Tiger: <code>int</code> and <code>string</code>.
+</p>
+
+<p>
+There are three ways to define new types.
+</p>
+</div>
+
+<div id="outline-container-org2d646d2" class="outline-4">
+<h4 id="org2d646d2"><span class="section-number-4">1.4.1</span> Arrays</h4>
+<div class="outline-text-4" id="text-1-4-1">
+<p>
+An <i>array</i> type is defined in terms of the type of its elements. Two different array types with the same element type are considered to be <b>distinct types</b>.
+</p>
+
+<p>
+For example,
+</p>
+<pre class="example">let
+  type numbers = array of int
+  type scores = array of int
+  var x := numbers[10] of 100
+  var y := scores of [1, 2, 3]
+in
+  x[8] := 200;
+  print_int(y[0])
+end
+</pre>
+
+<p>
+Here, <code>numbers</code> and <code>scores</code> are distinct types that cannot be interchanged.
+</p>
+
+<p>
+<code>x</code> is a value of type <code>numbers</code> that initially consists of 100 elements of the value <code>10</code>.
+</p>
+
+<p>
+<code>y</code> is a value of type <code>scores</code> that consists of three elements: 1, 2, 3.
+</p>
+
+<p>
+The expression <code>size e</code> is an <code>int</code> value which is the declared size of the array-valued expression <code>e</code>.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org3eed8fd" class="outline-4">
+<h4 id="org3eed8fd"><span class="section-number-4">1.4.2</span> Records</h4>
+<div class="outline-text-4" id="text-1-4-2">
+<p>
+A <i>record</i> type is a value that consists of named sub-values called <i>fields</i>.
+</p>
+
+<pre class="example">let
+  type person = {name: string, age: int}
+  var p1 := person {name="Joe", age=66}
+  var p2: person := nil
+in
+  print(p.name)
+end
+</pre>
+
+<p>
+As with arrays, every record type is distinct even if it has the same fields.
+</p>
+
+<p>
+The special value <code>nil</code> can be assigned to record values. A variable can only be initially assigned the value <code>nil</code> if its type is explicitly marked (as with <code>p2</code> here).
+</p>
+
+<p>
+Records may be defined recursively:
+</p>
+<pre class="example">let
+  type list = {head: int, tail: list}
+in
+  list {head=10, tail=list {head=20, tail=list {head=30, tail=nil}}}
+end
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org758b509" class="outline-4">
+<h4 id="org758b509"><span class="section-number-4">1.4.3</span> Aliases</h4>
+<div class="outline-text-4" id="text-1-4-3">
+<p>
+A type <i>alias</i> defines a new name for an existing type. The two types are treated interchangably.
+</p>
+
+<p>
+For example,
+</p>
+<pre class="example">let
+  type width = int
+  var x: width := 10
+  var y: int := 20
+in
+  x + y
+end
+</pre>
+</div>
+</div>
+
+<div id="outline-container-orgfacea80" class="outline-4">
+<h4 id="orgfacea80"><span class="section-number-4">1.4.4</span> Mutually-recursive types</h4>
+<div class="outline-text-4" id="text-1-4-4">
+<p>
+Type declarations separated by the keyword <code>and</code> form a <i>mutually-recursive</i> group.
+</p>
+
+<p>
+For example,
+</p>
+<pre class="example">let
+  type tree = {root: item, children: forest}
+  and type forest = {head: tree, tail: forest}
+  and type item = string
+
+  function leaf(x: string): tree = tree {root=x, children=nil}
+  function cons(x: tree, f: forest): forest = forest {head=x, tail=f}
+in
+  tree {root="Z", children=cons(leaf("A"), cons(leaf("B"), cons(leaf("C"), nil)))}
+end  
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgfbc4525" class="outline-3">
+<h3 id="orgfbc4525"><span class="section-number-3">1.5</span> Values</h3>
+<div class="outline-text-3" id="text-1-5">
+</div>
+<div id="outline-container-org5df0fef" class="outline-4">
+<h4 id="org5df0fef"><span class="section-number-4">1.5.1</span> Integers and strings</h4>
+<div class="outline-text-4" id="text-1-5-1">
+<p>
+Integers in Tiger are always 64 bit with two's complement representation. The arithmetic operators <code>+</code>, <code>-</code>, <code>*</code>, and <code>/</code> behave as one would expect.
+</p>
+
+<p>
+<code>e1 &amp; e2</code> is non-zero when both <code>e1</code> and <code>e2</code> are non-zero. <code>e1 | e2</code> is non-zero when either <code>e1</code> or <code>e2</code> is non-zero. <code>not(e)</code> is non-zero when <code>e</code> is zero and zero when <code>e</code> is non-zero.
+</p>
+
+<p>
+String literal like <code>"Hi"</code> support a limited number of "escape" characters, like <code>"\n"</code>.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org4bc9a38" class="outline-4">
+<h4 id="org4bc9a38"><span class="section-number-4">1.5.2</span> <code>while</code>-loops and <code>break</code></h4>
+<div class="outline-text-4" id="text-1-5-2">
+<p>
+A <code>while</code> loop evaluates an <code>int</code>-valued <i>condition</i> and if the result is non-zero, evaluates a <code>()</code>-valued <i>body</i>.
+</p>
+
+<pre class="example">let
+  var x := 10
+in
+  while x &lt;&gt; 0 do
+    (print_int(x);
+     print_line();
+     x := x - 1)
+done
+</pre>
+
+<p>
+The <i>break</i> keyword may be used to terminate a <i>while</i> loop early.
+</p>
+
+<pre class="example">while 1 do break
+</pre>
+</div>
+</div>
+
+<div id="outline-container-orgdc9dca4" class="outline-4">
+<h4 id="orgdc9dca4"><span class="section-number-4">1.5.3</span> <code>for</code> loops</h4>
+<div class="outline-text-4" id="text-1-5-3">
+<pre class="example">for i := 1 to 10 do (print_int(i); print_line())
+</pre>
+
+<p>
+<code>break</code> may also be used inside a <code>for</code> loop to terminate early.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org29c45b9" class="outline-4">
+<h4 id="org29c45b9"><span class="section-number-4">1.5.4</span> Comparisons</h4>
+<div class="outline-text-4" id="text-1-5-4">
+<p>
+Two values of the same type may always be compared for equality (<code>=</code>) or inequality (<code>&lt;&gt;</code>).
+</p>
+
+<p>
+Integers and strings are compared <i>structurally</i>: two expressions with the same logical value compare equal. As a consequence, two distinct <code>string</code> values with the same contents cannot be distinguished in Tiger programs. These values may also be compared according to the <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, and <code>&gt;=</code> operators. Strings are compared lexicographically.
+</p>
+
+<p>
+The equality of record and array values is defined according to physical identity.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org0edc418" class="outline-4">
+<h4 id="org0edc418"><span class="section-number-4">1.5.5</span> Operator precedence</h4>
+<div class="outline-text-4" id="text-1-5-5">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col class="org-center">
+
+<col class="org-center">
+
+<col class="org-center">
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-center">Operator</th>
+<th scope="col" class="org-center">Precedence</th>
+<th scope="col" class="org-center">Associativity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-center"><code>:=</code></td>
+<td class="org-center">1</td>
+<td class="org-center">&nbsp;</td>
+</tr>
+
+<tr>
+<td class="org-center"><code>&amp;</code>, |</td>
+<td class="org-center">2</td>
+<td class="org-center">&nbsp;</td>
+</tr>
+
+<tr>
+<td class="org-center"><code>=</code>, <code>&lt;&gt;</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code></td>
+<td class="org-center">3</td>
+<td class="org-center">&nbsp;</td>
+</tr>
+
+<tr>
+<td class="org-center"><code>+</code>, <code>-</code></td>
+<td class="org-center">4</td>
+<td class="org-center">left</td>
+</tr>
+
+<tr>
+<td class="org-center"><code>*</code>, <code>/</code></td>
+<td class="org-center">5</td>
+<td class="org-center">left</td>
+</tr>
+
+<tr>
+<td class="org-center"><code>-</code>, <code>size</code></td>
+<td class="org-center">6</td>
+<td class="org-center">right</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org1785802" class="outline-2">
+<h2 id="org1785802"><span class="section-number-2">2</span> Built-ins</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+Tiger has some functions built-in to the language.
+</p>
+
+<ul class="org-ul">
+<li><code>chr(x: int): string</code> – A single-character string consisting of the character with ASCII code <code>x</code>. The program aborts with an error if <code>x</code> is not a valid ASCII character code.</li>
+<li><code>ord(s: string): int</code> – The ASCII character code for the first character in the string <code>s</code>. If the string is empty, the result is <code>-1</code>.</li>
+<li><code>concat(s1: string, s2: string): string</code> – The concatenation of two strings into a new string.</li>
+<li><code>len(s: string): int</code> – The number of ASCII characters in a string.</li>
+<li><code>substring(s: string, start: int, count: int): string</code> – A new string consisting of <code>count</code> characters from <code>s</code>, beginning at the zero-based index <code>start</code>. The program aborts with an error if the substring is out of range of <code>s</code>.</li>
+<li><code>print(s: string)</code> – Print a string to the standard output device. If there's a system error, the program aborts.</li>
+<li><code>print_int(x: int)</code> – Print an integer in base-10 to the standard output device. If there's a system error, the program aborts.</li>
+<li><code>print_line()</code> – Print a newline character to the standard output device. If there's a system error, the program aborts.</li>
+<li><code>flush()</code> – Flush the standard output device, which is buffered.</li>
+<li><code>read_char(): string</code> – Read a single-character string from the standard input device. If no character is available, the result is the empty string. If there's a system error, the program aborts.</li>
+<li><code>random(a: int, b: int): int</code> – Compute a pseudo-random value in the range <span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-1-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mrow&gt;&lt;mo&gt;[&lt;/mo&gt;&lt;mrow&gt;&lt;mi&gt;a&lt;/mi&gt;&lt;mo&gt;,&lt;/mo&gt;&lt;mi&gt;b&lt;/mi&gt;&lt;/mrow&gt;&lt;mo&gt;)&lt;/mo&gt;&lt;/mrow&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-1" style="width: 2.127em; display: inline-block;"><span style="display: inline-block; position: relative; width: 2.066em; height: 0px; font-size: 103%;"><span style="position: absolute; clip: rect(1.277em, 1001.95em, 2.612em, -999.997em); top: -2.181em; left: 0em;"><span class="mrow" id="MathJax-Span-2"><span class="mrow" id="MathJax-Span-3"><span class="mo" id="MathJax-Span-4" style="font-family: MathJax_Main;">[</span><span class="mrow" id="MathJax-Span-5"><span class="mi" id="MathJax-Span-6" style="font-family: MathJax_Math-italic;">a</span><span class="mo" id="MathJax-Span-7" style="font-family: MathJax_Main;">,</span><span class="mi" id="MathJax-Span-8" style="font-family: MathJax_Math-italic; padding-left: 0.185em;">b</span></span><span class="mo" id="MathJax-Span-9" style="font-family: MathJax_Main;">)</span></span></span><span style="display: inline-block; width: 0px; height: 2.187em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.309em; border-left: 0px solid; width: 0px; height: 1.128em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mo>[</mo><mrow><mi>a</mi><mo>,</mo><mi>b</mi></mrow><mo>)</mo></mrow></math></span></span><script type="math/tex" id="MathJax-Element-1">\left[a,b\right)</script>. If the range is invalid, the program aborts.</li>
+<li><code>seed(x: int)</code> – Seed the random generator.</li>
+<li><code>error(message: string)</code> – Abort the program with a user-defined message.</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Jesse Haber-Kucharsky</p>
+<p class="date">Created: 2022-06-12 Sun 15:35</p>
+</div>
+
+
+<div style="position: absolute; width: 0px; height: 0px; overflow: hidden; padding: 0px; border: 0px; margin: 0px;"><div id="MathJax_Font_Test" style="position: absolute; visibility: hidden; top: 0px; left: 0px; width: auto; padding: 0px; border: 0px; margin: 0px; white-space: nowrap; text-align: left; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; font-size: 40px; font-weight: normal; font-style: normal; font-family: MathJax_Math-italic, sans-serif;"></div></div></body></html>

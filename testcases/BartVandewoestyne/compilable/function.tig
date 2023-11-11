@@ -1,5 +1,5 @@
 let
-  function my_function(int:a) : int =
+  function my_function(a:int) : int =
        2*a
 in
   my_function()

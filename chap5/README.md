@@ -95,6 +95,27 @@ used in the initializer have to be compatible with the respective struct fields.
 When a function is called, the values if any passed into the function have to be compatible with the function's formal
 parameter list defined in the functions definition.
 
+## The unit type
+
+See https://www.haber-kucharsky.com/proj/fang/tiger.html
+
+The unit type is used for functions that return no value and are merely called because their side-effects are beneficial.
+The unit type is also created when a variable is assigned an empty sequence:
+
+test43.tig  ( semanttest.exe ..\testcases\book\test43.tig )
+
+```
+/* initialize with unit and causing type mismatch in addition */
+
+let 
+	var a := ()
+in
+	a + 3
+end
+```
+
+There is no explicit type defined for unit. The semantic analysis in this compiler returns NULL for the unit.
+
 ### Environments / Scopes / Lifetime
 
 Each mapping / entry into the symbol tables has a scope. When the scope ends, the mapping has to be invalidated (which
@@ -490,15 +511,15 @@ type a = string
 ```
 
 A language feature in tiger says: It is allowed to redeclare a
-type within one batch! It is not allowed to redeclare a type 
-in another batch!
+type accross two distinct batches! It is not allowed to redeclare a type 
+within the same batch!
 
-Make sure that redeclaring a variable is allowed if and only if, there
-is no other variable in between the redeclared variables!
+Make sure that redeclaring a variable is allowed if and only if, the
+two batches are separated by a declaration or something else.
 
-THIS IS LEGAL:
+THIS IS ILLEGAL:
 
-test38.tig
+test38.tig ( semanttest.exe ..\testcases\book\test38.tig )
 
 ```
 /* This is illegal, since there are two types with the same name
@@ -512,9 +533,9 @@ in
 end
 ```
 
-THIS IS ILLEGAL:
+THIS IS LEGAL:
 
-test47.tig,         ( semanttest.exe ..\testcases\book\test47.tig )
+test47.tig ( semanttest.exe ..\testcases\book\test47.tig )
 
 ```
 /* This is legal. The second type "a" simply hides the first one.
@@ -530,9 +551,14 @@ in
 end
 ```
 
+NOTE: I do not really understand what added-value this type of constraint adds 
+to the language. The current semantic analysis does not care about specific 
+declaration batches! Variables are shadowed whenever a name is redeclared!
+
 
 
 #### Semantic analysis detects errors here
+
 TODO: test31.tig
 TODO: test31.tig has to fail since the declared type and the type of the value that is used during initialization differs.
 
@@ -854,11 +880,81 @@ end
 ```
 
 
+# Mutually Recursive Types
+
+Mutually recursive types are types that reference each other in a way that all references eventually form a loop!
+
+The loop can be very small as in a node-type that references itself or a set of types that reference each other in a circle.
+
+There are two approaches to the problem. 
+
+## Approach 1 - Official Approach
+
+The official way described in the book is to consider mutually recursive types
+valid, when they are defined in a consecutive batch of declarations (See Appendix).
+
+Here is the excerpt from the Appendix:
+
+Mutually recursive types: A collection of types may be recursive or mutually
+recursive. Mutually recursive types are declared by a consecutive sequence
+of type declarations without intervening value or function declarations. 
+
+Each recursion cycle must pass through a record or array type.
+
+Thus, the type of lists of integers is legal:
+
+```
+type intlist = {hd: int, tl: intlist}
+type tree = {key: int, children: treelist}
+type treelist = {hd: tree, tl: treelist}
+```
+
+But the following declaration sequence is illegal:
+
+```
+type b = c
+type c = b
+```
+
+To implement the official approach, follow the steps outlined in the book on page 114.
+
+When processing mutually recursive types, we will need a place-holder for
+types whose name we know but whose definition we have not yet seen. 
+
+We can create a Ty_Name(sym, NULL) as a place-holder for the type-name sym
+and later on fill in the ty field of the Ty_Name object with the type that sym
+is supposed to stand for.
+
+
+
+## Approach 2 - Approach from https://www.haber-kucharsky.com/proj/fang/tiger.html
+
+The second way to treat mutually recursive types is usind a "and"-keyword as defined here: https://www.haber-kucharsky.com/proj/fang/tiger.html
+
+1.4.4 Mutually-recursive types
+Type declarations separated by the keyword "and" form a mutually-recursive group.
+
+For example,
+
+```
+let
+  type tree = {root: item, children: forest}
+  and type forest = {head: tree, tail: forest}
+  and type item = string
+
+  function leaf(x: string): tree = tree {root=x, children=nil}
+  function cons(x: tree, f: forest): forest = forest {head=x, tail=f}
+in
+  tree {root="Z", children=cons(leaf("A"), cons(leaf("B"), cons(leaf("C"), nil)))}
+end
+```
+
+See mutually_recursive_types_with_and_keyword.tig
+
+
 
 
 # Tests
-
-
 
 Atomic Expressions:
 vardec_no_type_and_initializer.tig          ( semanttest.exe ..\testcases\vardec_no_type_and_initializer.tig & cat ast_dump.txt )
@@ -877,6 +973,7 @@ let_nested.tig      ( semanttest.exe ..\testcases\let_nested.tig    & cat ..\tes
 
 Operators
 addition.tig        ( semanttest.exe ..\testcases\addition.tig      & cat ..\testcases\addition.tig      & cat ast_dump.txt ) // OK
+opers.tig           ( semanttest.exe ..\testcases\opers.tig         & cat ..\testcases\opers.tig         & cat ast_dump.txt ) // OK
 
 Assignment
 assignment.tig      ( semanttest.exe ..\testcases\assignment.tig    & cat ..\testcases\assignment.tig    & cat ast_dump.txt ) // SEM-ERROR
@@ -887,29 +984,67 @@ arrays_simple.tig   ( semanttest.exe ..\testcases\arrays_simple.tig & cat ..\tes
 
 Built-In functions
 builtin_functions.tig ( semanttest.exe ..\testcases\builtin_functions.tig & cat ..\testcases\builtin_functions.tig & cat ast_dump.txt ) // OK
+builtin_functions_getchar.tig ( semanttest.exe ..\testcases\builtin_functions_getchar.tig
 
 For-Loop
-forloop_simple.tig      ( semanttest.exe ..\testcases\forloop_simple.tig ) // SEM-ERROR, hi is not of type int
-forloop_non_declared_variable.tig  ( semanttest.exe ..\testcases\forloop_non_declared_variable.tig ) // OK
+forloop_simple.tig                  ( semanttest.exe ..\testcases\forloop_simple.tig ) // SEM-ERROR, hi is not of type int
+forloop_non_declared_variable.tig   ( semanttest.exe ..\testcases\forloop_non_declared_variable.tig ) // OK
 
 Functions
 ( semanttest.exe ..\testcases\function_complex_2.tig ) // OK
 ( semanttest.exe ..\testcases\function_complex_3.tig ) // OK
 ( semanttest.exe ..\testcases\function_complex.tig ) // OK
 ( semanttest.exe ..\testcases\function_simple.tig ) // OK
-( semanttest.exe ..\testcases\function_use_parameter_confusing.tig ) // TODO: compiler seg-fault! Undefined function isdigit() causes seg-fault!
+( semanttest.exe ..\testcases\function_use_parameter_confusing.tig ) // OK
 ( semanttest.exe ..\testcases\function_use_parameter.tig ) // OK
 ( semanttest.exe ..\testcases\function.tig ) // OK
 
+if-then
+if-then-else
+( semanttest.exe ..\testcases\if_nil.tig ) // OK
+( semanttest.exe ..\testcases\if_sequence.tig ) // OK
+( semanttest.exe ..\testcases\if_simple.tig ) // SEM-ERROR
+
+let
+( semanttest.exe ..\testcases\let_nested.tig ) // OK
+( semanttest.exe ..\testcases\let.tig ) // SEM-ERROR semantic error (types do not match)
+
+nil
+( semanttest.exe ..\testcases\nil_matches_any_type.tig ) // OK
+
+records
+( semanttest.exe ..\testcases\records_field_assignment.tig ) // OK
+( semanttest.exe ..\testcases\records_simple.tig ) // OK
+( semanttest.exe ..\testcases\records_var_declaration.tig ) // OK
+
+Sequences
+( semanttest.exe ..\testcases\sequencing.tig ) // SEM-ERROR, variable i not declared
+
+Type Declarations
+( semanttest.exe ..\testcases\typedec_simple.tig ) // OK
+
+Variable Declarations
+( semanttest.exe ..\testcases\vardec_nil.tig ) // OK
+( semanttest.exe ..\testcases\vardec_no_type_and_initializer.tig ) // OK
+( semanttest.exe ..\testcases\vardec_no_type_no_initializer.tig ) // SYNTAX ERROR, initializer missing
+( semanttest.exe ..\testcases\vardec_type_no_initialization.tig ) // SYNTAX ERROR, initializer missing
+
 Applications
-fact.tig            ( semanttest.exe ..\testcases\fact.tig ) // SEM-ERROR, print_int not defined
-merge.tig           ( semanttest.exe ..\testcases\merge.tig
-queens.tig          ( semanttest.exe ..\testcases\queens.tig
+fact.tig            ( semanttest.exe ..\testcases\fact.tig ) // OK
+merge.tig           ( semanttest.exe ..\testcases\merge.tig ) // OK
+queens.tig          ( semanttest.exe ..\testcases\queens.tig ) // OK
+
+Mutually recursive types
+mutually_recursive_types_with_and_keyword.tig    ( semanttest.exe ..\testcases\mutually_recursive_types_with_and_keyword.tig ) 
+// SYNTAX ERROR since: "Type declarations separated by the keyword and form a mutually-recursive group." The "and" keyword between type declarations is not implemented! It is not part of the official language.
+
+mutually_recursive_types.tig ( semanttest.exe ..\testcases\mutually_recursive_types.tig )
+
 
 All the following tests are in the testcases\book folder
 
 Comparison Operators:
-test13.tig          ( semanttest.exe ..\testcases\book\test13.tig & cat ast_dump.txt )
+test13.tig          ( semanttest.exe ..\testcases\book\test13.tig & cat ast_dump.txt ) // SEMANTIC ERROR
 
 Arithmetic Operators:
 test26.tig          ( semanttest.exe ..\testcases\book\test26.tig & cat ..\testcases\book\test26.tig & cat ast_dump.txt )
@@ -983,12 +1118,78 @@ function calls:
 test21.tig,         ( semanttest.exe ..\testcases\book\test21.tig & cat ..\testcases\book\test21.tig & cat ast_dump.txt )
 test27.tig          ( semanttest.exe ..\testcases\book\test27.tig & cat ..\testcases\book\test27.tig & cat ast_dump.txt )
 
+
+
+test47.tig ( semanttest.exe ..\testcases\book\test47.tig ) <============= Shadowing does not work! Currently two 'a' variables are created!
+
+
+
 semanttest.exe ..\testcases\BartVandewoestyne\compilable\array_equality.tig
 semanttest.exe ..\testcases\BartVandewoestyne\compilable\control_characters.tig
 semanttest.exe ..\testcases\BartVandewoestyne\compilable\escape_sequences.tig
-semanttest.exe ..\testcases\BartVandewoestyne\compilable\function.tig
+semanttest.exe ..\testcases\BartVandewoestyne\compilable\function.tig // <============= causes seg fault, required parameter is missing
 semanttest.exe ..\testcases\BartVandewoestyne\compilable\negative_int.tig
 semanttest.exe ..\testcases\BartVandewoestyne\compilable\procedure.tig
 semanttest.exe ..\testcases\BartVandewoestyne\compilable\record_equality_test.tig
 semanttest.exe ..\testcases\BartVandewoestyne\compilable\simple_let.tig
 semanttest.exe ..\testcases\BartVandewoestyne\compilable\valid_strings.tig
+
+semanttest.exe ..\testcases\WMBao\Good\1.tig
+semanttest.exe ..\testcases\WMBao\Good\2.tig
+semanttest.exe ..\testcases\WMBao\Good\3.tig
+semanttest.exe ..\testcases\WMBao\Good\5.tig
+semanttest.exe ..\testcases\WMBao\Good\6.tig
+semanttest.exe ..\testcases\WMBao\Good\7.tig
+semanttest.exe ..\testcases\WMBao\Good\8.tig
+semanttest.exe ..\testcases\WMBao\Good\10.tig
+semanttest.exe ..\testcases\WMBao\Good\11.tig
+semanttest.exe ..\testcases\WMBao\Good\12.tig
+semanttest.exe ..\testcases\WMBao\Good\13.tig
+semanttest.exe ..\testcases\WMBao\Good\14.tig
+semanttest.exe ..\testcases\WMBao\Good\15.tig
+semanttest.exe ..\testcases\WMBao\Good\16.tig
+semanttest.exe ..\testcases\WMBao\Good\17.tig
+semanttest.exe ..\testcases\WMBao\Good\18.tig
+semanttest.exe ..\testcases\WMBao\Good\19.tig
+semanttest.exe ..\testcases\WMBao\Good\20.tig
+semanttest.exe ..\testcases\WMBao\Good\21.tig
+semanttest.exe ..\testcases\WMBao\Good\22.tig
+semanttest.exe ..\testcases\WMBao\Good\23.tig
+semanttest.exe ..\testcases\WMBao\Good\24.tig
+semanttest.exe ..\testcases\WMBao\Good\25.tig
+semanttest.exe ..\testcases\WMBao\Good\26.tig
+semanttest.exe ..\testcases\WMBao\Good\27.tig
+semanttest.exe ..\testcases\WMBao\Good\28.tig
+semanttest.exe ..\testcases\WMBao\Good\29.tig
+semanttest.exe ..\testcases\WMBao\Good\30.tig
+semanttest.exe ..\testcases\WMBao\Good\32.tig
+semanttest.exe ..\testcases\WMBao\Good\33.tig
+semanttest.exe ..\testcases\WMBao\Good\34.tig
+semanttest.exe ..\testcases\WMBao\Good\35.tig
+semanttest.exe ..\testcases\WMBao\Good\36.tig
+semanttest.exe ..\testcases\WMBao\Good\38.tig
+semanttest.exe ..\testcases\WMBao\Good\40.tig
+semanttest.exe ..\testcases\WMBao\Good\43.tig
+semanttest.exe ..\testcases\WMBao\Good\52.tig
+semanttest.exe ..\testcases\WMBao\Good\61.tig <============== SegFault! break statement not implemented!
+semanttest.exe ..\testcases\WMBao\Good\68.tig
+semanttest.exe ..\testcases\WMBao\Good\69.tig
+semanttest.exe ..\testcases\WMBao\Good\70.tig
+semanttest.exe ..\testcases\WMBao\Good\71.tig
+semanttest.exe ..\testcases\WMBao\Good\72.tig
+semanttest.exe ..\testcases\WMBao\Good\73.tig
+semanttest.exe ..\testcases\WMBao\Good\74.tig
+semanttest.exe ..\testcases\WMBao\Good\76.tig
+semanttest.exe ..\testcases\WMBao\Good\77.tig
+semanttest.exe ..\testcases\WMBao\Good\78.tig
+semanttest.exe ..\testcases\WMBao\Good\79.tig
+semanttest.exe ..\testcases\WMBao\Good\80.tig
+semanttest.exe ..\testcases\WMBao\Good\81.tig
+semanttest.exe ..\testcases\WMBao\Good\82.tig
+semanttest.exe ..\testcases\WMBao\Good\83.tig
+semanttest.exe ..\testcases\WMBao\Good\84.tig
+semanttest.exe ..\testcases\WMBao\Good\85.tig
+semanttest.exe ..\testcases\WMBao\Good\86.tig
+semanttest.exe ..\testcases\WMBao\Good\87.tig
+semanttest.exe ..\testcases\WMBao\Good\88.tig
+semanttest.exe ..\testcases\WMBao\Good\pi.tig

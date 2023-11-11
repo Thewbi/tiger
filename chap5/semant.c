@@ -41,12 +41,26 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             S_symbol func = a->u.call.func;
             A_expList args = a->u.call.args;
 
+            printf("A_callExp A\n");
+
             // retrieve the function declaration
             Ty_ty func_ty = TAB_look(venv, func);
+
+
+            if (func_ty == NULL)
+            {
+                EM_error(a->pos, "Use of undeclared function \"%s\" !\n", S_name(func));
+                assert(0);
+            }
+
             show(func, func_ty);
             printf("\n");
 
+            printf("A_callExp B\n");
+
             E_enventry enventry = (E_enventry) func_ty;
+
+            printf("A_callExp C\n");
 
             printf("Result-");
             show_type(enventry->u.fun.result);
@@ -161,7 +175,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             }
             else if 
             (
-                (oper == A_eqOp)
+                (oper == A_eqOp) || (oper == A_neqOp)
             )
             {
                 printf("A_opExp 20 - OPERAND F \n");

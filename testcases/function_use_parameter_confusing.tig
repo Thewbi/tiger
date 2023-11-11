@@ -1,7 +1,11 @@
 let 
 
     type any = { any : int }
+
     var buffer := getchar()
+
+    function isdigit(s : string) : int =
+            ord(buffer) >= ord("0") & ord(buffer) <= ord("9")
 
     function readint(any: any) : int =
     let 
@@ -10,7 +14,6 @@ let
         (
             // any is the formal parameter of this function
             any.any := isdigit(buffer);
-            //any.any := 1;
             i
         )
     end
