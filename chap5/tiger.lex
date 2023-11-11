@@ -147,13 +147,13 @@ type   {adjust(); return TYPE;}
   /* lexer state/mode/condition transitions from INITIAL to states handling comments and strings */
 
   /* When in INITIAL condition and a comment starts, go to COMMENT condition */
-<INITIAL>"/*" {adjust(); commentNesting++; BEGIN COMMENT;}
+<INITIAL>"/*"   { adjust(); commentNesting++; BEGIN COMMENT; }
 
   /* When in INITIAL condition and a single line comment starts, go to SINGLE_LINE_COMMENT condition */
-<INITIAL>"//" {adjust(); BEGIN SINGLE_LINE_COMMENT;}
+<INITIAL>"//"   { adjust(); BEGIN SINGLE_LINE_COMMENT; }
 
   /* When in INITIAL condition and a string starts, go to STRING_STATE condition */
-<INITIAL>\" {adjust(); init_str_buf(); BEGIN STRING_STATE; }
+<INITIAL>\"     { adjust(); init_str_buf(); BEGIN STRING_STATE; }
 
 
 
@@ -175,9 +175,33 @@ type   {adjust(); return TYPE;}
 
 <STRING_STATE>{
 
-  \" {adjust(); BEGIN INITIAL; yylval.sval = strdup(str_buf); return STRING; }
+  \"        { adjust(); BEGIN INITIAL; yylval.sval = strdup(str_buf); return STRING; }
 
-  <<EOF>>	 {adjust(); EM_error(EM_tokPos,"Unclosed string detected! %s", yytext);  yyterminate();}
+  <<EOF>>   { adjust(); EM_error(EM_tokPos,"Unclosed string detected! %s", yytext); yyterminate(); }
+
+  \\\" {
+      adjust();
+      char *yptr=yytext;
+      append_char2str_buf(*(yptr+1));
+  }
+
+  \\\\ {
+      adjust();
+      char *yptr=yytext;
+      append_char2str_buf(*(yptr+1));
+  }
+
+  \\n {
+      adjust();
+      char *yptr=yytext;
+      append_char2str_buf('\n');
+  }
+
+  \\t {
+      adjust();
+      char *yptr=yytext;
+      append_char2str_buf('\t');
+  }
 
   . {
       adjust();
@@ -190,29 +214,30 @@ type   {adjust(); return TYPE;}
 <COMMENT>{
   
     /* When in COMMENT condition and a comment ends, go back to INITIAL condition */
-  "*/" {adjust(); commentNesting--; if (commentNesting == 0) { BEGIN INITIAL; } }
+  "*/"      { adjust(); commentNesting--; if (commentNesting == 0) { BEGIN INITIAL; } }
 
     /* When in COMMENT condition and a comment starts, stay in COMMENT condition and increment the comment nesting */
-  "/*" {adjust(); commentNesting++;}
+  "/*"      { adjust(); commentNesting++; }
 
     /* increment line numbers while inside multilien comments also */
-  \n	 {adjust(); EM_newline(); continue;}
+  \n        { adjust(); EM_newline(); continue; }
 
     /* Detect unclosed comments on end of file EOF */
-  <<EOF>>     {adjust(); EM_error(EM_tokPos,"Unclosed comment detected! %s", yytext);  yyterminate();}
+  <<EOF>>   { adjust(); EM_error(EM_tokPos,"Unclosed comment detected! %s", yytext); yyterminate(); }
 
     /* When in COMMENT condition, consume all characters and ignore them */
-  . {adjust();}
+  .         { adjust(); }
 
 }
 
 <SINGLE_LINE_COMMENT>{
   
     /* increment line numbers while inside single line comments also */
-  \n	 {adjust(); EM_newline(); BEGIN INITIAL;}
+  \n        { adjust(); EM_newline(); BEGIN INITIAL; }
 
     /* When in SINGLE_LINE_COMMENT condition, consume all characters and ignore them */
-  . {adjust();}
+  .         { adjust(); }
+
 }
 
 

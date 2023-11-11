@@ -1,4 +1,19 @@
- opExp(
-  PLUS,
-  breakExp(),
-  breakExp())
+ seqExp(
+  expList(
+   stringExp(),
+   expList(
+    stringExp(1234567890123456789012345678901),
+    expList(
+     stringExp(12345678901234567890123456789012),
+     expList(
+      stringExp(A string with
+a newline!),
+      expList(
+       stringExp(Column 1	Column 2	Column 3),
+       expList(
+        stringExp("),
+        expList(
+         stringExp(\),
+         expList(
+          stringExp(the_end),
+          expList())))))))))
