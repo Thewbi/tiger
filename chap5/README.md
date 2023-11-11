@@ -1119,20 +1119,31 @@ test21.tig,         ( semanttest.exe ..\testcases\book\test21.tig & cat ..\testc
 test27.tig          ( semanttest.exe ..\testcases\book\test27.tig & cat ..\testcases\book\test27.tig & cat ast_dump.txt )
 
 
+break:
+two_breaks.tig      ( semanttest.exe ..\testcases\BartVandewoestyne\uncompilable\two_breaks.tig ) // SEM_ERROR, type of operand has to be int
+breaktest.tig       ( semanttest.exe ..\testcases\FlexW\breaktest.tig )
+keyword_04.tig      ( semanttest.exe ..\testcases\nwtnni\lex\keyword_04.tig )
+58.tig              ( semanttest.exe ..\testcases\WMBao\Bad\58.tig )
+75.tig              ( semanttest.exe ..\testcases\WMBao\Bad\75.tig )
+12.tig              ( semanttest.exe ..\testcases\WMBao\Good\12.tig )
+19.tig              ( semanttest.exe ..\testcases\WMBao\Good\19.tig )
+61.tig              ( semanttest.exe ..\testcases\WMBao\Good\61.tig )
+
+
 
 test47.tig ( semanttest.exe ..\testcases\book\test47.tig ) <============= Shadowing does not work! Currently two 'a' variables are created!
 
 
 
-semanttest.exe ..\testcases\BartVandewoestyne\compilable\array_equality.tig
-semanttest.exe ..\testcases\BartVandewoestyne\compilable\control_characters.tig
-semanttest.exe ..\testcases\BartVandewoestyne\compilable\escape_sequences.tig
-semanttest.exe ..\testcases\BartVandewoestyne\compilable\function.tig // <============= causes seg fault, required parameter is missing
-semanttest.exe ..\testcases\BartVandewoestyne\compilable\negative_int.tig
-semanttest.exe ..\testcases\BartVandewoestyne\compilable\procedure.tig
-semanttest.exe ..\testcases\BartVandewoestyne\compilable\record_equality_test.tig
-semanttest.exe ..\testcases\BartVandewoestyne\compilable\simple_let.tig
-semanttest.exe ..\testcases\BartVandewoestyne\compilable\valid_strings.tig
+semanttest.exe ..\testcases\BartVandewoestyne\compilable\array_equality.tig // OK
+semanttest.exe ..\testcases\BartVandewoestyne\compilable\control_characters.tig // OK
+semanttest.exe ..\testcases\BartVandewoestyne\compilable\escape_sequences.tig // OK
+semanttest.exe ..\testcases\BartVandewoestyne\compilable\function.tig // SEM_ERROR function calle without required actual parameter
+semanttest.exe ..\testcases\BartVandewoestyne\compilable\negative_int.tig // OK
+semanttest.exe ..\testcases\BartVandewoestyne\compilable\procedure.tig // OK
+semanttest.exe ..\testcases\BartVandewoestyne\compilable\record_equality_test.tig // OK
+semanttest.exe ..\testcases\BartVandewoestyne\compilable\simple_let.tig // OK
+semanttest.exe ..\testcases\BartVandewoestyne\compilable\valid_strings.tig // syntax error <============ fix it!
 
 semanttest.exe ..\testcases\WMBao\Good\1.tig
 semanttest.exe ..\testcases\WMBao\Good\2.tig
@@ -1171,7 +1182,7 @@ semanttest.exe ..\testcases\WMBao\Good\38.tig
 semanttest.exe ..\testcases\WMBao\Good\40.tig
 semanttest.exe ..\testcases\WMBao\Good\43.tig
 semanttest.exe ..\testcases\WMBao\Good\52.tig
-semanttest.exe ..\testcases\WMBao\Good\61.tig <============== SegFault! break statement not implemented!
+semanttest.exe ..\testcases\WMBao\Good\61.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\68.tig
 semanttest.exe ..\testcases\WMBao\Good\69.tig
 semanttest.exe ..\testcases\WMBao\Good\70.tig

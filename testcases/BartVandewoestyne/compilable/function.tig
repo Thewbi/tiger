@@ -1,3 +1,4 @@
+/* my_function() requires a parameter but is called without one! */
 let
   function my_function(a:int) : int =
        2*a

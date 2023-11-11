@@ -303,6 +303,16 @@ function calls:
 test21.tig,         ( parsetest.exe ..\testcases\book\test21.tig & cat ..\testcases\book\test21.tig & cat ast_dump.txt )
 test27.tig          ( parsetest.exe ..\testcases\book\test27.tig & cat ..\testcases\book\test27.tig & cat ast_dump.txt )
 
+break:
+two_breaks.tig      ( parsetest.exe ..\testcases\BartVandewoestyne\uncompilable\two_breaks.tig )
+breaktest.tig       ( parsetest.exe ..\testcases\FlexW\breaktest.tig )
+keyword_04.tig      ( parsetest.exe ..\testcases\nwtnni\lex\keyword_04.tig )
+58.tig              ( parsetest.exe ..\testcases\WMBao\Bad\58.tig )
+75.tig              ( parsetest.exe ..\testcases\WMBao\Bad\75.tig )
+12.tig              ( parsetest.exe ..\testcases\WMBao\Good\12.tig )
+19.tig              ( parsetest.exe ..\testcases\WMBao\Good\19.tig )
+61.tig              ( parsetest.exe ..\testcases\WMBao\Good\61.tig )
+
 parsetest.exe ..\testcases\BartVandewoestyne\compilable\array_equality.tig
 parsetest.exe ..\testcases\BartVandewoestyne\compilable\control_characters.tig
 parsetest.exe ..\testcases\BartVandewoestyne\compilable\escape_sequences.tig

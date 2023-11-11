@@ -1,11 +1,4 @@
- letExp(
-  decList(
-   varDec(buffer,
-    callExp(getchar,
-     expList()),
-    TRUE),
-   decList()),
-  seqExp(
-   expList(
-    intExp(0),
-    expList())))
+ opExp(
+  PLUS,
+  breakExp(),
+  breakExp())

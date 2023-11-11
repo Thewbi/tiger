@@ -46,7 +46,6 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             // retrieve the function declaration
             Ty_ty func_ty = TAB_look(venv, func);
 
-
             if (func_ty == NULL)
             {
                 EM_error(a->pos, "Use of undeclared function \"%s\" !\n", S_name(func));
@@ -73,10 +72,19 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             while (formals != NULL) {
 
                 Ty_ty formal_param_ty = formals->head;
-                
-                // convert the expression into a type
+
+                // if a actual parameter is missing, return an error
+                if (args == NULL)
+                {
+                    EM_error(a->pos, "Missing actual parameter in function \"%s\" !\n", S_name(func));
+                    assert(0);
+                }
+
+                printf("A_callExp 19 - AAAAAA args: %d\n", args);
+                // convert the expression of the current actual parameter into a type
                 struct expty actual_param_expTy = transExp(venv, tenv, args->head);
                 Ty_ty actual_param_ty = actual_param_expTy.ty;
+                printf("A_callExp 19 - BBBBBBB\n");
 
                 // DEBUG
                 printf("Formal Param-%d: ", param_idx);
@@ -94,6 +102,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 
                 param_idx = param_idx + 1;
 
+                // advance pointers
                 formals = formals->tail;
                 args = args->tail;
             }
@@ -413,7 +422,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 
         case A_breakExp:
             printf("A_breakExp 27\n");
-            assert(0);
+            return expTy(a, Ty_Nil());
 
         case A_letExp: 
         {
