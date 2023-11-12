@@ -7,5 +7,6 @@ in
 	in print (v)
 	end;
 	print (v);
-	print ("\n")
+	print ("\n");
+    0
 end

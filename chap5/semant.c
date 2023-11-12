@@ -53,7 +53,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
                 assert(0);
             }
 
-            show(func, func_ty);
+            //show(func, func_ty);
             //printf("\n");
 
             //printf("A_callExp B\n");
@@ -63,7 +63,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
             //printf("A_callExp C\n");
 
             //printf("Result-");
-            show_type(enventry->u.fun.result);
+            //show_type(enventry->u.fun.result);
             //printf("\n");
 
             //printf("A_callExp 19 - A\n");
@@ -89,9 +89,9 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
 
                 // DEBUG
                 //printf("Formal Param-%d: ", param_idx);
-                show_type(formal_param_ty);
+                //show_type(formal_param_ty);
                 //printf(" Actual Param-%d: ", param_idx);
-                show_type(actual_param_ty);
+                //show_type(actual_param_ty);
                 //printf("\n");
 
                 // check the types
@@ -240,7 +240,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
             //printf("binding_value: %d\n", binding_value);
 
             Ty_ty record_type = (Ty_ty) binding_value;
-            show_type(record_type);
+            // show_type(record_type);
 
             return expTy(a, record_type);
         }
@@ -290,11 +290,11 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
 
             //printf("C A_assignExp 23: pos: %d\n", a->pos);
 
-            printf("lvalue.ty \n");
-            show_type(lvalue.ty);
-            printf("\nrhs_exp.ty \n");
-            show_type(rhs_exp.ty);
-            printf("\n");
+            // printf("lvalue.ty \n");
+            // show_type(lvalue.ty);
+            // printf("\nrhs_exp.ty \n");
+            // show_type(rhs_exp.ty);
+            // printf("\n");
 
             if (lvalue.ty != rhs_exp.ty)
             //if (lvalue.ty->kind != rhs_exp.ty->kind)
@@ -335,11 +335,11 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
             } else {
                 struct expty elsee_Ty = transExp(venv, tenv, elsee, inside_loop);
 
-                //printf("if-then type: [");
-                show_type(then_Ty.ty);
-                //printf("] else type: [");
-                show_type(elsee_Ty.ty);
-                //printf("]\n");
+                // //printf("if-then type: [");
+                // show_type(then_Ty.ty);
+                // //printf("] else type: [");
+                // show_type(elsee_Ty.ty);
+                // //printf("]\n");
 
                 if ((then_Ty.ty->kind != Ty_nil) && (elsee_Ty.ty->kind != Ty_nil) && (then_Ty.ty->kind != elsee_Ty.ty->kind))
                 {
@@ -418,7 +418,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
             struct expty hi_ty = transExp(venv, tenv, hi, inside_loop);
 
             //printf("ZUZUZUZUZUZUZU\n");
-            show_type(hi_ty.ty);
+            //show_type(hi_ty.ty);
             //printf("\n");
             if (hi_ty.ty->kind != Ty_int)
             {
@@ -496,7 +496,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
             //printf("AAA\n");
 
             //printf("\nTAB_DUMP tenv\n=============================\n");
-            TAB_dump(tenv, show);
+            //TAB_dump(tenv, show);
             //printf("=============================\n");
 
             void* binding_value = S_look(tenv, typ);
@@ -504,15 +504,15 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
             //printf("binding_value: %d\n", binding_value);
 
             Ty_ty array_type = (Ty_ty) binding_value;
-            show_type(array_type);
+            // show_type(array_type);
 
             Ty_ty array_element_type = array_type->u.array;
-            show_type(array_element_type);
+            // show_type(array_element_type);
 
             //printf("BBB\n");
 
             struct expty init_exp_type = transExp(venv, tenv, init, inside_loop);
-            show_type(init_exp_type.ty);
+            // show_type(init_exp_type.ty);
 
             //printf("CCC\n");
 
@@ -548,22 +548,22 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
  */
 struct expty transVar(S_table venv, S_table tenv, A_var v)
 {
-    printf("transVar() %d\n", v->kind);
+    // printf("transVar() %d\n", v->kind);
 
     switch(v->kind) 
     {
         case A_simpleVar:
         {
-            printf("transVar() - simpleVar 12 - VarName: \"%s\"\n", S_name(v->u.simple));
+            // printf("transVar() - simpleVar 12 - VarName: \"%s\"\n", S_name(v->u.simple));
 
             //printf("\ntransVar() - TAB_DUMP venv\n=============================\n");
-            TAB_dump(venv, show);
+            //TAB_dump(venv, show);
             //printf("=============================\n");
 
             Ty_ty ty = TAB_look(venv, v->u.simple);
 
             //printf("transVar() - VVVVVVVAR is of type: ");
-            show(v->u.simple, ty);
+            //show(v->u.simple, ty);
             //printf("\n");
 
             if (ty == NULL) {
@@ -590,46 +590,46 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
 
         case A_fieldVar:
         {
-            printf("transVar() - A_fieldVar\n");
+            //printf("transVar() - A_fieldVar\n");
 
             // struct {A_var var; S_symbol sym;} field;
 
             // this is the variable AST node of the record variable that is accessed
             A_var record_variable = v->u.field.var;
-            printf("transVar() - record_variable: %d\n", record_variable);
-            printf("transVar() - Kind: %d\n", record_variable->kind);
+            //printf("transVar() - record_variable: %d\n", record_variable);
+            //printf("transVar() - Kind: %d\n", record_variable->kind);
 
             // this is the field's name that is accessed within the record variable
             S_symbol record_variable_used_field_name = v->u.field.sym;
-            printf("transVar() - A_fieldVar 13 - symm: \"%s\"\n", S_name(record_variable_used_field_name));
+            //printf("transVar() - A_fieldVar 13 - symm: \"%s\"\n", S_name(record_variable_used_field_name));
 
             Ty_ty record_var_type = NULL;
 
             if (record_variable->kind == 14)
             {
-                printf("Subscript\n");
+                //printf("Subscript\n");
                 struct expty transvar_type = transVar(venv, tenv, record_variable);
-                printf("Subscript %d\n", transvar_type);
+                //printf("Subscript %d\n", transvar_type);
 
                 record_var_type = transvar_type.ty;
-                printf("transVar() - show_type() record_var_type ");
-                show_type(record_var_type);
-                printf("\n");
+                //printf("transVar() - show_type() record_var_type ");
+                //show_type(record_var_type);
+                //printf("\n");
             }
             else 
             {
                 // this is the name of the variable AST node of the record variable that is accessed
                 S_symbol record_variable_name = record_variable->u.simple;
 
-                printf("Symbol: %d\n", record_variable_name);
-                printf("transVar() - record_variable_name: %s\n", S_name(record_variable_name));
+                //printf("Symbol: %d\n", record_variable_name);
+                //printf("transVar() - record_variable_name: %s\n", S_name(record_variable_name));
 
                 // convert record variable name to it's type via the variable environment
                 //Ty_ty record_var_type = S_look(venv, record_variable_name);
                 record_var_type = S_look(venv, record_variable_name);
-                printf("transVar() - show_type() record_var_type ");
-                show_type(record_var_type);
-                printf("\n");
+                //printf("transVar() - show_type() record_var_type ");
+                //show_type(record_var_type);
+                //printf("\n");
             }
 
             if (record_var_type == NULL) {
@@ -650,10 +650,10 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
 
             //A_fieldList field_list = var_type->u.record;
 
-            printf("aaaaaaaaaaaaaaaaa \n");
-            show_type(record_var_type);
-            printf("\n");
-            printf("bbbbbbbbbbbbbbbbbb \n");
+            // printf("aaaaaaaaaaaaaaaaa \n");
+            // show_type(record_var_type);
+            // printf("\n");
+            // printf("bbbbbbbbbbbbbbbbbb \n");
 
             // printf("xxxxxxxxxxxxxxxxxx \n");
 
@@ -676,7 +676,7 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
 
             //assert(0);
 
-            printf("xxxxxxxxxxxxxxxxxx \n");
+            // printf("xxxxxxxxxxxxxxxxxx \n");
 
             A_fieldList field_list = NULL;
 
@@ -692,30 +692,30 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
                 field_list = record_var_type->u.record;
             }
 
-            printf("field_list: %d \n", field_list);
+            // printf("field_list: %d \n", field_list);
 
             while (field_list != NULL) 
             {
                 A_namety record_field = field_list->head;
-                printf("transVar() - head: %d\n", record_field);
-                printf("name: %s type: %s\n", S_name(record_field->name), S_name(record_field->ty));
+                // printf("transVar() - head: %d\n", record_field);
+                // printf("name: %s type: %s\n", S_name(record_field->name), S_name(record_field->ty));
 
                 //assert(0);
 
-                printf("transVar() - name: %s type: %s\n", S_name(record_field->name), S_name(record_field->ty));
+                // printf("transVar() - name: %s type: %s\n", S_name(record_field->name), S_name(record_field->ty));
 
-                printf("transVar() - COMPARING record_variable_used_field_name: %s record_field->name: %s\n", 
-                    S_name(record_variable_used_field_name), S_name(record_field->name));
+                // printf("transVar() - COMPARING record_variable_used_field_name: %s record_field->name: %s\n", 
+                //     S_name(record_variable_used_field_name), S_name(record_field->name));
 
                 // iterate until the field in the record is found, return it's type
                 if (record_variable_used_field_name == record_field->name) {
                     //if (strcmp(S_name(record_variable_used_field_name), S_name(record_field->name)) == 0) {
-                    printf("transVar() - returning %s\n", S_name(record_field->ty));
+                    // printf("transVar() - returning %s\n", S_name(record_field->ty));
 
                     Ty_ty type = S_look(tenv, record_field->ty);
 
-                    show_type(type);
-                    printf("\n");
+                    // show_type(type);
+                    // printf("\n");
 
                     //return expTy(v, TAB_look(tenv, record_field->ty));
                     return expTy(v, type);
@@ -725,9 +725,9 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
                 field_list = field_list->tail;
             }
 
-            printf("yyyyyyyyyyyyyyy \n");
+            // printf("yyyyyyyyyyyyyyy \n");
 
-            //EM_error(v->pos, "Field \"%s\" is not present in record type! Line: %d\n", S_name(record_variable_used_field_name), v->pos);
+            EM_error(v->pos, "Field \"%s\" is not present in record type! Line: %d\n", S_name(record_variable_used_field_name), v->pos);
 
             assert(0);
         }
@@ -737,27 +737,27 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
         {
             // struct {A_var var; A_exp exp;} subscript;
 
-            printf("A_subscriptVar 14\n");
+            // printf("A_subscriptVar 14\n");
             //printf("A_subscriptVar 14 - VarName: \"%s\"\n", S_name(v->u.subscript.var->u.simple));
 
             // this is the name of the array type:
             //printf("Array Variable Name: %s\n", S_name(v->u.subscript.var->u.simple));
 
-            // DEBUG
-            printf("\ntransVar() - TAB_DUMP tenv\n=============================\n");
-            TAB_dump(tenv, show);
-            printf("=============================\n");
+            // // DEBUG
+            // printf("\ntransVar() - TAB_DUMP tenv\n=============================\n");
+            // TAB_dump(tenv, show);
+            // printf("=============================\n");
 
-            // DEBUG
-            printf("\ntransVar() - TAB_DUMP venv\n=============================\n");
-            TAB_dump(venv, show);
-            printf("=============================\n");
+            // // DEBUG
+            // printf("\ntransVar() - TAB_DUMP venv\n=============================\n");
+            // TAB_dump(venv, show);
+            // printf("=============================\n");
 
             A_var subscript_var = v->u.subscript.var;
             struct expty subscript_var_var = transVar(venv, tenv, subscript_var);
-            show_type(subscript_var_var.ty);
-            printf("\n");
-            printf("aaaa %d\n", subscript_var_var);
+            // show_type(subscript_var_var.ty);
+            // printf("\n");
+            // printf("aaaa %d\n", subscript_var_var);
 
             // printf("a\n");
             // Ty_ty array_type = TAB_look(venv, v->u.subscript.var->u.simple);
@@ -766,7 +766,7 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
 
             Ty_ty array_type = subscript_var_var.ty;
 
-            show_type(array_type);
+            // show_type(array_type);
 
             // subscripts are only allowd on Ty_array
             if (array_type->kind != Ty_array)
@@ -776,8 +776,8 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
             }
             
             Ty_ty array_element_type = array_type->u.array;
-            show_type(array_element_type);
-            printf("\n");
+            // show_type(array_element_type);
+            // printf("\n");
 
             return expTy(v, array_element_type);
         }
@@ -802,14 +802,14 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
  */
 void transDec(S_table venv, S_table tenv, A_dec d)
 {
-    printf("transDec: pos: %d\n", d->pos);
-    printf("kind: %d\n", d->kind);
+    // printf("transDec: pos: %d\n", d->pos);
+    // printf("kind: %d\n", d->kind);
 
     switch (d->kind)
     {
         case A_varDec:
         {
-            printf("transDec: A_varDec\n");
+            // printf("transDec: A_varDec\n");
 
             // // check if the variable is already contained in the current venv
             // void* binding_value = S_look(venv, d->u.var.var);
@@ -826,18 +826,18 @@ void transDec(S_table venv, S_table tenv, A_dec d)
             // determine the type of the initialization value
             if (d->u.var.init != NULL) {
 
-                printf("d->u.var.init - kind: %d\n", d->u.var.init->kind);
+                // printf("d->u.var.init - kind: %d\n", d->u.var.init->kind);
 
                 init_type = transExp(venv, tenv, d->u.var.init, OUTSIDE_LOOP);
 
-                printf("init_type retrieved: %d - ", init_type);
-                show_type(init_type.ty);
-                printf("\n");
+                // printf("init_type retrieved: %d - ", init_type);
+                // show_type(init_type.ty);
+                // printf("\n");
             }
-            else 
-            {
-                printf("No initializer\n");
-            }
+            // else 
+            // {
+            //     printf("No initializer\n");
+            // }
 
             // the type specifier on a variable is optional so take care
             // here to not dereference a null pointer
@@ -846,43 +846,43 @@ void transDec(S_table venv, S_table tenv, A_dec d)
             {
                 S_enter(venv, d->u.var.var, init_type.ty);
 
-                printf("\nTAB_DUMP venv\n=============================\n");
-                TAB_dump(venv, show);
-                printf("=============================\n");
+                // printf("\nTAB_DUMP venv\n=============================\n");
+                // TAB_dump(venv, show);
+                // printf("=============================\n");
             }
             else
             {
-                printf("Current tenv :\n");
+                // printf("Current tenv :\n");
 
-                // DEBUG
-                printf("\nTAB_DUMP tenv\n=============================\n");
-                TAB_dump(tenv, show);
-                printf("=============================\n");
+                // // DEBUG
+                // printf("\nTAB_DUMP tenv\n=============================\n");
+                // TAB_dump(tenv, show);
+                // printf("=============================\n");
 
                 Ty_ty var_type = S_look(tenv, type_symbol);
                 
-                printf("type_symbol: \"%s\"\n", S_name(type_symbol));
-                show_type(var_type);
-                printf("\n");
+                // printf("type_symbol: \"%s\"\n", S_name(type_symbol));
+                // show_type(var_type);
+                // printf("\n");
 
                 bool init_type_is_nil = init_type.ty->kind == Ty_nil;
                 bool var_type_is_nil = var_type->kind == Ty_nil;
 
-                printf("init_type_is_nil: %d, var_type_is_nil: %d\n", init_type_is_nil, var_type_is_nil);
+                // printf("init_type_is_nil: %d, var_type_is_nil: %d\n", init_type_is_nil, var_type_is_nil);
 
                 if ((init_type.ty->kind != Ty_nil) && (var_type->kind != Ty_nil)) {
 
-                    printf("AAAAAA\n");
+                    // printf("AAAAAA\n");
 
-                    printf("var_type: ");
-                    show_type(var_type);
-                    printf("\n");
+                    // printf("var_type: ");
+                    // show_type(var_type);
+                    // printf("\n");
 
-                    printf("init_type.ty: ");
-                    show_type(init_type.ty);
-                    printf("\n");
+                    // printf("init_type.ty: ");
+                    // show_type(init_type.ty);
+                    // printf("\n");
 
-                    printf("%d - %d\n", var_type, init_type.ty);
+                    // printf("%d - %d\n", var_type, init_type.ty);
 
                     if (var_type->kind != init_type.ty->kind) {
                         EM_error(d->pos, "Variable \"%s\". Initializer type and variable type differ! Line: %d\n", S_name(d->u.var.var), d->pos);
@@ -901,7 +901,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                         case Ty_array:
                             if (var_type->u.array != init_type.ty->u.array)
                             {
-                                printf("BBBBBB\n");
+                                // printf("BBBBBB\n");
 
                                 EM_error(d->pos, "Types used in variable declaration initializer are incompatible!");
                                 assert(0);
@@ -914,7 +914,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                         case Ty_record:
                             if (var_type->u.record != init_type.ty->u.record)
                             {
-                                printf("CCCCCCCC\n");
+                                // printf("CCCCCCCC\n");
 
                                 EM_error(d->pos, "Types used in variable declaration initializer are incompatible!");
                                 assert(0);
@@ -929,36 +929,36 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                             assert(0);
                     }
 
-                    printf("ahahaahaahh\n");
+                    // printf("ahahaahaahh\n");
 
                     // enter binding for the declared variable into the variable environment (venv)
                     // The initializer type is used because the explizit type specifier is optional and
                     // the initializer and specifier types have to match at all times
                     S_enter(venv, d->u.var.var, init_type.ty);
 
-                    printf("Current venv :\n");
+                    // printf("Current venv :\n");
 
-                    // DEBUG
-                    printf("\nTAB_DUMP venv\n=============================\n");
-                    TAB_dump(venv, show);
-                    printf("=============================\n");
+                    // // DEBUG
+                    // printf("\nTAB_DUMP venv\n=============================\n");
+                    // TAB_dump(venv, show);
+                    // printf("=============================\n");
                 }
                 else if (var_type->kind != Ty_nil)
                 {
                     S_enter(venv, d->u.var.var, var_type);
 
-                    // DEBUG
-                    printf("\nTAB_DUMP venv\n=============================\n");
-                    TAB_dump(venv, show);
-                    printf("=============================\n");
+                    // // DEBUG
+                    // printf("\nTAB_DUMP venv\n=============================\n");
+                    // TAB_dump(venv, show);
+                    // printf("=============================\n");
                 } else {
                     assert(0);
                 }
 
-                // DEBUG
-                printf("\nTAB_DUMP venv\n=============================\n");
-                TAB_dump(venv, show);
-                printf("=============================\n");
+                // // DEBUG
+                // printf("\nTAB_DUMP venv\n=============================\n");
+                // TAB_dump(venv, show);
+                // printf("=============================\n");
             }
         }
         break;
@@ -975,19 +975,19 @@ void transDec(S_table venv, S_table tenv, A_dec d)
             //     assert(0);
             // }
 
-            printf("A Adding to tenv: \"%s\"\n", S_name(type_name));
+            // printf("A Adding to tenv: \"%s\"\n", S_name(type_name));
             S_enter(tenv, type_name, transTy(tenv, d->u.type));
 
-            // DEBUG
-            printf("\nTAB_DUMP tenv\n=============================\n");
-            TAB_dump(tenv, show);
-            printf("=============================\n");
+            // // DEBUG
+            // printf("\nTAB_DUMP tenv\n=============================\n");
+            // TAB_dump(tenv, show);
+            // printf("=============================\n");
         }
         break;
 
         case A_functionDec:
         {
-            printf("A_functionDec\n");
+            // printf("A_functionDec\n");
 
             struct expty function_result_type;
             //function_result_type.ty = Ty_nil;
@@ -997,8 +997,8 @@ void transDec(S_table venv, S_table tenv, A_dec d)
             while (fundecList != NULL) 
             {
                 A_fundec fundec = fundecList->head;
-                printf("fundec: pos: %d\n", fundec->pos);
-                printf("fundec: name: %s\n", S_name(fundec->name));
+                //printf("fundec: pos: %d\n", fundec->pos);
+                //printf("fundec: name: %s\n", S_name(fundec->name));
 
                 // // check if the function is already contained in the current venv
                 // void* binding_value = S_look(venv, fundec->name);
@@ -1014,7 +1014,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 // They can be defined without return type!
                 if (fundec->result == NULL)
                 {
-                    printf("123445\n");
+                    //printf("123445\n");
                     S_enter(venv, fundec->name, E_FunEntry(formalTys, NULL));
                 }
                 else
@@ -1036,46 +1036,46 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 
                 // insert formal parameters into the scope
                 {
-                    printf("Processing formal function parameters ...\n");
+                    //printf("Processing formal function parameters ...\n");
 
                     A_fieldList l;
                     Ty_tyList t;
                     for (l = fundec->params, t = formalTys; l; l = l->tail, t = t->tail)
                     {
-                        printf("param: %s\n", S_name(l->head->name));
+                        //printf("param: %s\n", S_name(l->head->name));
                         S_enter(venv, l->head->name, E_VarEntry(t->head));
                     }
 
-                    printf("Processing formal function parameters done.\n");
+                    //printf("Processing formal function parameters done.\n");
                 }
 
-                // DEBUG
-                printf("\n123 TAB_DUMP venv\n=============================\n");
-                TAB_dump(venv, show);
-                printf("=============================\n");
+                // // DEBUG
+                // printf("\n123 TAB_DUMP venv\n=============================\n");
+                // TAB_dump(venv, show);
+                // printf("=============================\n");
 
                 // process the body
-                printf(">>>+++>>>> Processing function body...\n");
+                //printf(">>>+++>>>> Processing function body...\n");
                 function_result_type = transExp(venv, tenv, fundec->body, OUTSIDE_LOOP);
-                printf("<<<+++<<< Processing function body done.\n");
+                //printf("<<<+++<<< Processing function body done.\n");
 
                 // remove parameter scope
                 S_endScope(venv);
 
-                printf("testing fundec: %d\n", fundec);
-                printf("testing fundec: %d\n", fundec->result);
-                printf("testing function_result_type: %d\n", function_result_type);
-                printf("testing function_result_type.ty: %d\n", function_result_type.ty);
+                //printf("testing fundec: %d\n", fundec);
+                //printf("testing fundec: %d\n", fundec->result);
+                //printf("testing function_result_type: %d\n", function_result_type);
+                //printf("testing function_result_type.ty: %d\n", function_result_type.ty);
 
                 if ((fundec->result == NULL) && (function_result_type.ty != Ty_Nil()))
                 //if ((fundec->result == NULL) && (function_result_type.ty->kind != Ty_nil))
                 {
-                    printf("wololo\n");
+                    //printf("wololo\n");
                     EM_error(d->pos, "Function \"%s\" is declared without return type but returns %s.\n", S_name(fundec->name), label_type(function_result_type.ty));
                     assert(0);
                 }
 
-                printf("next function UIOAIUSDOIUASDOIUASDOUIASDUIO\n");
+                //printf("next function UIOAIUSDOIUASDOIUASDOUIASDUIO\n");
 
                 // next function declaration
                 fundecList = fundecList->tail;
@@ -1087,7 +1087,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
             assert(0);
     }
 
-    printf("transDec done.\n");
+    //printf("transDec done.\n");
 }
 
 /**
@@ -1098,24 +1098,24 @@ void transDec(S_table venv, S_table tenv, A_dec d)
  */
 Ty_tyList makeFormalTyList(S_table tenv, A_fieldList params)
 {
-    printf("makeFormalTyList() \n");
+    //printf("makeFormalTyList() \n");
 
     Ty_tyList result = NULL;
 
     while (params != NULL)
     {
         A_field param = params->head;
-        printf("param: %s\n", S_name(param->name));
+        //printf("param: %s\n", S_name(param->name));
 
         Ty_ty paramTy = S_look(tenv, param->typ);
-        show_type(paramTy);
+        // show_type(paramTy);
 
         result = Ty_TyList(paramTy, result);
 
         params = params->tail;
     }
 
-    printf("makeFormalTyList() done.\n");
+    //printf("makeFormalTyList() done.\n");
 
     return result;
 }
@@ -1125,7 +1125,7 @@ Ty_tyList makeFormalTyList(S_table tenv, A_fieldList params)
 */
 Ty_ty transTy(S_table tenv, A_ty a)
 {
-    printf("transTy\n");
+    //printf("transTy\n");
 
     assert(a);
 
@@ -1139,7 +1139,7 @@ Ty_ty transTy(S_table tenv, A_ty a)
         {
             case A_nameTy: //=33,
             {
-                printf("A_nameTy - 33 - value: \"%s\"\n", S_name(ty->u.name));
+                //printf("A_nameTy - 33 - value: \"%s\"\n", S_name(ty->u.name));
                 // retrieve the referenced type from the tenv
                 return TAB_look(tenv, ty->u.name);
             }
@@ -1147,14 +1147,14 @@ Ty_ty transTy(S_table tenv, A_ty a)
 
             case A_recordTy: //=34,
             {
-                printf("A_recordTy - 34 - named_type - value: \"%s\"\n", S_name(named_type->name));
+                //printf("A_recordTy - 34 - named_type - value: \"%s\"\n", S_name(named_type->name));
                 
                 // for all record fields in the record type
                 A_fieldList field_list = named_type->ty->u.record;
                 while (field_list != NULL) 
                 {
                     A_namety record_field = field_list->head;
-                    printf("name: %s type: %s\n", S_name(record_field->name), S_name(record_field->ty));
+                    //printf("name: %s type: %s\n", S_name(record_field->name), S_name(record_field->ty));
 
                     // advance iterator
                     field_list = field_list->tail;
@@ -1169,12 +1169,12 @@ Ty_ty transTy(S_table tenv, A_ty a)
 
             case A_arrayTy: //=35
             {
-                printf("A_arrayTy - 35 - value: \"%s\"\n", S_name(ty->u.name));
+                //printf("A_arrayTy - 35 - value: \"%s\"\n", S_name(ty->u.name));
 
                 // retrieve the referenced type from the tenv
                 void * retrieved_type = TAB_look(tenv, ty->u.name);
 
-                show_type(retrieved_type);
+                //show_type(retrieved_type);
 
                 Ty_ty array_ty = Ty_Array(retrieved_type);
                 

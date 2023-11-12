@@ -9,5 +9,6 @@
          in
                  if foo(y) then print("wrong")
                           else print("correct")
-         end
+         end;
+         0
  end

@@ -640,12 +640,7 @@ or have the library do new things.
 
 
 
-#### Semantic analysis detects errors here
 
-TODO: test31.tig
-TODO: test31.tig has to fail since the declared type and the type of the value that is used during initialization differs.
-
-#### Semantic analysis correct here
 
 ### Variable Assignments of Basic Type (int, string)
 
@@ -696,7 +691,7 @@ end
 ```
 
 arrays_simple.tig
-TODO: arrays.tig
+arrays.tig
 test24.tig
 test29.tig
 
@@ -775,11 +770,6 @@ in
 end
 ```
 
-### Semantic analysis detects errors here
-TODO test31.tig
-
-### Semantic analysis correct here
-arrays_simple.tig
 
 ## Records / Structs
 
@@ -1112,8 +1102,8 @@ arrays.tig          ( semanttest.exe ..\testcases\arrays.tig        & cat ..\tes
 arrays_simple.tig   ( semanttest.exe ..\testcases\arrays_simple.tig & cat ..\testcases\arrays_simple.tig & cat ast_dump.txt ) // OK
 
 Built-In functions
-builtin_functions.tig ( semanttest.exe ..\testcases\builtin_functions.tig & cat ..\testcases\builtin_functions.tig & cat ast_dump.txt ) // OK
-builtin_functions_getchar.tig ( semanttest.exe ..\testcases\builtin_functions_getchar.tig ) OK
+builtin_functions.tig           ( semanttest.exe ..\testcases\builtin_functions.tig & cat ..\testcases\builtin_functions.tig & cat ast_dump.txt ) // OK
+builtin_functions_getchar.tig   ( semanttest.exe ..\testcases\builtin_functions_getchar.tig ) OK
 
 For-Loop
 forloop_simple.tig                  ( semanttest.exe ..\testcases\forloop_simple.tig ) // SEM-ERROR, hi is not of type int
@@ -1164,8 +1154,8 @@ merge.tig           ( semanttest.exe ..\testcases\merge.tig ) // OK
 queens.tig          ( semanttest.exe ..\testcases\queens.tig ) // OK
 
 Mutually recursive types
-mutually_recursive_types_with_and_keyword.tig    ( semanttest.exe ..\testcases\mutually_recursive_types_with_and_keyword.tig ) // SYNTAX ERROR since: "Type declarations separated by the keyword and form a mutually-recursive group." The "and" keyword between type declarations is not implemented! It is not part of the official language.
-mutually_recursive_types.tig ( semanttest.exe ..\testcases\mutually_recursive_types.tig )
+mutually_recursive_types_with_and_keyword.tig   ( semanttest.exe ..\testcases\mutually_recursive_types_with_and_keyword.tig ) // SYNTAX ERROR since: "Type declarations separated by the keyword and form a mutually-recursive group." The "and" keyword between type declarations is not implemented! It is not part of the official language.
+mutually_recursive_types.tig                    ( semanttest.exe ..\testcases\mutually_recursive_types.tig )
 test16.tig,         ( semanttest.exe ..\testcases\book\test16.tig & cat ..\testcases\book\test16.tig & cat ast_dump.txt ) // <============== This currently semantically validates as OK although it should not
 test5.tig,          ( semanttest.exe ..\testcases\book\test5.tig  & cat ..\testcases\book\test5.tig & cat ast_dump.txt )
 test17.tig,         ( semanttest.exe ..\testcases\book\test17.tig & cat ..\testcases\book\test17.tig & cat ast_dump.txt ) // should throw an error since definition of recursive type is interrupted
@@ -1190,20 +1180,20 @@ test9.tig,          ( semanttest.exe ..\testcases\book\test9.tig  & cat ..\testc
 test15.tig          ( semanttest.exe ..\testcases\book\test15.tig & cat ..\testcases\book\test15.tig & cat ast_dump.txt ) // SEM_ERROR: this application returns a unit (Non-Type) since the if-then does not return a type! Returning unit is not allowed. You need a sequence or something to produce a type to return!
 
 while-loops:
-test10.tig          ( semanttest.exe ..\testcases\book\test10.tig & cat ..\testcases\book\test10.tig & cat ast_dump.txt )
+test10.tig          ( semanttest.exe ..\testcases\book\test10.tig & cat ..\testcases\book\test10.tig & cat ast_dump.txt ) // OK
 
 for-loops:
-test11.tig          ( semanttest.exe ..\testcases\book\test11.tig & cat ..\testcases\book\test11.tig & cat ast_dump.txt )
+test11.tig          ( semanttest.exe ..\testcases\book\test11.tig & cat ..\testcases\book\test11.tig & cat ast_dump.txt ) // SEM_ERROR hi has to be of type integer
 
 sequences:
-test20.tig          ( semanttest.exe ..\testcases\book\test20.tig & cat ..\testcases\book\test20.tig & cat ast_dump.txt )
+test20.tig          ( semanttest.exe ..\testcases\book\test20.tig & cat ..\testcases\book\test20.tig & cat ast_dump.txt ) // SEM_ERROR undeclared variable
 
 array-indexing:
-test24.tig          ( semanttest.exe ..\testcases\book\test24.tig & cat ..\testcases\book\test24.tig & cat ast_dump.txt )
-test32.tig          ( semanttest.exe ..\testcases\book\test32.tig & cat ..\testcases\book\test32.tig & cat ast_dump.txt )
+test24.tig          ( semanttest.exe ..\testcases\book\test24.tig & cat ..\testcases\book\test24.tig & cat ast_dump.txt ) // SEM_ERROR Subscript used on variable "d". Variable is not an array! Line: 6
+test32.tig          ( semanttest.exe ..\testcases\book\test32.tig & cat ..\testcases\book\test32.tig & cat ast_dump.txt ) // SEM_ERROR initializing exp and array type differ
 
 record field acces:
-test25.tig          ( semanttest.exe ..\testcases\book\test25.tig & cat ..\testcases\book\test25.tig & cat ast_dump.txt )
+test25.tig          ( semanttest.exe ..\testcases\book\test25.tig & cat ..\testcases\book\test25.tig & cat ast_dump.txt ) // SEM_ERROR
 
 variable declarations:
 test12.tig,         ( semanttest.exe ..\testcases\book\test12.tig & cat ..\testcases\book\test12.tig & cat ast_dump.txt ) // OK
@@ -1253,8 +1243,8 @@ test27.tig          ( semanttest.exe ..\testcases\book\test27.tig & cat ..\testc
 
 break:
 two_breaks.tig      ( semanttest.exe ..\testcases\BartVandewoestyne\uncompilable\two_breaks.tig ) // SEM_ERROR, type of operand has to be int
-breaktest.tig       ( semanttest.exe ..\testcases\FlexW\breaktest.tig ) // OK
-keyword_04.tig      ( semanttest.exe ..\testcases\nwtnni\lex\keyword_04.tig ) // OK
+breaktest.tig       ( semanttest.exe ..\testcases\FlexW\breaktest.tig ) // SEM_ERROR, break outside loop
+keyword_04.tig      ( semanttest.exe ..\testcases\nwtnni\lex\keyword_04.tig ) // SEM_ERROR, break outside loop
 58.tig              ( semanttest.exe ..\testcases\WMBao\Bad\58.tig ) // SEM-ERROR, A break is used outside a for or while loop
 75.tig              ( semanttest.exe ..\testcases\WMBao\Bad\75.tig ) // SEM-ERROR, A break is used outside a for or while loop
 12.tig              ( semanttest.exe ..\testcases\WMBao\Good\12.tig ) // OK
@@ -1283,10 +1273,10 @@ semanttest.exe ..\testcases\WMBao\Good\1.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\2.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\3.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\5.tig // OK
-semanttest.exe ..\testcases\WMBao\Good\6.tig
-semanttest.exe ..\testcases\WMBao\Good\7.tig
+semanttest.exe ..\testcases\WMBao\Good\6.tig // OK
+semanttest.exe ..\testcases\WMBao\Good\7.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\8.tig
-semanttest.exe ..\testcases\WMBao\Good\10.tig
+semanttest.exe ..\testcases\WMBao\Good\10.tig // SYNTAX ERROR
 semanttest.exe ..\testcases\WMBao\Good\11.tig
 semanttest.exe ..\testcases\WMBao\Good\12.tig
 semanttest.exe ..\testcases\WMBao\Good\13.tig
@@ -1308,17 +1298,17 @@ semanttest.exe ..\testcases\WMBao\Good\28.tig
 semanttest.exe ..\testcases\WMBao\Good\29.tig
 semanttest.exe ..\testcases\WMBao\Good\30.tig
 semanttest.exe ..\testcases\WMBao\Good\32.tig
-semanttest.exe ..\testcases\WMBao\Good\33.tig // compiler segfault
-semanttest.exe ..\testcases\WMBao\Good\34.tig
-semanttest.exe ..\testcases\WMBao\Good\35.tig
-semanttest.exe ..\testcases\WMBao\Good\36.tig
-semanttest.exe ..\testcases\WMBao\Good\38.tig
-semanttest.exe ..\testcases\WMBao\Good\40.tig
-semanttest.exe ..\testcases\WMBao\Good\43.tig
-semanttest.exe ..\testcases\WMBao\Good\52.tig
+semanttest.exe ..\testcases\WMBao\Good\33.tig // OK
+semanttest.exe ..\testcases\WMBao\Good\34.tig // OK
+semanttest.exe ..\testcases\WMBao\Good\35.tig // OK
+semanttest.exe ..\testcases\WMBao\Good\36.tig // SEM_ERROR: use of undeclared function printi
+semanttest.exe ..\testcases\WMBao\Good\38.tig // SEM_ERROR: use of undeclared function printi
+semanttest.exe ..\testcases\WMBao\Good\40.tig // OK
+semanttest.exe ..\testcases\WMBao\Good\43.tig // OK
+semanttest.exe ..\testcases\WMBao\Good\52.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\61.tig // OK
-semanttest.exe ..\testcases\WMBao\Good\68.tig
-semanttest.exe ..\testcases\WMBao\Good\69.tig
+semanttest.exe ..\testcases\WMBao\Good\68.tig // OK
+semanttest.exe ..\testcases\WMBao\Good\69.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\70.tig
 semanttest.exe ..\testcases\WMBao\Good\71.tig
 semanttest.exe ..\testcases\WMBao\Good\72.tig
@@ -1326,8 +1316,8 @@ semanttest.exe ..\testcases\WMBao\Good\73.tig
 semanttest.exe ..\testcases\WMBao\Good\74.tig
 semanttest.exe ..\testcases\WMBao\Good\76.tig
 semanttest.exe ..\testcases\WMBao\Good\77.tig
-semanttest.exe ..\testcases\WMBao\Good\78.tig
-semanttest.exe ..\testcases\WMBao\Good\79.tig
+semanttest.exe ..\testcases\WMBao\Good\78.tig // OK
+semanttest.exe ..\testcases\WMBao\Good\79.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\80.tig
 semanttest.exe ..\testcases\WMBao\Good\81.tig
 semanttest.exe ..\testcases\WMBao\Good\82.tig

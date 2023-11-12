@@ -1,0 +1,11 @@
+/* https://www.haber-kucharsky.com/proj/fang/tiger.html */
+let
+  type tree = {root: item, children: forest}
+  type forest = {head: tree, tail: forest}
+  type item = string
+
+  function leaf(x: string): tree = tree {root=x, children=nil}
+  function cons(x: tree, f: forest): forest = forest {head=x, tail=f}
+in
+  tree {root="Z", children=cons(leaf("A"), cons(leaf("B"), cons(leaf("C"), nil)))}
+end  
