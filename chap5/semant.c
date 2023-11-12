@@ -224,10 +224,15 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
             printf("A_recordExp 21\n");
 
             S_symbol typ = a->u.record.typ;
-            printf("A_recordExp - typ: \"%s\"\n", S_name(typ));
+            printf("A_recordExp - type: \"%s\"\n", S_name(typ));
 
             // lookup the symbol in tenv
             void* binding_value = S_look(tenv, typ);
+            if (binding_value == NULL)
+            {
+                EM_error(a->pos, "undeclared type \"%s\". tenv does not contain type: \"%s\"\n", S_name(typ), S_name(typ));
+                assert(0);
+            }
             assert(binding_value);
             printf("binding_value: %d\n", binding_value);
 
@@ -809,6 +814,11 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 
                     printf("%d - %d\n", var_type, init_type.ty);
 
+                    if (var_type->kind != init_type.ty->kind) {
+                        EM_error(d->pos, "Variable \"%s\". Initializer type and variable type differ! Line: %d\n", S_name(d->u.var.var), d->pos);
+                        assert(0);
+                    }
+
                     switch (var_type->kind) {
 
                         case Ty_nil:
@@ -907,8 +917,10 @@ void transDec(S_table venv, S_table tenv, A_dec d)
         {
             printf("A_functionDec\n");
 
-            A_fundecList fundecList = d->u.function;
+            struct expty function_result_type;
+            function_result_type.ty = Ty_nil;
 
+            A_fundecList fundecList = d->u.function;
             while (fundecList != NULL) 
             {
                 A_fundec fundec = fundecList->head;
@@ -925,9 +937,11 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 
                 Ty_tyList formalTys = makeFormalTyList(tenv, fundec->params);
 
-                // functions do not have to return a value. They can be without return type!
+                // functions do not have to return a value. 
+                // They can be defined without return type!
                 if (fundec->result == NULL)
                 {
+                    printf("123445\n");
                     S_enter(venv, fundec->name, E_FunEntry(formalTys, NULL));
                 }
                 else
@@ -969,12 +983,19 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 
                 // process the body
                 printf(">>>+++>>>> Processing function body...\n");
-                transExp(venv, tenv, fundec->body, OUTSIDE_LOOP);
+                function_result_type = transExp(venv, tenv, fundec->body, OUTSIDE_LOOP);
                 printf("<<<+++<<< Processing function body done.\n");
 
                 // remove parameter scope
                 S_endScope(venv);
 
+                if ((fundec->result == NULL) && (function_result_type.ty->kind != Ty_nil))
+                {
+                    EM_error(d->pos, "Function \"%s\" is declared without return type but returns %s.\n", S_name(fundec->name), label_type(function_result_type.ty));
+                    assert(0);
+                }
+
+                // next function declaration
                 fundecList = fundecList->tail;
             }
         }
@@ -1202,4 +1223,83 @@ void show_type(Ty_ty type)
             printf("Unknown type!");
             break;
     }
-} 
+}
+
+char* label_type(Ty_ty type) {
+    if (type == NULL)
+    {
+        return "No type!";
+    }
+    
+    switch (type->kind)
+    {
+        case E_varEntry:
+        {
+            E_enventry enventry = (E_enventry) type;
+            return label_type(enventry->u.var.ty);
+        }
+        break;
+
+        case E_funEntry:
+        {
+            E_enventry enventry = (E_enventry) type;
+            return label_type(enventry->u.fun.result);
+
+            // int param_idx = 1;
+            // Ty_tyList formals = enventry->u.fun.formals;
+            // while (formals != NULL) {
+                
+            //     printf(" Param-%d: ", param_idx);
+            //     param_idx = param_idx + 1;
+            //     show_type(formals->head);
+            //     formals = formals->tail;
+            // }
+        }
+        break;
+
+        // 0
+        case Ty_record:
+        {
+            return "Ty_record";
+            // // print all the records fields, their names and types
+            // A_fieldList field_list = type->u.record;
+            // while (field_list != NULL) 
+            // {
+            //     A_namety record_field = field_list->head;
+            //     printf(" name: %s type: %s", S_name(record_field->name), S_name(record_field->ty));
+
+            //     // advance iterator
+            //     field_list = field_list->tail;
+            // }
+        }
+        break;
+
+        case Ty_nil:
+            return "Ty_nil";
+            break;
+            
+        case Ty_int:
+            return "Ty_int";
+            break;
+            
+        case Ty_string:
+            return "Ty_string";
+            break;
+            
+        case Ty_array:
+            return "Ty_array";
+            break;
+            
+        case Ty_name:
+            return "Ty_name";
+            break;
+            
+        case Ty_void:
+            return "Ty_void";
+            break;
+            
+        default:
+            return "Unknown type!";
+            break;
+    }
+}

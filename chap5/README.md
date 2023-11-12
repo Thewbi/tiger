@@ -1169,6 +1169,10 @@ mutually_recursive_types.tig ( semanttest.exe ..\testcases\mutually_recursive_ty
 test16.tig,         ( semanttest.exe ..\testcases\book\test16.tig & cat ..\testcases\book\test16.tig & cat ast_dump.txt ) // <============== This currently semantically validates as OK although it should not
 test5.tig,          ( semanttest.exe ..\testcases\book\test5.tig  & cat ..\testcases\book\test5.tig & cat ast_dump.txt )
 test17.tig,         ( semanttest.exe ..\testcases\book\test17.tig & cat ..\testcases\book\test17.tig & cat ast_dump.txt ) // should throw an error since definition of recursive type is interrupted
+test6.tig,          ( semanttest.exe ..\testcases\book\test6.tig  & cat ..\testcases\book\test6.tig & cat ast_dump.txt )
+test7.tig,          ( semanttest.exe ..\testcases\book\test7.tig  & cat ..\testcases\book\test7.tig & cat ast_dump.txt )
+test18.tig,         ( semanttest.exe ..\testcases\book\test18.tig & cat ..\testcases\book\test18.tig & cat ast_dump.txt )
+test19.tig,         ( semanttest.exe ..\testcases\book\test19.tig & cat ..\testcases\book\test19.tig & cat ast_dump.txt ) 
 
 
 
@@ -1202,19 +1206,19 @@ record field acces:
 test25.tig          ( semanttest.exe ..\testcases\book\test25.tig & cat ..\testcases\book\test25.tig & cat ast_dump.txt )
 
 variable declarations:
-test12.tig,         ( semanttest.exe ..\testcases\book\test12.tig & cat ..\testcases\book\test12.tig & cat ast_dump.txt )
-test31.tig,         ( semanttest.exe ..\testcases\book\test31.tig & cat ..\testcases\book\test31.tig & cat ast_dump.txt ) <================== SEMANT is broken! This file has to fail!
+test12.tig,         ( semanttest.exe ..\testcases\book\test12.tig & cat ..\testcases\book\test12.tig & cat ast_dump.txt ) // OK
+test31.tig,         ( semanttest.exe ..\testcases\book\test31.tig & cat ..\testcases\book\test31.tig & cat ast_dump.txt ) // SEM_ERROR, initializer type and variable type differ!
 test37.tig,         ( semanttest.exe ..\testcases\book\test37.tig & cat ..\testcases\book\test37.tig & cat ast_dump.txt ) // OK
-test41.tig,         ( semanttest.exe ..\testcases\book\test41.tig & cat ..\testcases\book\test41.tig & cat ast_dump.txt )
-test42.tig,         ( semanttest.exe ..\testcases\book\test42.tig & cat ..\testcases\book\test42.tig & cat ast_dump.txt )
-test43.tig          ( semanttest.exe ..\testcases\book\test43.tig & cat ..\testcases\book\test43.tig & cat ast_dump.txt )
+test41.tig,         ( semanttest.exe ..\testcases\book\test41.tig & cat ..\testcases\book\test41.tig & cat ast_dump.txt ) // OK
+test42.tig,         ( semanttest.exe ..\testcases\book\test42.tig & cat ..\testcases\book\test42.tig & cat ast_dump.txt ) // OK
+test43.tig          ( semanttest.exe ..\testcases\book\test43.tig & cat ..\testcases\book\test43.tig & cat ast_dump.txt ) // SEM_ERRRO, unit type of variable causes semant to signal an error later when variable is used
 
 record type definitions:
-test33.tig,         ( semanttest.exe ..\testcases\book\test33.tig & cat ..\testcases\book\test33.tig & cat ast_dump.txt )
-test44.tig,         ( semanttest.exe ..\testcases\book\test44.tig & cat ..\testcases\book\test44.tig & cat ast_dump.txt )
-test45.tig,         ( semanttest.exe ..\testcases\book\test45.tig & cat ..\testcases\book\test45.tig & cat ast_dump.txt )
-test46.tig,         ( semanttest.exe ..\testcases\book\test46.tig & cat ..\testcases\book\test46.tig & cat ast_dump.txt )
-test49.tig   OK BECAUSE OF SYNTAX ERROR ( semanttest.exe ..\testcases\book\test49.tig & cat ..\testcases\book\test49.tig & cat ast_dump.txt )
+test33.tig,         ( semanttest.exe ..\testcases\book\test33.tig & cat ..\testcases\book\test33.tig & cat ast_dump.txt ) // SEM_ERROR, undeclared type
+test44.tig,         ( semanttest.exe ..\testcases\book\test44.tig & cat ..\testcases\book\test44.tig & cat ast_dump.txt ) // SEM_ERROR
+test45.tig,         ( semanttest.exe ..\testcases\book\test45.tig & cat ..\testcases\book\test45.tig & cat ast_dump.txt ) // SEM_ERROR, unit return
+test46.tig,         ( semanttest.exe ..\testcases\book\test46.tig & cat ..\testcases\book\test46.tig & cat ast_dump.txt ) // OK
+test49.tig          ( semanttest.exe ..\testcases\book\test49.tig & cat ..\testcases\book\test49.tig & cat ast_dump.txt ) // SYNTAX ERROR
 
 type definitions:
 test1.tig,          ( semanttest.exe ..\testcases\book\test1.tig  & cat ..\testcases\book\test1.tig & cat ast_dump.txt ) // OK
@@ -1227,24 +1231,24 @@ test28.tig,         ( semanttest.exe ..\testcases\book\test28.tig & cat ..\testc
 test29.tig,         ( semanttest.exe ..\testcases\book\test29.tig & cat ..\testcases\book\test29.tig & cat ast_dump.txt ) // <================= should be SEM-ERROR, different array types
 test30.tig,         ( semanttest.exe ..\testcases\book\test30.tig & cat ..\testcases\book\test30.tig & cat ast_dump.txt ) // OK
 test38.tig,         ( semanttest.exe ..\testcases\book\test38.tig & cat ..\testcases\book\test38.tig & cat ast_dump.txt ) // SEM-ERROR, two types of same name in the same batch
-test47.tig,         ( semanttest.exe ..\testcases\book\test47.tig & cat ..\testcases\book\test47.tig & cat ast_dump.txt )
+test47.tig,         ( semanttest.exe ..\testcases\book\test47.tig & cat ..\testcases\book\test47.tig & cat ast_dump.txt ) // OK
 test48.tig          ( semanttest.exe ..\testcases\book\test48.tig & cat ..\testcases\book\test48.tig & cat ast_dump.txt ) // SEM-ERROR, this implementation prevents shadowing!
 
 function declarations and function calls:
-test4.tig,          ( semanttest.exe ..\testcases\book\test4.tig  & cat ..\testcases\book\test4.tig & cat ast_dump.txt )
-test6.tig,          ( semanttest.exe ..\testcases\book\test6.tig  & cat ..\testcases\book\test6.tig & cat ast_dump.txt )
-test7.tig,          ( semanttest.exe ..\testcases\book\test7.tig  & cat ..\testcases\book\test7.tig & cat ast_dump.txt )
-test18.tig,         ( semanttest.exe ..\testcases\book\test18.tig & cat ..\testcases\book\test18.tig & cat ast_dump.txt )
-test19.tig,         ( semanttest.exe ..\testcases\book\test19.tig & cat ..\testcases\book\test19.tig & cat ast_dump.txt )
+test4.tig,          ( semanttest.exe ..\testcases\book\test4.tig  & cat ..\testcases\book\test4.tig & cat ast_dump.txt ) // OK
+test6.tig,          ( semanttest.exe ..\testcases\book\test6.tig  & cat ..\testcases\book\test6.tig & cat ast_dump.txt ) // <======== currently fails but has to be ok
+test7.tig,          ( semanttest.exe ..\testcases\book\test7.tig  & cat ..\testcases\book\test7.tig & cat ast_dump.txt ) // <======== currently fails but has to be ok
+test18.tig,         ( semanttest.exe ..\testcases\book\test18.tig & cat ..\testcases\book\test18.tig & cat ast_dump.txt ) // <======== currently fails but has to be ok
+test19.tig,         ( semanttest.exe ..\testcases\book\test19.tig & cat ..\testcases\book\test19.tig & cat ast_dump.txt ) // <======== currently fails but has to be ok
 test34.tig,         ( semanttest.exe ..\testcases\book\test34.tig & cat ..\testcases\book\test34.tig & cat ast_dump.txt ) // SEM-ERROR, formal and actual parameter types differ
-test35.tig,         ( semanttest.exe ..\testcases\book\test35.tig & cat ..\testcases\book\test35.tig & cat ast_dump.txt )
-test36.tig,         ( semanttest.exe ..\testcases\book\test36.tig & cat ..\testcases\book\test36.tig & cat ast_dump.txt )
-test39.tig,         ( semanttest.exe ..\testcases\book\test39.tig & cat ..\testcases\book\test39.tig & cat ast_dump.txt )
-test40.tig          ( semanttest.exe ..\testcases\book\test40.tig & cat ..\testcases\book\test40.tig & cat ast_dump.txt )
+test35.tig,         ( semanttest.exe ..\testcases\book\test35.tig & cat ..\testcases\book\test35.tig & cat ast_dump.txt ) // SEM-ERROR, formals are more then actuals
+test36.tig,         ( semanttest.exe ..\testcases\book\test36.tig & cat ..\testcases\book\test36.tig & cat ast_dump.txt ) // SEM-ERROR, formals are fewer then actuals
+test39.tig,         ( semanttest.exe ..\testcases\book\test39.tig & cat ..\testcases\book\test39.tig & cat ast_dump.txt ) // OK, in this implementation
+test40.tig          ( semanttest.exe ..\testcases\book\test40.tig & cat ..\testcases\book\test40.tig & cat ast_dump.txt ) // SEM-ERROR, no return type declared but returns ty_int
 
 function calls:
-test21.tig,         ( semanttest.exe ..\testcases\book\test21.tig & cat ..\testcases\book\test21.tig & cat ast_dump.txt )
-test27.tig          ( semanttest.exe ..\testcases\book\test27.tig & cat ..\testcases\book\test27.tig & cat ast_dump.txt )
+test21.tig,         ( semanttest.exe ..\testcases\book\test21.tig & cat ..\testcases\book\test21.tig & cat ast_dump.txt ) // SEM-ERROR, procedure (= no return value, returns unit) is used where return type is required
+test27.tig          ( semanttest.exe ..\testcases\book\test27.tig & cat ..\testcases\book\test27.tig & cat ast_dump.txt ) // OK
 
 
 break:
@@ -1289,16 +1293,16 @@ semanttest.exe ..\testcases\WMBao\Good\13.tig
 semanttest.exe ..\testcases\WMBao\Good\14.tig
 semanttest.exe ..\testcases\WMBao\Good\15.tig
 semanttest.exe ..\testcases\WMBao\Good\16.tig
-semanttest.exe ..\testcases\WMBao\Good\17.tig
+semanttest.exe ..\testcases\WMBao\Good\17.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\18.tig
 semanttest.exe ..\testcases\WMBao\Good\19.tig
 semanttest.exe ..\testcases\WMBao\Good\20.tig
 semanttest.exe ..\testcases\WMBao\Good\21.tig
 semanttest.exe ..\testcases\WMBao\Good\22.tig
-semanttest.exe ..\testcases\WMBao\Good\23.tig
+semanttest.exe ..\testcases\WMBao\Good\23.tig // OK, this is the queens.tig by appel
 semanttest.exe ..\testcases\WMBao\Good\24.tig
 semanttest.exe ..\testcases\WMBao\Good\25.tig
-semanttest.exe ..\testcases\WMBao\Good\26.tig
+semanttest.exe ..\testcases\WMBao\Good\26.tig // <============= error segfault in the compiler
 semanttest.exe ..\testcases\WMBao\Good\27.tig
 semanttest.exe ..\testcases\WMBao\Good\28.tig
 semanttest.exe ..\testcases\WMBao\Good\29.tig
