@@ -6,7 +6,7 @@
  */
 E_enventry E_VarEntry(Ty_ty ty)
 {
-    printf("Factory - E_VarEntry\n");
+    //printf("Factory - E_VarEntry\n");
 
 	E_enventry e = checked_malloc(sizeof(*e));
     e->kind = E_varEntry;
@@ -21,7 +21,7 @@ E_enventry E_VarEntry(Ty_ty ty)
  */
 E_enventry E_FunEntry(Ty_tyList formals, Ty_ty result)
 {
-    printf("Factory - E_VarEntry\n");
+    //printf("Factory - E_VarEntry\n");
 
 	E_enventry e = checked_malloc(sizeof(*e));
     e->kind = E_funEntry;

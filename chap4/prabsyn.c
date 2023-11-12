@@ -78,41 +78,41 @@ static void pr_oper(FILE *out, A_oper d) {
 /* Print A_var types. Indent d spaces. */
 void pr_exp(FILE *out, A_exp v, int d) {
 
-  printf("pr_exp() ...\n");
+//   printf("pr_exp() ...\n");
 
  indent(out, d);
 
  switch (v->kind) {
 
  case A_varExp:
-   printf("pr_exp() - A_varExp\n");
+//    printf("pr_exp() - A_varExp\n");
    fprintf(out, "varExp(\n"); pr_var(out, v->u.var, d+1); 
    fprintf(out, "%s", ")");
    break;
 
  case A_nilExp:
-   printf("A_nilExp\n");
+//    printf("A_nilExp\n");
    fprintf(out, "nilExp()");
    break;
 
  case A_intExp:
-   printf("A_intExp\n");
+//    printf("A_intExp\n");
    fprintf(out, "intExp(%d)", v->u.intt);
    break;
 
  case A_stringExp:
-   printf("A_stringExp\n");
+//    printf("A_stringExp\n");
    fprintf(out, "stringExp(%s)", v->u.stringg);
    break;
 
  case A_callExp:
-   printf("A_callExp\n");
+//    printf("A_callExp\n");
    fprintf(out, "callExp(%s,\n", S_name(v->u.call.func));
    pr_expList(out, v->u.call.args, d+1); fprintf(out, ")");
    break;
 
  case A_opExp:
-   printf("A_opExp\n");
+//    printf("A_opExp\n");
    fprintf(out, "opExp(\n");
 
   if (v->u.op.right == NULL) {
@@ -132,7 +132,7 @@ void pr_exp(FILE *out, A_exp v, int d) {
    break;
 
  case A_recordExp:
-   printf("A_recordExp\n");
+//    printf("A_recordExp\n");
    fprintf(out, "recordExp(%s,\n", S_name(v->u.record.typ)); 
    pr_efieldList(out, v->u.record.fields, d+1); fprintf(out, ")");
    break;
@@ -141,46 +141,46 @@ void pr_exp(FILE *out, A_exp v, int d) {
  A_expList_ has a A_exp called head and a pointer to the next A_expList_.
  This will form a singly linked list. */
  case A_seqExp:
-   printf("A_seqExp ...\n");
+//    printf("A_seqExp ...\n");
    fprintf(out, "seqExp(\n");
    pr_expList(out, v->u.seq, d+1); fprintf(out, ")");
-   printf("A_seqExp done.\n");
+//    printf("A_seqExp done.\n");
    break;
 
  case A_assignExp:
-   printf("A_assignExp\n");
+//    printf("A_assignExp\n");
    fprintf(out, "assignExp(\n");
    pr_var(out, v->u.assign.var, d+1); fprintf(out, ",\n");
    pr_exp(out, v->u.assign.exp, d+1); fprintf(out, ")");
    break;
 
  case A_ifExp:
-   printf("A_ifExp - A\n");
+//    printf("A_ifExp - A\n");
    fprintf(out, "iffExp(\n");
-   printf("A_ifExp - B\n");
+//    printf("A_ifExp - B\n");
    pr_exp(out, v->u.iff.test, d+1); fprintf(out, ",\n");
-   printf("A_ifExp - C\n");
+//    printf("A_ifExp - C\n");
    pr_exp(out, v->u.iff.then, d+1);
-   printf("A_ifExp - D\n");
+//    printf("A_ifExp - D\n");
    if (v->u.iff.elsee) { /* else is optional */
-   printf("A_ifExp - E\n");
+        // printf("A_ifExp - E\n");
       fprintf(out, ",\n");
-      printf("A_ifExp - F\n");
+    //   printf("A_ifExp - F\n");
       pr_exp(out, v->u.iff.elsee, d+1);
    }
-   printf("A_ifExp - G\n");
+//    printf("A_ifExp - G\n");
    fprintf(out, ")");
    break;
 
  case A_whileExp:
-   printf("A_whileExp\n");
+//    printf("A_whileExp\n");
    fprintf(out, "whileExp(\n");
    pr_exp(out, v->u.whilee.test, d+1); fprintf(out, ",\n");
    pr_exp(out, v->u.whilee.body, d+1); fprintf(out, ")\n");
    break;
 
  case A_forExp:
-   printf("A_forExp\n");
+//    printf("A_forExp\n");
    fprintf(out, "forExp(%s,\n", S_name(v->u.forr.var)); 
    pr_exp(out, v->u.forr.lo, d+1); fprintf(out, ",\n");
    pr_exp(out, v->u.forr.hi, d+1); fprintf(out, "%s\n", ",");
@@ -189,50 +189,50 @@ void pr_exp(FILE *out, A_exp v, int d) {
    break;
 
  case A_breakExp:
-   printf("A_breakExp\n");
+//    printf("A_breakExp\n");
    fprintf(out, "breakExp()");
    break;
 
  case A_letExp:
-   printf("A_letExp type: %d\n", v->kind);
+//    printf("A_letExp type: %d\n", v->kind);
    fprintf(out, "letExp(\n");
 
-   printf("A_letExp A\n");
+//    printf("A_letExp A\n");
    pr_decList(out, v->u.let.decs, d+1); fprintf(out, ",\n");
 
-   printf("A_letExp B\n");
+//    printf("A_letExp B\n");
    pr_exp(out, v->u.let.body, d+1); fprintf(out, ")");
 
-   printf("A_letExp C\n");
+//    printf("A_letExp C\n");
    break;
 
  case A_arrayExp:
 
-   printf("A_arrayExp - A\n");
+   //printf("A_arrayExp - A\n");
 
    fprintf(out, "arrayExp(%s,\n", S_name(v->u.array.typ));
 
-   printf("A_arrayExp - B\n");
+   //printf("A_arrayExp - B\n");
 
    pr_exp(out, v->u.array.size, d+1); fprintf(out, ",\n");
 
-   printf("A_arrayExp - C\n");
+   //printf("A_arrayExp - C\n");
 
    pr_exp(out, v->u.array.init, d+1); fprintf(out, ")");
 
-   printf("A_arrayExp - D\n");
+   //printf("A_arrayExp - D\n");
    break;
 
  default:
 
-  printf("Unexpected kind: %d\n", v->kind);
+  //printf("Unexpected kind: %d\n", v->kind);
    assert(0); 
  } 
 }
 
 static void pr_dec(FILE *out, A_dec v, int d) {
 
-  printf("pr_dec kind: %lu\n", v->kind);
+  //printf("pr_dec kind: %lu\n", v->kind);
 
  indent(out, d);
  switch (v->kind) {
@@ -245,32 +245,32 @@ static void pr_dec(FILE *out, A_dec v, int d) {
 
  case A_varDec:
 
-   printf("pr_dec - A_varDec\n");
+   //printf("pr_dec - A_varDec\n");
 
    fprintf(out, "varDec(%s,\n", S_name(v->u.var.var));
 
-   printf("pr_dec - A_varDec - A\n");
+   //printf("pr_dec - A_varDec - A\n");
 
    if (v->u.var.typ) {
 
-     printf("pr_dec - A_varDec - B\n");
+     //printf("pr_dec - A_varDec - B\n");
      indent(out, d+1); fprintf(out, "%s,\n", S_name(v->u.var.typ)); 
    }
 
-   printf("pr_dec - A_varDec - C\n");
+   //printf("pr_dec - A_varDec - C\n");
 
    pr_exp(out, v->u.var.init, d+1); fprintf(out, ",\n");
 
-   printf("pr_dec - A_varDec - D\n");
+   //printf("pr_dec - A_varDec - D\n");
 
    indent(out, d+1); fprintf(out, "%s", v->u.var.escape ? "TRUE)" : "FALSE)");
 
-   printf("pr_dec - A_varDec - E\n");
+   //printf("pr_dec - A_varDec - E\n");
 
    break;
 
  case A_typeDec:
- printf("pr_dec - A_typeDec\n");
+ //printf("pr_dec - A_typeDec\n");
    fprintf(out, "typeDec(\n"); 
    pr_nametyList(out, v->u.type, d+1); fprintf(out, ")");
    break;
@@ -317,27 +317,27 @@ static void pr_fieldList(FILE *out, A_fieldList v, int d) {
 
 static void pr_expList(FILE *out, A_expList v, int d) {
 
-  printf("pr_expList() ...\n");
+  //printf("pr_expList() ...\n");
 
  indent(out, d);
  if (v) {
-  printf("pr_expList() A\n");
+  //printf("pr_expList() A\n");
 
    fprintf(out, "expList(\n"); 
 
-   printf("pr_expList() B\n");
+   //printf("pr_expList() B\n");
 
    pr_exp(out, v->head, d+1); fprintf(out, ",\n");
 
-   printf("pr_expList() B\n");
+   //printf("pr_expList() B\n");
 
    pr_expList(out, v->tail, d+1);
 
-   printf("pr_expList() C\n");
+   //printf("pr_expList() C\n");
 
    fprintf(out, ")");
 
-   printf("pr_expList() D\n");
+   //printf("pr_expList() D\n");
  }
  else fprintf(out, "expList()"); 
 
@@ -365,37 +365,37 @@ static void pr_fundecList(FILE *out, A_fundecList v, int d) {
 
 static void pr_decList(FILE *out, A_decList v, int d) {
 
-  printf("pr_decList() A\n");
+  //printf("pr_decList() A\n");
 
  indent(out, d);
  if (v) {
 
-  printf("pr_decList() B\n");
+  //printf("pr_decList() B\n");
 
    fprintf(out, "decList(\n"); 
 
-   printf("pr_decList() C\n");
+   //printf("pr_decList() C\n");
 
    pr_dec(out, v->head, d+1); fprintf(out, ",\n");
 
-   printf("pr_decList() D\n");
+   //printf("pr_decList() D\n");
 
    pr_decList(out, v->tail, d+1);
 
-   printf("pr_decList() E\n");
+   //printf("pr_decList() E\n");
 
    fprintf(out, ")");
  }
  else 
  {
-  printf("pr_decList() C\n");
+  //printf("pr_decList() C\n");
 
   fprintf(out, "decList()"); 
  }
 }
 
 static void pr_namety(FILE *out, A_namety v, int d) {
-  printf("pr_namety v: %d\n", v);
+  //printf("pr_namety v: %d\n", v);
  indent(out, d);
  fprintf(out, "namety(%s,\n", S_name(v->name)); 
  pr_ty(out, v->ty, d+1); fprintf(out, ")");
@@ -403,7 +403,7 @@ static void pr_namety(FILE *out, A_namety v, int d) {
 
 static void pr_nametyList(FILE *out, A_nametyList v, int d) {
 
-  printf("pr_nametyList\n");
+  //printf("pr_nametyList\n");
  indent(out, d);
  if (v) {
    fprintf(out, "nametyList(\n"); 

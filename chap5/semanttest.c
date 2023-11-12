@@ -17,7 +17,7 @@ int main(int argc, char **argv)
         fprintf(stderr,"usage: a.out filename\n"); exit(1);
     }
 
-    printf("\n\n\nParsing the input ...\n");
+    printf("Parsing the input ...\n");
     A_exp program = parse(argv[1]);
     printf("Parsing the input done.\n");
 
@@ -27,7 +27,7 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    printf("\n\n\nDumping the AST ...\n");
+    printf("Dumping the AST ...\n");
     // open a file in write only mode
     FILE *out_file = fopen("ast_dump.txt", "w"); 
     // test for files not existing.
@@ -57,10 +57,10 @@ int main(int argc, char **argv)
     S_enter(tenv, S_Symbol("int"), Ty_Int());
     S_enter(tenv, S_Symbol("string"), Ty_String());
 
-    // DEBUG
-    printf("\nINITIAL TAB_DUMP venv\n=============================\n");
-    TAB_dump(tenv, show);
-    printf("=============================\n");
+    // // DEBUG
+    // printf("\nINITIAL TAB_DUMP venv\n=============================\n");
+    // TAB_dump(tenv, show);
+    // printf("=============================\n");
 
 
 
@@ -179,17 +179,17 @@ int main(int argc, char **argv)
     
     
     
-    // DEBUG
-    printf("\nINITIAL TAB_DUMP venv\n=============================\n");
-    TAB_dump(venv, show);
-    printf("=============================\n");
+    // // DEBUG
+    // printf("\nINITIAL TAB_DUMP venv\n=============================\n");
+    // TAB_dump(venv, show);
+    // printf("=============================\n");
 
 
 
 
 
 
-    printf("\n\n\nPerforming Semantic Analysis ...\n");
+    printf("Performing Semantic Analysis ...\n");
     struct expty exp = transExp(venv, tenv, program, OUTSIDE_LOOP);
 
     if (exp.ty == Ty_Nil())

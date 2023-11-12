@@ -1228,7 +1228,7 @@ test14.tig,         ( semanttest.exe ..\testcases\book\test14.tig & cat ..\testc
 test22.tig,         ( semanttest.exe ..\testcases\book\test22.tig & cat ..\testcases\book\test22.tig & cat ast_dump.txt ) // SEM-ERRRO, field not in record type
 test23.tig,         ( semanttest.exe ..\testcases\book\test23.tig & cat ..\testcases\book\test23.tig & cat ast_dump.txt ) // SEM-ERROR, type mismatch
 test28.tig,         ( semanttest.exe ..\testcases\book\test28.tig & cat ..\testcases\book\test28.tig & cat ast_dump.txt ) // SEM-ERROR, different record types
-test29.tig,         ( semanttest.exe ..\testcases\book\test29.tig & cat ..\testcases\book\test29.tig & cat ast_dump.txt ) // <================= should be SEM-ERROR, different array types
+test29.tig,         ( semanttest.exe ..\testcases\book\test29.tig & cat ..\testcases\book\test29.tig & cat ast_dump.txt ) // <================= FIX IT !!!!!! should be SEM-ERROR, different array types
 test30.tig,         ( semanttest.exe ..\testcases\book\test30.tig & cat ..\testcases\book\test30.tig & cat ast_dump.txt ) // OK
 test38.tig,         ( semanttest.exe ..\testcases\book\test38.tig & cat ..\testcases\book\test38.tig & cat ast_dump.txt ) // SEM-ERROR, two types of same name in the same batch
 test47.tig,         ( semanttest.exe ..\testcases\book\test47.tig & cat ..\testcases\book\test47.tig & cat ast_dump.txt ) // OK

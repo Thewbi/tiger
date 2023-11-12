@@ -9,7 +9,7 @@
 
 A_var A_SimpleVar(A_pos pos, S_symbol sym)
 {
-	printf("Factory - A_SimpleVar\n");
+	//printf("Factory - A_SimpleVar\n");
 	A_var p = checked_malloc(sizeof(*p));
  p->kind=A_simpleVar;
  p->pos=pos;
@@ -38,13 +38,13 @@ A_var A_SubscriptVar(A_pos pos, A_var var, A_exp exp)
 
 A_exp A_VarExp(A_pos pos, A_var var)
 {
-	printf("Factory - A_VarExp\n");
+	//printf("Factory - A_VarExp\n");
 	A_exp p = checked_malloc(sizeof(*p));
  p->kind=A_varExp;
  p->pos=pos;
  p->u.var=var;
 
- printf("Factory - A_VarExp: %d \n", p->kind);
+ //printf("Factory - A_VarExp: %d \n", p->kind);
  return p;
 }
 
