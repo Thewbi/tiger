@@ -100,7 +100,7 @@ parameter list defined in the functions definition.
 See https://www.haber-kucharsky.com/proj/fang/tiger.html
 
 The unit type is used for functions that return no value and are merely called because their side-effects are beneficial.
-The unit type is also created when a variable is assigned an empty sequence:
+The unit type is also created by if-then statements that lack an else branch or when a variable is assigned an empty sequence:
 
 test43.tig  ( semanttest.exe ..\testcases\book\test43.tig )
 
@@ -114,7 +114,7 @@ in
 end
 ```
 
-There is no explicit type defined for unit. The semantic analysis in this compiler returns NULL for the unit.
+There is no explicit type defined for unit. The semantic analysis in this compiler returns NULL or Ty_Nil() for the unit.
 
 ### Environments / Scopes / Lifetime
 
@@ -203,16 +203,16 @@ Table is a desctructive / imperative table that uses a stack to roll and unroll 
 
 # Structure of the Semantic Analysis Module semant.h/semant.c
 
-After a bit of trial-and-error with the semant.h/semant.c, the following can be said about the overall approach.
+After a bit of trial-and-error with the semant.h/semant.c files, the following can be said about the overall approach.
 
-Firstly, there have to be two environments prepare in the semanttest.c like so:
+Firstly, there have to be two environments prepared in the semanttest.c like so:
 
 ```
 S_table venv = S_empty();
 S_table tenv = S_empty();
 ```
 
-to prevent errors from happening. The important part is to call S_empty() so that the end pointers of linked
+to prevent seg-faults from happening. The important part is to call S_empty() so that the end pointers of linked
 lists are set to NULL correctly. venv is the environment for variables and functions. tenv is the environments for types.
 
 To output the tables, the function TAB_dump() from table.h/c is used. The function pointer points to a
@@ -277,7 +277,7 @@ void show(void *key, void *value)
 ```
 
 I have placed show() into semant.h/.c since it is used there exclusively. You can use TAB_dump()
-to check your intermediate results ant to check what bindings from symbol name to type are stored in
+to check your intermediate results and to check what bindings from symbol name to type are stored in
 your environments.
 
 Semant is recursive in that transExp() calls itself and every execution of the semantic analysis phase starts with a call
@@ -359,7 +359,7 @@ left and the right operand.
                 EM_error(a->u.op.left->pos, "integer required");
                 sane = FALSE;
             }
-        
+
             if (right.ty->kind != Ty_int)
             {
                 EM_error(a->u.op.right->pos,"integer required");
@@ -369,7 +369,7 @@ left and the right operand.
             if (sane) {
                 printf("A_opExp 20 - PLUS - Semantically sane! \n");
             }
-        
+
             return expTy(NULL, Ty_Int());
         }
     }
@@ -452,9 +452,9 @@ The variable declaration optionally can contain a type specification.
 ```
 let
     var a := 0
-	var i:int := 5
+    var i:int := 5
 in
-	0
+    0
 end
 ```
 
@@ -464,11 +464,11 @@ the assigned value is used as the type of the declared variable.
 
 ```
 let
-	var i:int := 5
+    var i:int := 5
     var a := 0
     var b := "test"
 in
-	i
+    i
 end
 ```
 
@@ -485,9 +485,9 @@ The semantic analysis has to return an error.
 
 ```
 let
-	var i:int := "this will err"
+    var i:int := "this will err"
 in
-	0
+    0
 end
 ```
 
@@ -526,10 +526,10 @@ test38.tig ( semanttest.exe ..\testcases\book\test38.tig )
     in the same (consecutive) batch of mutually recursive types. 
     See also test47  */
 let
-	type a = int
-	type a = string
+    type a = int
+    type a = string
 in
-	0
+    0
 end
 ```
 
@@ -543,11 +543,11 @@ test47.tig ( semanttest.exe ..\testcases\book\test47.tig )
    are not in the same batch of mutually recursive types.
    See also test38 */
 let
-	type a = int
-	var b := 4
-	type a = string
+    type a = int
+    var b := 4
+    type a = string
 in
-	0
+    0
 end
 ```
 
@@ -563,11 +563,11 @@ If this code is compiled: test47.tig,         ( semanttest.exe ..\testcases\book
 
 ```
 let
-	type a = int
-	var b := 4
-	type a = string
+    type a = int
+    var b := 4
+    type a = string
 in
-	0
+    0
 end
 ```
 
@@ -672,9 +672,9 @@ An example is in typedec_simple.tig:
 
 ```
 let
-	type myint = int
+    type myint = int
 in
-	0
+    0
 end
 ```
 
@@ -688,10 +688,10 @@ arrays_simple.tig
 
 ```
 let
-	type arrtype1 = array of int
+    type arrtype1 = array of int
     type arrtype2 = array of string
 in
-	0
+    0
 end
 ```
 
@@ -706,9 +706,9 @@ Next are records.
 
 ```
 let
-	type rectype = { name:string, age:int }
+    type rectype = { name:string, age:int }
 in
-	0
+    0
 end
 ```
 
@@ -731,7 +731,7 @@ let
     var b:int := 3
     var c:int := 0
 in
-	c := a + b
+    c := a + b
 end
 ```
 
@@ -752,10 +752,10 @@ arrays.tig
 
 ```
 let
-	type arrtype1 = array of int
-	var arr1: arrtype1 := arrtype1 [10] of 0
+    type arrtype1 = array of int
+    var arr1: arrtype1 := arrtype1 [10] of 0
 in
-	arr1[0] := 123;
+    arr1[0] := 123;
     arr1[2]
 end
 ```
@@ -769,9 +769,9 @@ It is invalid to index a variable that is not an array (test24.tig)
 ```
 /* error : variable not array */
 let 
-	var d:=0
+    var d:=0
 in
-	d[3]
+    d[3]
 end
 ```
 
@@ -788,9 +788,9 @@ It is invalid to perform field access on variables that are not structs / record
 ```
 /* error : variable not record */
 let 
-	var d:=0
+    var d:=0
 in
-	d.f 
+    d.f 
 end
 ```
 
@@ -929,9 +929,9 @@ The returned type of a for-loop is the last type of the body.
 /* valid for and let */
 
 let
-	var a:= 0
+    var a:= 0
 in 
-	for i:=0 to 100 do (a:=a+1;())
+    for i:=0 to 100 do (a:=a+1;())
 end
 ```
 ## while-loop
@@ -955,7 +955,7 @@ test40.tig          ( semanttest.exe ..\testcases\book\test40.tig & cat ..\testc
 
 ```
 let
-	function g(a:int):int = a
+    function g(a:int):int = a
 in
     //g(2)
     0
@@ -992,16 +992,16 @@ Illegal:
 /* semantics of nested break */
 
 let function f () =
-	let 
+    let 
         function g (i : int) : int =
-		    if i = 3 then break
-	in
-		for i := 0 to 9 do
-		    (
+            if i = 3 then break
+    in
+        for i := 0 to 9 do
+            (
                 g (i); 
                 print (chr (i + ord ("0")))
             )
-	end
+    end
 in
 	f ()
 end
@@ -1067,14 +1067,14 @@ For example,
 
 ```
 let
-  type tree = {root: item, children: forest}
-  and type forest = {head: tree, tail: forest}
-  and type item = string
+    type tree = {root: item, children: forest}
+    and type forest = {head: tree, tail: forest}
+    and type item = string
 
-  function leaf(x: string): tree = tree {root=x, children=nil}
-  function cons(x: tree, f: forest): forest = forest {head=x, tail=f}
+    function leaf(x: string): tree = tree {root=x, children=nil}
+    function cons(x: tree, f: forest): forest = forest {head=x, tail=f}
 in
-  tree {root="Z", children=cons(leaf("A"), cons(leaf("B"), cons(leaf("C"), nil)))}
+    tree {root="Z", children=cons(leaf("A"), cons(leaf("B"), cons(leaf("C"), nil)))}
 end
 ```
 
@@ -1203,7 +1203,7 @@ test25.tig          ( semanttest.exe ..\testcases\book\test25.tig & cat ..\testc
 
 variable declarations:
 test12.tig,         ( semanttest.exe ..\testcases\book\test12.tig & cat ..\testcases\book\test12.tig & cat ast_dump.txt )
-test31.tig,         ( semanttest.exe ..\testcases\book\test31.tig & cat ..\testcases\book\test31.tig & cat ast_dump.txt )
+test31.tig,         ( semanttest.exe ..\testcases\book\test31.tig & cat ..\testcases\book\test31.tig & cat ast_dump.txt ) <================== SEMANT is broken! This file has to fail!
 test37.tig,         ( semanttest.exe ..\testcases\book\test37.tig & cat ..\testcases\book\test37.tig & cat ast_dump.txt ) // OK
 test41.tig,         ( semanttest.exe ..\testcases\book\test41.tig & cat ..\testcases\book\test41.tig & cat ast_dump.txt )
 test42.tig,         ( semanttest.exe ..\testcases\book\test42.tig & cat ..\testcases\book\test42.tig & cat ast_dump.txt )
