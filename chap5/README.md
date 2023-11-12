@@ -1281,8 +1281,8 @@ semanttest.exe ..\testcases\BartVandewoestyne\compilable\valid_strings.tig // OK
 
 semanttest.exe ..\testcases\WMBao\Good\1.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\2.tig // OK
-semanttest.exe ..\testcases\WMBao\Good\3.tig
-semanttest.exe ..\testcases\WMBao\Good\5.tig
+semanttest.exe ..\testcases\WMBao\Good\3.tig // OK
+semanttest.exe ..\testcases\WMBao\Good\5.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\6.tig
 semanttest.exe ..\testcases\WMBao\Good\7.tig
 semanttest.exe ..\testcases\WMBao\Good\8.tig
@@ -1308,7 +1308,7 @@ semanttest.exe ..\testcases\WMBao\Good\28.tig
 semanttest.exe ..\testcases\WMBao\Good\29.tig
 semanttest.exe ..\testcases\WMBao\Good\30.tig
 semanttest.exe ..\testcases\WMBao\Good\32.tig
-semanttest.exe ..\testcases\WMBao\Good\33.tig
+semanttest.exe ..\testcases\WMBao\Good\33.tig // compiler segfault
 semanttest.exe ..\testcases\WMBao\Good\34.tig
 semanttest.exe ..\testcases\WMBao\Good\35.tig
 semanttest.exe ..\testcases\WMBao\Good\36.tig
