@@ -24,6 +24,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
         case A_nilExp:
             printf("A_varExp 16\n");
             return expTy(a, Ty_Nil());
+            //return expTy(a, Ty_nil);
 
         case A_intExp:
             printf("aaa A_intExp 17\n");
@@ -115,6 +116,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
             {
                 printf("A_callExp 19 - C\n");
                 return expTy(a, Ty_Nil());
+                //return expTy(a, Ty_nil);
             }
 
             printf("A_callExp 19 - D - result: %d\n", enventry->u.fun.result);
@@ -248,7 +250,8 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
             printf("A_seqExp 22\n");
 
             struct expty last_type;
-            last_type.ty = Ty_nil;
+            //last_type.ty = Ty_nil;
+            last_type.ty = Ty_Nil();
 
             A_expList seq = a->u.seq;
             while (seq != NULL) {
@@ -264,7 +267,8 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
             }
 
             // the sequence adopts the type of it's last expression
-            return expTy(a, last_type.ty);
+            //return expTy(a, last_type.ty);
+            return last_type;
         }
         break;
 
@@ -290,6 +294,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
                 EM_error(a->u.op.left->pos, "Types used in assignment are incompatible!");
                 assert(0);
                 return expTy(NULL, Ty_Nil());
+                //return expTy(NULL, Ty_nil);
             } 
             else 
             {
@@ -318,6 +323,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
                 // last statement is not fully defined in the else case! Therefore
                 // return nil
                 return expTy(a, Ty_Nil());
+                //return expTy(a, Ty_nil);
             } else {
                 struct expty elsee_Ty = transExp(venv, tenv, elsee, inside_loop);
 
@@ -332,6 +338,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
                     EM_error(a->pos, "if-then-else invalid! then and else are of different type!");
                     assert(0);
                     return expTy(NULL, Ty_Nil());
+                    //return expTy(NULL, Ty_nil);
                 }
             }
             return expTy(a, then_Ty.ty);
@@ -394,6 +401,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
                 EM_error(a->pos, "lo invalid - integer required");
                 assert(0);
                 return expTy(NULL, Ty_Nil());
+                //return expTy(NULL, Ty_nil);
             }
 
             printf("A_forExp F\n");
@@ -411,6 +419,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
                 EM_error(a->pos, "hi invalid - integer required");
                 assert(0);
                 return expTy(NULL, Ty_Nil());
+                //return expTy(NULL, Ty_nil);
             }
 
             printf("A_forExp G\n");
@@ -432,6 +441,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
                 assert(0);
             }
             return expTy(a, Ty_Nil());
+            //return expTy(NULL, Ty_nil);
 
         case A_letExp: 
         {
@@ -502,6 +512,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
                 EM_error(a->pos, "Type used in array initialization does not match array type!");
                 assert(0);
                 return expTy(NULL, Ty_Nil());
+                //return expTy(NULL, Ty_nil);
             } else {
                 printf("Array declaration valid\n");
             }
@@ -551,6 +562,7 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
                 EM_error(v->pos, "Variable \"%s\" is not declared. The type is unknown! Line: %d\n", S_name(v->u.simple), v->pos);
                 assert(0);
                 return expTy(NULL, Ty_Nil());
+                //return expTy(NULL, Ty_nil);
             }
 
             if (ty->kind == E_varEntry) {
@@ -752,6 +764,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 
             // see VARIABLE DECLARATIONS, page 119
             struct expty init_type = expTy(NULL, Ty_Nil());
+            //struct expty init_type = expTy(NULL, Ty_nil);
 
             // determine the type of the initialization value
             if (d->u.var.init != NULL) {
@@ -836,6 +849,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                                 EM_error(d->pos, "Types used in variable declaration initializer are incompatible!");
                                 assert(0);
                                 //return expTy(NULL, Ty_Nil());
+                                //return expTy(NULL, Ty_nil);
                                 return;
                             }
                             break;
@@ -848,6 +862,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                                 EM_error(d->pos, "Types used in variable declaration initializer are incompatible!");
                                 assert(0);
                                 //return expTy(NULL, Ty_Nil());
+                                //return expTy(NULL, Ty_nil);
                                 return;
                             }
                             break;
@@ -918,7 +933,8 @@ void transDec(S_table venv, S_table tenv, A_dec d)
             printf("A_functionDec\n");
 
             struct expty function_result_type;
-            function_result_type.ty = Ty_nil;
+            //function_result_type.ty = Ty_nil;
+            function_result_type.ty = Ty_Nil();
 
             A_fundecList fundecList = d->u.function;
             while (fundecList != NULL) 
@@ -989,11 +1005,20 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 // remove parameter scope
                 S_endScope(venv);
 
-                if ((fundec->result == NULL) && (function_result_type.ty->kind != Ty_nil))
+                printf("testing fundec: %d\n", fundec);
+                printf("testing fundec: %d\n", fundec->result);
+                printf("testing function_result_type: %d\n", function_result_type);
+                printf("testing function_result_type.ty: %d\n", function_result_type.ty);
+
+                if ((fundec->result == NULL) && (function_result_type.ty != Ty_Nil()))
+                //if ((fundec->result == NULL) && (function_result_type.ty->kind != Ty_nil))
                 {
+                    printf("wololo\n");
                     EM_error(d->pos, "Function \"%s\" is declared without return type but returns %s.\n", S_name(fundec->name), label_type(function_result_type.ty));
                     assert(0);
                 }
+
+                printf("next function UIOAIUSDOIUASDOIUASDOUIASDUIO\n");
 
                 // next function declaration
                 fundecList = fundecList->tail;

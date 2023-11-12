@@ -1225,7 +1225,7 @@ test1.tig,          ( semanttest.exe ..\testcases\book\test1.tig  & cat ..\testc
 test2.tig,          ( semanttest.exe ..\testcases\book\test2.tig  & cat ..\testcases\book\test2.tig & cat ast_dump.txt ) // OK
 test3.tig,          ( semanttest.exe ..\testcases\book\test3.tig  & cat ..\testcases\book\test3.tig & cat ast_dump.txt ) // OK
 test14.tig,         ( semanttest.exe ..\testcases\book\test14.tig & cat ..\testcases\book\test14.tig & cat ast_dump.txt ) // SEM-ERROR, types do not match
-test22.tig,         ( semanttest.exe ..\testcases\book\test22.tig & cat ..\testcases\book\test22.tig & cat ast_dump.txt ) // SEM-ERRRO,  field not in record type
+test22.tig,         ( semanttest.exe ..\testcases\book\test22.tig & cat ..\testcases\book\test22.tig & cat ast_dump.txt ) // SEM-ERRRO, field not in record type
 test23.tig,         ( semanttest.exe ..\testcases\book\test23.tig & cat ..\testcases\book\test23.tig & cat ast_dump.txt ) // SEM-ERROR, type mismatch
 test28.tig,         ( semanttest.exe ..\testcases\book\test28.tig & cat ..\testcases\book\test28.tig & cat ast_dump.txt ) // SEM-ERROR, different record types
 test29.tig,         ( semanttest.exe ..\testcases\book\test29.tig & cat ..\testcases\book\test29.tig & cat ast_dump.txt ) // <================= should be SEM-ERROR, different array types
@@ -1279,8 +1279,8 @@ semanttest.exe ..\testcases\BartVandewoestyne\compilable\record_equality_test.ti
 semanttest.exe ..\testcases\BartVandewoestyne\compilable\simple_let.tig // OK
 semanttest.exe ..\testcases\BartVandewoestyne\compilable\valid_strings.tig // OK
 
-semanttest.exe ..\testcases\WMBao\Good\1.tig
-semanttest.exe ..\testcases\WMBao\Good\2.tig
+semanttest.exe ..\testcases\WMBao\Good\1.tig // OK
+semanttest.exe ..\testcases\WMBao\Good\2.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\3.tig
 semanttest.exe ..\testcases\WMBao\Good\5.tig
 semanttest.exe ..\testcases\WMBao\Good\6.tig
@@ -1302,7 +1302,7 @@ semanttest.exe ..\testcases\WMBao\Good\22.tig
 semanttest.exe ..\testcases\WMBao\Good\23.tig // OK, this is the queens.tig by appel
 semanttest.exe ..\testcases\WMBao\Good\24.tig
 semanttest.exe ..\testcases\WMBao\Good\25.tig
-semanttest.exe ..\testcases\WMBao\Good\26.tig // <============= error segfault in the compiler
+semanttest.exe ..\testcases\WMBao\Good\26.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\27.tig
 semanttest.exe ..\testcases\WMBao\Good\28.tig
 semanttest.exe ..\testcases\WMBao\Good\29.tig
@@ -1334,7 +1334,7 @@ semanttest.exe ..\testcases\WMBao\Good\82.tig
 semanttest.exe ..\testcases\WMBao\Good\83.tig
 semanttest.exe ..\testcases\WMBao\Good\84.tig
 semanttest.exe ..\testcases\WMBao\Good\85.tig
-semanttest.exe ..\testcases\WMBao\Good\86.tig
-semanttest.exe ..\testcases\WMBao\Good\87.tig
-semanttest.exe ..\testcases\WMBao\Good\88.tig
-semanttest.exe ..\testcases\WMBao\Good\pi.tig
+semanttest.exe ..\testcases\WMBao\Good\86.tig // OK
+semanttest.exe ..\testcases\WMBao\Good\87.tig // OK
+semanttest.exe ..\testcases\WMBao\Good\88.tig // OK
+semanttest.exe ..\testcases\WMBao\Good\pi.tig // SEM_ERROR: use of undeclared function printi
