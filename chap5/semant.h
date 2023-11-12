@@ -10,6 +10,9 @@
 #include "env.h"
 #include "table.h"
 
+#define OUTSIDE_LOOP 0
+#define INSIDE_LOOP 1
+
 // where Tr_exp is the translation of the expression into intermediate code, and
 // ty is the type of the expression.
 // To avoid a discussion of intermediate code at this point, let us define a
@@ -22,7 +25,7 @@ struct expty {Tr_exp exp; Ty_ty ty;};
 struct expty expTy(Tr_exp exp, Ty_ty ty);
 
 struct expty transVar(S_table venv, S_table tenv, A_var v);
-struct expty transExp(S_table venv, S_table tenv, A_exp a);
+struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop);
 void transDec(S_table venv, S_table tenv, A_dec d);
 /*struct*/ Ty_ty transTy (S_table tenv, A_ty a);
 

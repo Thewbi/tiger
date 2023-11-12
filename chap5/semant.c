@@ -11,7 +11,7 @@ struct expty expTy(Tr_exp exp, Ty_ty ty)
 /**
  * Traverses expressions and performs semantic analysis, makes sure that the types match.
 */
-struct expty transExp(S_table venv, S_table tenv, A_exp a)
+struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
 {
     printf("transExp A - a->kind: %d\n", a->kind);
 
@@ -82,7 +82,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 
                 printf("A_callExp 19 - AAAAAA args: %d\n", args);
                 // convert the expression of the current actual parameter into a type
-                struct expty actual_param_expTy = transExp(venv, tenv, args->head);
+                struct expty actual_param_expTy = transExp(venv, tenv, args->head, OUTSIDE_LOOP);
                 Ty_ty actual_param_ty = actual_param_expTy.ty;
                 printf("A_callExp 19 - BBBBBBB\n");
 
@@ -146,10 +146,10 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
                 }
 
                 printf("A_opExp left transExp()\n");
-                struct expty left = transExp(venv, tenv, a->u.op.left);
+                struct expty left = transExp(venv, tenv, a->u.op.left, inside_loop);
 
                 printf("A_opExp right transExp()\n");
-                struct expty right = transExp(venv, tenv, a->u.op.right);
+                struct expty right = transExp(venv, tenv, a->u.op.right, inside_loop);
 
                 printf("A_opExp 20 - OPERAND B left: %d, right: %d, left-ty: %d, right-ty: %d\n", left, right, left.ty, right.ty);
 
@@ -189,8 +189,8 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             {
                 printf("A_opExp 20 - OPERAND F \n");
 
-                struct expty left = transExp(venv, tenv, a->u.op.left);
-                struct expty right = transExp(venv, tenv, a->u.op.right);
+                struct expty left = transExp(venv, tenv, a->u.op.left, inside_loop);
+                struct expty right = transExp(venv, tenv, a->u.op.right, inside_loop);
 
                 printf("A_opExp 20 - OPERAND G left: %d, right: %d, left-ty: %d, right-ty: %d\n", left, right, left.ty, right.ty);
 
@@ -251,7 +251,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
                 if (seq->head != NULL)
                 {
                     printf("A_seqExp:\n");
-                    last_type = transExp(venv, tenv, seq->head);
+                    last_type = transExp(venv, tenv, seq->head, inside_loop);
                 }
 
                 // advance iterator
@@ -273,7 +273,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             printf("B A_assignExp 23: pos: %d\n", a->pos);
 
             A_exp exp = a->u.assign.exp;
-            struct expty rhs_exp = transExp(venv, tenv, exp);
+            struct expty rhs_exp = transExp(venv, tenv, exp, inside_loop);
 
             printf("lvalue: %d rhs_exp: %d\n", lvalue, rhs_exp);
             printf("lvalue.ty: %d rhs_exp.ty: %d\n", lvalue.ty, rhs_exp.ty);
@@ -304,8 +304,8 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             A_exp then = a->u.iff.then;
             A_exp elsee = a->u.iff.elsee;
 
-            struct expty test_Ty = transExp(venv, tenv, test);
-            struct expty then_Ty = transExp(venv, tenv, then);
+            struct expty test_Ty = transExp(venv, tenv, test, inside_loop);
+            struct expty then_Ty = transExp(venv, tenv, then, inside_loop);
 
             if (elsee == NULL) {
                 // a if-then statement (without else) has no type because the 
@@ -314,7 +314,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
                 // return nil
                 return expTy(a, Ty_Nil());
             } else {
-                struct expty elsee_Ty = transExp(venv, tenv, elsee);
+                struct expty elsee_Ty = transExp(venv, tenv, elsee, inside_loop);
 
                 printf("if-then type: [");
                 show_type(then_Ty.ty);
@@ -342,9 +342,9 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             A_exp test = a->u.whilee.test;
             A_exp body = a->u.whilee.body;
 
-            struct expty test_Ty = transExp(venv, tenv, test);
+            struct expty test_Ty = transExp(venv, tenv, test, inside_loop);
 
-            return transExp(venv, tenv, body);
+            return transExp(venv, tenv, body, INSIDE_LOOP);
         }
         break;
 
@@ -381,7 +381,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 
 
             // lo has to be int
-            struct expty lo_ty = transExp(venv, tenv, lo);
+            struct expty lo_ty = transExp(venv, tenv, lo, inside_loop);
             if (lo_ty.ty->kind != Ty_int)
             {
                 S_endScope(venv);
@@ -394,7 +394,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             printf("A_forExp F\n");
 
             // hi has to be int
-            struct expty hi_ty = transExp(venv, tenv, hi);
+            struct expty hi_ty = transExp(venv, tenv, hi, inside_loop);
 
             printf("ZUZUZUZUZUZUZU\n");
             show_type(hi_ty.ty);
@@ -403,14 +403,14 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             {
                 S_endScope(venv);
 
-                EM_error(a->pos, "lo invalid - integer required");
+                EM_error(a->pos, "hi invalid - integer required");
                 assert(0);
                 return expTy(NULL, Ty_Nil());
             }
 
             printf("A_forExp G\n");
 
-            struct expty for_loop_expty = transExp(venv, tenv, body);
+            struct expty for_loop_expty = transExp(venv, tenv, body, INSIDE_LOOP);
 
             S_endScope(venv);
 
@@ -422,6 +422,10 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 
         case A_breakExp:
             printf("A_breakExp 27\n");
+            if (!inside_loop) {
+                EM_error(a->pos, "break is not located inside loop flow control structure!");
+                assert(0);
+            }
             return expTy(a, Ty_Nil());
 
         case A_letExp: 
@@ -442,7 +446,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             A_exp body = a->u.let.body;
             if (body != NULL) {
                 printf("body:\n");
-                exp = transExp(venv, tenv, body);
+                exp = transExp(venv, tenv, body, inside_loop);
             }
 
             S_endScope(tenv);
@@ -484,7 +488,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
 
             printf("BBB\n");
 
-            struct expty init_exp_type = transExp(venv, tenv, init);
+            struct expty init_exp_type = transExp(venv, tenv, init, inside_loop);
             show_type(init_exp_type.ty);
 
             printf("CCC\n");
@@ -733,6 +737,14 @@ void transDec(S_table venv, S_table tenv, A_dec d)
         {
             printf("transDec: A_varDec\n");
 
+            // // check if the variable is already contained in the current venv
+            // void* binding_value = S_look(venv, d->u.var.var);
+            // if (binding_value != NULL)
+            // {
+            //     EM_error(d->pos, "Reuse of variable name \"%s\". This implementation does not allow variable name reuse/shadowing! Line: %d\n", S_name(d->u.var.var), d->pos);
+            //     assert(0);
+            // }
+
             // see VARIABLE DECLARATIONS, page 119
             struct expty init_type = expTy(NULL, Ty_Nil());
 
@@ -741,7 +753,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 
                 printf("d->u.var.init - kind: %d\n", d->u.var.init->kind);
 
-                init_type = transExp(venv, tenv, d->u.var.init);
+                init_type = transExp(venv, tenv, d->u.var.init, OUTSIDE_LOOP);
 
                 printf("init_type retrieved: %d - ", init_type);
                 show_type(init_type.ty);
@@ -752,7 +764,8 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 printf("No initializer\n");
             }
 
-            // the type specifier on a variable is optional
+            // the type specifier on a variable is optional so take care
+            // here to not dereference a null pointer
             S_symbol type_symbol = d->u.var.typ;
             if (type_symbol == NULL)
             {
@@ -870,8 +883,18 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 
         case A_typeDec:
         {
-            printf("A Adding to tenv: \"%s\"\n", S_name(d->u.type->head->name));
-            S_enter(tenv, d->u.type->head->name, transTy(tenv, d->u.type));
+            S_symbol type_name = d->u.type->head->name;
+
+            // // check if the type's name is already contained in the current tenv
+            // void* binding_value = S_look(tenv, type_name);
+            // if (binding_value != NULL)
+            // {
+            //     EM_error(d->pos, "Reuse of type name \"%s\". This implementation does not allow type_name name reuse/shadowing! Line: %d\n", S_name(type_name), d->pos);
+            //     assert(0);
+            // }
+
+            printf("A Adding to tenv: \"%s\"\n", S_name(type_name));
+            S_enter(tenv, type_name, transTy(tenv, d->u.type));
 
             // DEBUG
             printf("\nTAB_DUMP tenv\n=============================\n");
@@ -891,6 +914,14 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 A_fundec fundec = fundecList->head;
                 printf("fundec: pos: %d\n", fundec->pos);
                 printf("fundec: name: %s\n", S_name(fundec->name));
+
+                // // check if the function is already contained in the current venv
+                // void* binding_value = S_look(venv, fundec->name);
+                // if (binding_value != NULL)
+                // {
+                //     EM_error(d->pos, "Reuse of function name \"%s\". This implementation does not allow function name reuse/shadowing! Line: %d\n", S_name(fundec->name), d->pos);
+                //     assert(0);
+                // }
 
                 Ty_tyList formalTys = makeFormalTyList(tenv, fundec->params);
 
@@ -938,7 +969,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 
                 // process the body
                 printf(">>>+++>>>> Processing function body...\n");
-                transExp(venv, tenv, fundec->body);
+                transExp(venv, tenv, fundec->body, OUTSIDE_LOOP);
                 printf("<<<+++<<< Processing function body done.\n");
 
                 // remove parameter scope
@@ -987,10 +1018,9 @@ Ty_tyList makeFormalTyList(S_table tenv, A_fieldList params)
 }
 
 /**
- * This function takes types and either looks them up in the type environment
- * or creates types
+ * This function takes types and looks them up in the type environment
 */
-/*struct*/ Ty_ty transTy(S_table tenv, A_ty a)
+Ty_ty transTy(S_table tenv, A_ty a)
 {
     printf("transTy\n");
 
@@ -1016,7 +1046,7 @@ Ty_tyList makeFormalTyList(S_table tenv, A_fieldList params)
             {
                 printf("A_recordTy - 34 - named_type - value: \"%s\"\n", S_name(named_type->name));
                 
-                // insert a type for all record fields into the tenv
+                // for all record fields in the record type
                 A_fieldList field_list = named_type->ty->u.record;
                 while (field_list != NULL) 
                 {
@@ -1041,7 +1071,6 @@ Ty_tyList makeFormalTyList(S_table tenv, A_fieldList params)
                 // retrieve the referenced type from the tenv
                 void * retrieved_type = TAB_look(tenv, ty->u.name);
 
-                printf("hohohoh\n");
                 show_type(retrieved_type);
 
                 Ty_ty array_ty = Ty_Array(retrieved_type);

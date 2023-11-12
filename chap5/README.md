@@ -437,7 +437,7 @@ This type can then be further used in the recursion.
 
 
 
-# Approach Developing and Testing the Software for Chapter 4
+# Approach Developing and Testing the Software for Chapter 5
 
 ## Basic Types (int, string)
 
@@ -491,7 +491,7 @@ in
 end
 ```
 
-### Type shadowing
+### Type Shadowing and Variable Shadowing
 
 When declaring types, the type declarations form "batches".
 A batch is a consecutive list of type decalarations:
@@ -505,14 +505,14 @@ A batch is interrupted by variable declarations. After the
 variable declaration, the next batch starts:
 
 ```
-type a = int
-var b := 4
-type a = string
+type a = int    // type batch 1
+var b := 4      // variable batch 1
+type a = string // type batch 2
 ```
 
-A language feature in tiger says: It is allowed to redeclare a
-type accross two distinct batches! It is not allowed to redeclare a type 
-within the same batch!
+A language feature in tiger says: 
+It is allowed to redeclare a type accross two distinct batches! 
+It is *not* allowed to redeclare a type within the same batch!
 
 Make sure that redeclaring a variable is allowed if and only if, the
 two batches are separated by a declaration or something else.
@@ -551,9 +551,92 @@ in
 end
 ```
 
-NOTE: I do not really understand what added-value this type of constraint adds 
-to the language. The current semantic analysis does not care about specific 
-declaration batches! Variables are shadowed whenever a name is redeclared!
+NOTE: 
+I do not really understand what added-value this constraint of batches adds to the language. 
+The current semantic analysis does not care about specific declaration batches! 
+Variables are shadowed whenever a name is redeclared!
+
+The shadowing has the following effect on the current tenv or venv 
+(since it is the same for variable not only for types.)
+
+If this code is compiled: test47.tig,         ( semanttest.exe ..\testcases\book\test47.tig )
+
+```
+let
+	type a = int
+	var b := 4
+	type a = string
+in
+	0
+end
+```
+
+first, type a is an alias for int. The tenv will look like this:
+
+```
+TAB_DUMP tenv
+=============================
+Key: 'a' Ty_int
+<mark>
+Key: 'string' Ty_string
+Key: 'int' Ty_int
+=============================
+```
+
+Then a variable b is defined and directly after it, type a is redefined to be an alias of string.
+The tenv will look like this:
+
+```
+TAB_DUMP tenv
+=============================
+Key: 'a' Ty_string
+Key: 'a' Ty_int
+<mark>
+Key: 'string' Ty_string
+Key: 'int' Ty_int
+=============================
+```
+
+The important point is that it is perfectly correct to have two entries for a in the current tenv
+as long as when the code is generated, the first, top-most entry for a is used because it shadows
+all the other definitions below it!
+
+It would be an error to use the lower a (which is an alias to int) because then code is generated
+for a type that the programmer has shadowed!
+
+In other words, the retrieval (S_look()) on tables has to work correctly. When asked for a type
+or variable, S_look() has to return the most current entry shadowing all other entries.
+
+A very, very bad downside of shadowing in my opinion occurs when code is separated into modules.
+There are three types of modularization in modern programming languages as I see it.
+
+1. Modularization into several files pre compilation (combining files using a preprocessor and include statements)
+2. Modularization between compilation units (object files) (combining them using a linker)
+3. Modularization into libraries (static .lib or dynamic .dll)
+
+The problem arises in all cases I think.
+
+If a tiger programm shadows a function, then it might fundamentally change the way a library works!
+Imagine the case where a library managing network traffic uses a function called store_to_buffer().
+
+Imagine a tiger application shadowing store_to_buffer() for it's own purpose not knowing that store_to_buffer()
+has an important meainging in another context that it does not even know of, namely the network management routines.
+Then imagine after shadowing store_to_buffer(), the application uses the network stack which eventually
+calls into the store_to_buffer() routine that previously did it's job in the context of the networking code
+but now has been shadowed and repurposed to do something else that makes sense in the context of the application
+but breaks the network stack!
+
+The nasty thing is that finding this type of bug in an application that is put together by the compiler or linker
+later, after the programmer has tested their code thoroughly is very hard. The programmer says: I have written
+one million unit tests, my code is not that bugged, the bug must be in the network stack. The network stack 
+programmer says: Our code is used in thousands of system since the year 1837, it is not bugged! The bug must be 
+in your code. In the end, the bug is not a bug but a feature. The language allows you to effectively disable
+code contained in other modules!
+
+I think that shadowing also has an upside. Imaging you want to extend a method contained in a library.
+You can just shadow that function with your extended implemenation and get more debugging output that way
+or have the library do new things.
+
 
 
 
@@ -880,6 +963,52 @@ end
 ```
 
 
+# break
+
+The break keyword can only be used inside for-loops and while-loops.
+
+As stated on page 525 of the book in the appendix:
+
+Break: 
+The break expression terminates evaluation of the nearest enclosing while-expression or for-expression. 
+A break in procedure p cannot terminate a loop in procedure q, even if p is nested within q. 
+A break that is not within a while or for is illegal
+
+
+LEGAL:
+
+12.tig              ( semanttest.exe ..\testcases\WMBao\Good\12.tig ) // OK
+19.tig              ( semanttest.exe ..\testcases\WMBao\Good\19.tig ) // OK
+61.tig              ( semanttest.exe ..\testcases\WMBao\Good\61.tig ) // OK
+
+
+
+Illegal: 
+
+58.tig              ( semanttest.exe ..\testcases\WMBao\Bad\58.tig ) // Error: A break is used outside a for or while loop
+75.tig              ( semanttest.exe ..\testcases\WMBao\Bad\75.tig ) // Error: A break is used outside a for or while loop
+
+```
+/* semantics of nested break */
+
+let function f () =
+	let 
+        function g (i : int) : int =
+		    if i = 3 then break
+	in
+		for i := 0 to 9 do
+		    (
+                g (i); 
+                print (chr (i + ord ("0")))
+            )
+	end
+in
+	f ()
+end
+
+```
+
+
 # Mutually Recursive Types
 
 Mutually recursive types are types that reference each other in a way that all references eventually form a loop!
@@ -957,15 +1086,15 @@ See mutually_recursive_types_with_and_keyword.tig
 # Tests
 
 Atomic Expressions:
-vardec_no_type_and_initializer.tig          ( semanttest.exe ..\testcases\vardec_no_type_and_initializer.tig & cat ast_dump.txt )
-vardec_no_type_no_initializer.tig   SYNTAX_ERROR        ( semanttest.exe ..\testcases\vardec_no_type_no_initializer.tig
-vardec_type_no_initialization.tig   SYNTAX_ERROR        ( semanttest.exe ..\testcases\vardec_type_no_initialization.tig
+vardec_no_type_and_initializer.tig      ( semanttest.exe ..\testcases\vardec_no_type_and_initializer.tig & cat ast_dump.txt ) OK
+vardec_no_type_no_initializer.tig       ( semanttest.exe ..\testcases\vardec_no_type_no_initializer.tig ) SYNTAX_ERROR
+vardec_type_no_initialization.tig       ( semanttest.exe ..\testcases\vardec_type_no_initialization.tig ) SYNTAX_ERROR
 
 Assignments:
-assignment.tig   SEMANTIC_ERROR (no type specified)   ( semanttest.exe ..\testcases\assignment.tig & cat ast_dump.txt )
+assignment.tig      ( semanttest.exe ..\testcases\assignment.tig & cat ast_dump.txt ) SEMANTIC_ERROR (no type specified)
 
 Sequences:
-sequencing.tig   SEMANTIC_ERROR   ( semanttest.exe ..\testcases\sequencing.tig & cat ast_dump.txt )
+sequencing.tig      ( semanttest.exe ..\testcases\sequencing.tig & cat ast_dump.txt ) SEMANTIC_ERROR
 
 Let
 let.tig             ( semanttest.exe ..\testcases\let.tig           & cat ..\testcases\let.tig           & cat ast_dump.txt ) // SEM-ERROR
@@ -976,7 +1105,7 @@ addition.tig        ( semanttest.exe ..\testcases\addition.tig      & cat ..\tes
 opers.tig           ( semanttest.exe ..\testcases\opers.tig         & cat ..\testcases\opers.tig         & cat ast_dump.txt ) // OK
 
 Assignment
-assignment.tig      ( semanttest.exe ..\testcases\assignment.tig    & cat ..\testcases\assignment.tig    & cat ast_dump.txt ) // SEM-ERROR
+assignment.tig      ( semanttest.exe ..\testcases\assignment.tig    & cat ..\testcases\assignment.tig    & cat ast_dump.txt ) // SEM-ERROR, variable i not declared
 
 Arrays
 arrays.tig          ( semanttest.exe ..\testcases\arrays.tig        & cat ..\testcases\arrays.tig        & cat ast_dump.txt ) // OK
@@ -984,7 +1113,7 @@ arrays_simple.tig   ( semanttest.exe ..\testcases\arrays_simple.tig & cat ..\tes
 
 Built-In functions
 builtin_functions.tig ( semanttest.exe ..\testcases\builtin_functions.tig & cat ..\testcases\builtin_functions.tig & cat ast_dump.txt ) // OK
-builtin_functions_getchar.tig ( semanttest.exe ..\testcases\builtin_functions_getchar.tig
+builtin_functions_getchar.tig ( semanttest.exe ..\testcases\builtin_functions_getchar.tig ) OK
 
 For-Loop
 forloop_simple.tig                  ( semanttest.exe ..\testcases\forloop_simple.tig ) // SEM-ERROR, hi is not of type int
@@ -1003,7 +1132,7 @@ if-then
 if-then-else
 ( semanttest.exe ..\testcases\if_nil.tig ) // OK
 ( semanttest.exe ..\testcases\if_sequence.tig ) // OK
-( semanttest.exe ..\testcases\if_simple.tig ) // SEM-ERROR
+( semanttest.exe ..\testcases\if_simple.tig ) // SEM-ERROR, variable i not declared
 
 let
 ( semanttest.exe ..\testcases\let_nested.tig ) // OK
@@ -1035,10 +1164,12 @@ merge.tig           ( semanttest.exe ..\testcases\merge.tig ) // OK
 queens.tig          ( semanttest.exe ..\testcases\queens.tig ) // OK
 
 Mutually recursive types
-mutually_recursive_types_with_and_keyword.tig    ( semanttest.exe ..\testcases\mutually_recursive_types_with_and_keyword.tig ) 
-// SYNTAX ERROR since: "Type declarations separated by the keyword and form a mutually-recursive group." The "and" keyword between type declarations is not implemented! It is not part of the official language.
-
+mutually_recursive_types_with_and_keyword.tig    ( semanttest.exe ..\testcases\mutually_recursive_types_with_and_keyword.tig ) // SYNTAX ERROR since: "Type declarations separated by the keyword and form a mutually-recursive group." The "and" keyword between type declarations is not implemented! It is not part of the official language.
 mutually_recursive_types.tig ( semanttest.exe ..\testcases\mutually_recursive_types.tig )
+test16.tig,         ( semanttest.exe ..\testcases\book\test16.tig & cat ..\testcases\book\test16.tig & cat ast_dump.txt ) // <============== This currently semantically validates as OK although it should not
+test5.tig,          ( semanttest.exe ..\testcases\book\test5.tig  & cat ..\testcases\book\test5.tig & cat ast_dump.txt )
+test17.tig,         ( semanttest.exe ..\testcases\book\test17.tig & cat ..\testcases\book\test17.tig & cat ast_dump.txt ) // should throw an error since definition of recursive type is interrupted
+
 
 
 All the following tests are in the testcases\book folder
@@ -1083,24 +1214,21 @@ test33.tig,         ( semanttest.exe ..\testcases\book\test33.tig & cat ..\testc
 test44.tig,         ( semanttest.exe ..\testcases\book\test44.tig & cat ..\testcases\book\test44.tig & cat ast_dump.txt )
 test45.tig,         ( semanttest.exe ..\testcases\book\test45.tig & cat ..\testcases\book\test45.tig & cat ast_dump.txt )
 test46.tig,         ( semanttest.exe ..\testcases\book\test46.tig & cat ..\testcases\book\test46.tig & cat ast_dump.txt )
-test47.tig,         ( semanttest.exe ..\testcases\book\test47.tig & cat ..\testcases\book\test47.tig & cat ast_dump.txt )
 test49.tig   OK BECAUSE OF SYNTAX ERROR ( semanttest.exe ..\testcases\book\test49.tig & cat ..\testcases\book\test49.tig & cat ast_dump.txt )
 
 type definitions:
-test16.tig,         ( semanttest.exe ..\testcases\book\test16.tig & cat ..\testcases\book\test16.tig & cat ast_dump.txt )
-test1.tig,          ( semanttest.exe ..\testcases\book\test1.tig  & cat ..\testcases\book\test1.tig & cat ast_dump.txt )
-test2.tig,          ( semanttest.exe ..\testcases\book\test2.tig  & cat ..\testcases\book\test2.tig & cat ast_dump.txt )
-test3.tig,          ( semanttest.exe ..\testcases\book\test3.tig  & cat ..\testcases\book\test3.tig & cat ast_dump.txt )
-test5.tig,          ( semanttest.exe ..\testcases\book\test5.tig  & cat ..\testcases\book\test5.tig & cat ast_dump.txt )
-test14.tig,         ( semanttest.exe ..\testcases\book\test14.tig & cat ..\testcases\book\test14.tig & cat ast_dump.txt )
-test17.tig,         ( semanttest.exe ..\testcases\book\test17.tig & cat ..\testcases\book\test17.tig & cat ast_dump.txt )
-test22.tig,         ( semanttest.exe ..\testcases\book\test22.tig & cat ..\testcases\book\test22.tig & cat ast_dump.txt )
-test23.tig,         ( semanttest.exe ..\testcases\book\test23.tig & cat ..\testcases\book\test23.tig & cat ast_dump.txt )
-test28.tig,         ( semanttest.exe ..\testcases\book\test28.tig & cat ..\testcases\book\test28.tig & cat ast_dump.txt )
-test29.tig,         ( semanttest.exe ..\testcases\book\test29.tig & cat ..\testcases\book\test29.tig & cat ast_dump.txt )
-test30.tig,         ( semanttest.exe ..\testcases\book\test30.tig & cat ..\testcases\book\test30.tig & cat ast_dump.txt )
-test38.tig,         ( semanttest.exe ..\testcases\book\test38.tig & cat ..\testcases\book\test38.tig & cat ast_dump.txt )
-test48.tig          ( semanttest.exe ..\testcases\book\test48.tig & cat ..\testcases\book\test48.tig & cat ast_dump.txt )
+test1.tig,          ( semanttest.exe ..\testcases\book\test1.tig  & cat ..\testcases\book\test1.tig & cat ast_dump.txt ) // OK
+test2.tig,          ( semanttest.exe ..\testcases\book\test2.tig  & cat ..\testcases\book\test2.tig & cat ast_dump.txt ) // OK
+test3.tig,          ( semanttest.exe ..\testcases\book\test3.tig  & cat ..\testcases\book\test3.tig & cat ast_dump.txt ) // OK
+test14.tig,         ( semanttest.exe ..\testcases\book\test14.tig & cat ..\testcases\book\test14.tig & cat ast_dump.txt ) // SEM-ERROR, types do not match
+test22.tig,         ( semanttest.exe ..\testcases\book\test22.tig & cat ..\testcases\book\test22.tig & cat ast_dump.txt ) // SEM-ERRRO,  field not in record type
+test23.tig,         ( semanttest.exe ..\testcases\book\test23.tig & cat ..\testcases\book\test23.tig & cat ast_dump.txt ) // SEM-ERROR, type mismatch
+test28.tig,         ( semanttest.exe ..\testcases\book\test28.tig & cat ..\testcases\book\test28.tig & cat ast_dump.txt ) // SEM-ERROR, different record types
+test29.tig,         ( semanttest.exe ..\testcases\book\test29.tig & cat ..\testcases\book\test29.tig & cat ast_dump.txt ) // <================= should be SEM-ERROR, different array types
+test30.tig,         ( semanttest.exe ..\testcases\book\test30.tig & cat ..\testcases\book\test30.tig & cat ast_dump.txt ) // OK
+test38.tig,         ( semanttest.exe ..\testcases\book\test38.tig & cat ..\testcases\book\test38.tig & cat ast_dump.txt ) // SEM-ERROR, two types of same name in the same batch
+test47.tig,         ( semanttest.exe ..\testcases\book\test47.tig & cat ..\testcases\book\test47.tig & cat ast_dump.txt )
+test48.tig          ( semanttest.exe ..\testcases\book\test48.tig & cat ..\testcases\book\test48.tig & cat ast_dump.txt ) // SEM-ERROR, this implementation prevents shadowing!
 
 function declarations and function calls:
 test4.tig,          ( semanttest.exe ..\testcases\book\test4.tig  & cat ..\testcases\book\test4.tig & cat ast_dump.txt )
@@ -1108,7 +1236,7 @@ test6.tig,          ( semanttest.exe ..\testcases\book\test6.tig  & cat ..\testc
 test7.tig,          ( semanttest.exe ..\testcases\book\test7.tig  & cat ..\testcases\book\test7.tig & cat ast_dump.txt )
 test18.tig,         ( semanttest.exe ..\testcases\book\test18.tig & cat ..\testcases\book\test18.tig & cat ast_dump.txt )
 test19.tig,         ( semanttest.exe ..\testcases\book\test19.tig & cat ..\testcases\book\test19.tig & cat ast_dump.txt )
-test34.tig,         ( semanttest.exe ..\testcases\book\test34.tig & cat ..\testcases\book\test34.tig & cat ast_dump.txt )
+test34.tig,         ( semanttest.exe ..\testcases\book\test34.tig & cat ..\testcases\book\test34.tig & cat ast_dump.txt ) // SEM-ERROR, formal and actual parameter types differ
 test35.tig,         ( semanttest.exe ..\testcases\book\test35.tig & cat ..\testcases\book\test35.tig & cat ast_dump.txt )
 test36.tig,         ( semanttest.exe ..\testcases\book\test36.tig & cat ..\testcases\book\test36.tig & cat ast_dump.txt )
 test39.tig,         ( semanttest.exe ..\testcases\book\test39.tig & cat ..\testcases\book\test39.tig & cat ast_dump.txt )
@@ -1121,29 +1249,31 @@ test27.tig          ( semanttest.exe ..\testcases\book\test27.tig & cat ..\testc
 
 break:
 two_breaks.tig      ( semanttest.exe ..\testcases\BartVandewoestyne\uncompilable\two_breaks.tig ) // SEM_ERROR, type of operand has to be int
-breaktest.tig       ( semanttest.exe ..\testcases\FlexW\breaktest.tig )
-keyword_04.tig      ( semanttest.exe ..\testcases\nwtnni\lex\keyword_04.tig )
-58.tig              ( semanttest.exe ..\testcases\WMBao\Bad\58.tig )
-75.tig              ( semanttest.exe ..\testcases\WMBao\Bad\75.tig )
-12.tig              ( semanttest.exe ..\testcases\WMBao\Good\12.tig )
-19.tig              ( semanttest.exe ..\testcases\WMBao\Good\19.tig )
-61.tig              ( semanttest.exe ..\testcases\WMBao\Good\61.tig )
+breaktest.tig       ( semanttest.exe ..\testcases\FlexW\breaktest.tig ) // OK
+keyword_04.tig      ( semanttest.exe ..\testcases\nwtnni\lex\keyword_04.tig ) // OK
+58.tig              ( semanttest.exe ..\testcases\WMBao\Bad\58.tig ) // SEM-ERROR, A break is used outside a for or while loop
+75.tig              ( semanttest.exe ..\testcases\WMBao\Bad\75.tig ) // SEM-ERROR, A break is used outside a for or while loop
+12.tig              ( semanttest.exe ..\testcases\WMBao\Good\12.tig ) // OK
+19.tig              ( semanttest.exe ..\testcases\WMBao\Good\19.tig ) // OK
+61.tig              ( semanttest.exe ..\testcases\WMBao\Good\61.tig ) // OK
 
 
+Shadowing variables
 
-test47.tig ( semanttest.exe ..\testcases\book\test47.tig ) <============= Shadowing does not work! Currently two 'a' variables are created!
+Shadowing types
+test47.tig ( semanttest.exe ..\testcases\book\test47.tig ) // OK, Shadowing is allowed! Two types both called 'a' are created in the current tenv but this is fine if the uppermost type from the tenv is used! The uppermost type is the type defined last which shadows all other types!
 
 
 
 semanttest.exe ..\testcases\BartVandewoestyne\compilable\array_equality.tig // OK
 semanttest.exe ..\testcases\BartVandewoestyne\compilable\control_characters.tig // OK
 semanttest.exe ..\testcases\BartVandewoestyne\compilable\escape_sequences.tig // OK
-semanttest.exe ..\testcases\BartVandewoestyne\compilable\function.tig // SEM_ERROR function calle without required actual parameter
+semanttest.exe ..\testcases\BartVandewoestyne\compilable\function.tig // SEM_ERROR, function call without required actual parameter
 semanttest.exe ..\testcases\BartVandewoestyne\compilable\negative_int.tig // OK
 semanttest.exe ..\testcases\BartVandewoestyne\compilable\procedure.tig // OK
 semanttest.exe ..\testcases\BartVandewoestyne\compilable\record_equality_test.tig // OK
 semanttest.exe ..\testcases\BartVandewoestyne\compilable\simple_let.tig // OK
-semanttest.exe ..\testcases\BartVandewoestyne\compilable\valid_strings.tig // syntax error <============ fix it!
+semanttest.exe ..\testcases\BartVandewoestyne\compilable\valid_strings.tig // OK
 
 semanttest.exe ..\testcases\WMBao\Good\1.tig
 semanttest.exe ..\testcases\WMBao\Good\2.tig

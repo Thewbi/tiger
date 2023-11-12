@@ -1,0 +1,7 @@
+let
+	function g(a:int):int = 1
+    var test:int := 0
+    function g(a:int):int = 2
+in
+	0
+end

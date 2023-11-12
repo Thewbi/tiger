@@ -1,2 +1,2 @@
-/* error: break out of a loop. */
+/* error: break outside of a loop. */
 if 1 then break

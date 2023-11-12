@@ -69,6 +69,14 @@ void *TAB_look(TAB_table t, void *key)
     index = ((unsigned) key) % TABSIZE;
     for (b = t->table[index]; b; b=b->next)
     {
+        // printf("b->key: %s\n", S_name(b->key));
+
+        // if (b->key == "<mark>")
+        // {
+        //     printf("Found Marker!!!!!!!!!!!!");
+        //     //break;
+        // }
+
         if (b->key == key) 
         {
             printf("Type \"%s\" found! Binding is: %d\n", S_name(key), b->value);
@@ -76,6 +84,9 @@ void *TAB_look(TAB_table t, void *key)
             printf(".........\n");
             return b->value;
         }
+
+
+        
     }
 
     printf("Type \"%s\" not found!\n", S_name(key));

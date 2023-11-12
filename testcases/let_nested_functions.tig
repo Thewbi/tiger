@@ -1,0 +1,9 @@
+let
+	function g(a:int):int = 1
+in
+	let
+        function g(a:int):int = 2
+    in
+        0
+    end
+end
