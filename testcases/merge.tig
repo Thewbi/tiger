@@ -87,6 +87,7 @@ let
 
 in
     /* BODY OF MAIN PROGRAM */
-    printlist(merge(list1,list2))
+    printlist(merge(list1,list2));
+    0
 end
 

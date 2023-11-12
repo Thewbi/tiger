@@ -29,5 +29,6 @@ let
         else n * fact(n - 1)
 in
     printint(fact(10));
-    print("\n")
+    print("\n");
+    0
 end

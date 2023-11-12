@@ -47,6 +47,7 @@ let
     )
     
 in 
-    try(0)
+    try(0);
+    0
 end
 	

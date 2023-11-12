@@ -190,7 +190,14 @@ int main(int argc, char **argv)
 
 
     printf("\n\n\nPerforming Semantic Analysis ...\n");
-    transExp(venv, tenv, program);
+    struct expty exp = transExp(venv, tenv, program, OUTSIDE_LOOP);
+
+    if (exp.ty == Ty_Nil())
+    {
+        printf("Unit received (The application returns no type! This can be caused by if-then or by functions that return unit (aka. procedures)! Please extend the applicatin using a sequence so that all expressions return a type!\n");
+        assert(0);
+    }
+
     printf("Performing Semantic Analysis done.\n");
 
     return 0;

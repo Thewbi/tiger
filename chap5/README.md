@@ -1094,7 +1094,7 @@ Assignments:
 assignment.tig      ( semanttest.exe ..\testcases\assignment.tig & cat ast_dump.txt ) SEMANTIC_ERROR (no type specified)
 
 Sequences:
-sequencing.tig      ( semanttest.exe ..\testcases\sequencing.tig & cat ast_dump.txt ) SEMANTIC_ERROR
+sequencing.tig      ( semanttest.exe ..\testcases\sequencing.tig & cat ast_dump.txt ) SEMANTIC_ERROR, i has no type
 
 Let
 let.tig             ( semanttest.exe ..\testcases\let.tig           & cat ..\testcases\let.tig           & cat ast_dump.txt ) // SEM-ERROR
@@ -1178,12 +1178,12 @@ Comparison Operators:
 test13.tig          ( semanttest.exe ..\testcases\book\test13.tig & cat ast_dump.txt ) // SEMANTIC ERROR
 
 Arithmetic Operators:
-test26.tig          ( semanttest.exe ..\testcases\book\test26.tig & cat ..\testcases\book\test26.tig & cat ast_dump.txt )
+test26.tig          ( semanttest.exe ..\testcases\book\test26.tig & cat ..\testcases\book\test26.tig & cat ast_dump.txt ) // SEM_ERROR, integer required
 
 if-then-else:
-test8.tig,          ( semanttest.exe ..\testcases\book\test8.tig  & cat ast_dump.txt )
-test9.tig,          ( semanttest.exe ..\testcases\book\test9.tig  & cat ..\testcases\book\test9.tig & cat ast_dump.txt )
-test15.tig          ( semanttest.exe ..\testcases\book\test15.tig & cat ..\testcases\book\test15.tig & cat ast_dump.txt )
+test8.tig,          ( semanttest.exe ..\testcases\book\test8.tig  & cat ast_dump.txt ) // OK
+test9.tig,          ( semanttest.exe ..\testcases\book\test9.tig  & cat ..\testcases\book\test9.tig & cat ast_dump.txt ) // SEM_ERROR: types differ
+test15.tig          ( semanttest.exe ..\testcases\book\test15.tig & cat ..\testcases\book\test15.tig & cat ast_dump.txt ) // SEM_ERROR: this application returns a unit (Non-Type) since the if-then does not return a type! Returning unit is not allowed. You need a sequence or something to produce a type to return!
 
 while-loops:
 test10.tig          ( semanttest.exe ..\testcases\book\test10.tig & cat ..\testcases\book\test10.tig & cat ast_dump.txt )
@@ -1204,7 +1204,7 @@ test25.tig          ( semanttest.exe ..\testcases\book\test25.tig & cat ..\testc
 variable declarations:
 test12.tig,         ( semanttest.exe ..\testcases\book\test12.tig & cat ..\testcases\book\test12.tig & cat ast_dump.txt )
 test31.tig,         ( semanttest.exe ..\testcases\book\test31.tig & cat ..\testcases\book\test31.tig & cat ast_dump.txt )
-test37.tig,         ( semanttest.exe ..\testcases\book\test37.tig & cat ..\testcases\book\test37.tig & cat ast_dump.txt )
+test37.tig,         ( semanttest.exe ..\testcases\book\test37.tig & cat ..\testcases\book\test37.tig & cat ast_dump.txt ) // OK
 test41.tig,         ( semanttest.exe ..\testcases\book\test41.tig & cat ..\testcases\book\test41.tig & cat ast_dump.txt )
 test42.tig,         ( semanttest.exe ..\testcases\book\test42.tig & cat ..\testcases\book\test42.tig & cat ast_dump.txt )
 test43.tig          ( semanttest.exe ..\testcases\book\test43.tig & cat ..\testcases\book\test43.tig & cat ast_dump.txt )
