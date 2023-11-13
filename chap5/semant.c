@@ -1179,8 +1179,12 @@ Ty_ty transTy(S_table tenv, A_ty a)
                         // EM_error(a->pos, "Type not defined \"%s\"\n", S_name(record_field->ty));
                         // //assert(0);
 
+                        printf("UNKNOWN UNKNOWN UNKNOWN UNKNOWN\n");
+                        printf("UNKNOWN UNKNOWN UNKNOWN UNKNOWN\n");
+
                         Ty_ty ty_for_field = Ty_Name(record_field->name, NULL);
-                        ty_fieldList = Ty_FieldList(ty_for_field, ty_fieldList);
+                        Ty_field ty_field = Ty_Field(record_field->name, ty_for_field);
+                        ty_fieldList = Ty_FieldList(ty_field, ty_fieldList);
                     }
                     else 
                     {
@@ -1350,6 +1354,10 @@ void show_type(Ty_ty type)
             
         case Ty_name:
             printf("Ty_name");
+            if (type->u.name.ty == NULL)
+            {
+                printf(" (Placeholder for mutually recursive type!)");
+            }            
             break;
             
         case Ty_void:
