@@ -290,11 +290,11 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
 
             //printf("C A_assignExp 23: pos: %d\n", a->pos);
 
-            // printf("lvalue.ty \n");
-            // show_type(lvalue.ty);
-            // printf("\nrhs_exp.ty \n");
-            // show_type(rhs_exp.ty);
-            // printf("\n");
+            printf("lvalue.ty \n");
+            show_type(lvalue.ty);
+            printf("\nrhs_exp.ty \n");
+            show_type(rhs_exp.ty);
+            printf("\n");
 
             if (lvalue.ty != rhs_exp.ty)
             //if (lvalue.ty->kind != rhs_exp.ty->kind)
@@ -590,7 +590,7 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
 
         case A_fieldVar:
         {
-            //printf("transVar() - A_fieldVar\n");
+            printf("transVar() - A_fieldVar\n");
 
             // struct {A_var var; S_symbol sym;} field;
 
@@ -627,15 +627,15 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
                 // convert record variable name to it's type via the variable environment
                 //Ty_ty record_var_type = S_look(venv, record_variable_name);
                 record_var_type = S_look(venv, record_variable_name);
-                //printf("transVar() - show_type() record_var_type ");
-                //show_type(record_var_type);
-                //printf("\n");
-            }
+                printf("transVar() - show_type() record_var_type ");
+                show_type(record_var_type);
+                printf("\n");
 
-            if (record_var_type == NULL) {
-                // EM_error(v->pos, "Variable \"%s\". Variable is not defined! Line: %d\n", 
-                //     S_name(record_variable_name), v->pos);
-                assert(0);
+                if (record_var_type == NULL) {
+                    EM_error(v->pos, "Variable \"%s\". Variable is not defined!\n", 
+                        S_name(record_variable_name));
+                    assert(0);
+                }
             }
 
             // // DEBUG
@@ -680,24 +680,26 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
 
             A_fieldList field_list = NULL;
 
-            if (record_var_type->kind == E_varEntry) {
-
-            
-            // if the type is taken from a formal parameter, the type is wrapped in an E_enventry
-            // if the type is taken from a local or global variable, the type is a normal record type
-            E_enventry enventry = (E_enventry) record_var_type;
+            if (record_var_type->kind == E_varEntry) 
+            {
+                // if the type is taken from a formal parameter, the type is wrapped in an E_enventry
+                // if the type is taken from a local or global variable, the type is a normal record type
+                E_enventry enventry = (E_enventry) record_var_type;
                 Ty_ty unwrapped_type = enventry->u.var.ty;
                 field_list = unwrapped_type->u.record;
-            } else {
+            } 
+            else 
+            {
                 field_list = record_var_type->u.record;
             }
 
-            // printf("field_list: %d \n", field_list);
+            printf("field_list: %d \n", field_list);
 
             while (field_list != NULL) 
             {
                 A_namety record_field = field_list->head;
-                // printf("transVar() - head: %d\n", record_field);
+                
+                //printf("transVar() - head: %d\n", record_field);
                 // printf("name: %s type: %s\n", S_name(record_field->name), S_name(record_field->ty));
 
                 //assert(0);
@@ -707,15 +709,27 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
                 // printf("transVar() - COMPARING record_variable_used_field_name: %s record_field->name: %s\n", 
                 //     S_name(record_variable_used_field_name), S_name(record_field->name));
 
+                printf("%s - %s\n", S_name(record_variable_used_field_name), S_name(record_field->name));
+
+                printf("%d\n", strcmp(S_name(record_variable_used_field_name), S_name(record_field->name)));
+
                 // iterate until the field in the record is found, return it's type
-                if (record_variable_used_field_name == record_field->name) {
+                //if (record_variable_used_field_name == record_field->name)
+                //if (S_name(record_variable_used_field_name) == S_name(record_field->name))
+                if (strcmp(S_name(record_variable_used_field_name), S_name(record_field->name)) == 0)
+                {
                     //if (strcmp(S_name(record_variable_used_field_name), S_name(record_field->name)) == 0) {
                     // printf("transVar() - returning %s\n", S_name(record_field->ty));
 
-                    Ty_ty type = S_look(tenv, record_field->ty);
+                    printf("Field found!\n");
 
-                    // show_type(type);
-                    // printf("\n");
+                    //Ty_ty type = S_look(tenv, record_field->ty->u.name);
+                    //Ty_ty type = S_look(tenv, record_field->ty);
+                    Ty_ty type = record_field->ty;
+
+                    printf("Type of field: ");
+                    show_type(type);
+                    printf("\n");
 
                     //return expTy(v, TAB_look(tenv, record_field->ty));
                     return expTy(v, type);
@@ -974,14 +988,15 @@ void transDec(S_table venv, S_table tenv, A_dec d)
             //     EM_error(d->pos, "Reuse of type name \"%s\". This implementation does not allow type_name name reuse/shadowing! Line: %d\n", S_name(type_name), d->pos);
             //     assert(0);
             // }
+            printf("type declaration: %s\n", S_name(type_name));
 
             // printf("A Adding to tenv: \"%s\"\n", S_name(type_name));
             S_enter(tenv, type_name, transTy(tenv, d->u.type));
 
-            // // DEBUG
-            // printf("\nTAB_DUMP tenv\n=============================\n");
-            // TAB_dump(tenv, show);
-            // printf("=============================\n");
+            // DEBUG
+            printf("\nTAB_DUMP tenv\n=============================\n");
+            TAB_dump(tenv, show);
+            printf("=============================\n");
         }
         break;
 
@@ -1121,8 +1136,8 @@ Ty_tyList makeFormalTyList(S_table tenv, A_fieldList params)
 }
 
 /**
- * This function takes types and looks them up in the type environment
-*/
+ * This function takes types and validates them against the current type environment.
+ */
 Ty_ty transTy(S_table tenv, A_ty a)
 {
     //printf("transTy\n");
@@ -1148,22 +1163,40 @@ Ty_ty transTy(S_table tenv, A_ty a)
             case A_recordTy: //=34,
             {
                 //printf("A_recordTy - 34 - named_type - value: \"%s\"\n", S_name(named_type->name));
+
+                Ty_fieldList ty_fieldList = NULL; //Ty_FieldList(, NULL);
                 
                 // for all record fields in the record type
                 A_fieldList field_list = named_type->ty->u.record;
                 while (field_list != NULL) 
                 {
                     A_namety record_field = field_list->head;
-                    //printf("name: %s type: %s\n", S_name(record_field->name), S_name(record_field->ty));
+                    printf("name: %s type: %s\n", S_name(record_field->name), S_name(record_field->ty));
+
+                    void* binding_value = S_look(tenv, record_field->ty);
+                    if (binding_value == NULL)
+                    {
+                        // EM_error(a->pos, "Type not defined \"%s\"\n", S_name(record_field->ty));
+                        // //assert(0);
+
+                        Ty_ty ty_for_field = Ty_Name(record_field->name, NULL);
+                        ty_fieldList = Ty_FieldList(ty_for_field, ty_fieldList);
+                    }
+                    else 
+                    {
+                        // Ty_ty ty_for_field = Ty_Name(record_field->name, binding_value);
+                        // ty_fieldList = Ty_FieldList(ty_for_field, ty_fieldList);
+
+                        Ty_field ty_field = Ty_Field(record_field->name, (Ty_ty) binding_value);
+                        ty_fieldList = Ty_FieldList(ty_field, ty_fieldList);
+                    }
 
                     // advance iterator
                     field_list = field_list->tail;
                 }
 
                 // ... turning A_recordTy into Ty_Record ...
-                Ty_ty rec_ty = Ty_Record(named_type->ty->u.record);
-
-                return rec_ty;
+                return Ty_Record(ty_fieldList);
             }
             break;
 
@@ -1197,6 +1230,8 @@ Ty_ty transTy(S_table tenv, A_ty a)
  */ 
 void show(void *key, void *value)
 {
+    //printf("show\n");
+
     //
     // markers on in the environments require special treatment since they have null values for value
     //
@@ -1218,13 +1253,15 @@ void show(void *key, void *value)
 
 void show_type(Ty_ty type)
 {
-    //printf("show_type\n");
+    //printf("show_type A\n");
 
     if (type == NULL)
     {
         printf(" No type!");
         return;
     }
+
+    //printf("show_type B %d\n", type->kind);
     
     switch (type->kind)
     {
@@ -1264,12 +1301,30 @@ void show_type(Ty_ty type)
         {
             printf(" Ty_record ");
 
+            // // print all the records fields, their names and types
+            // A_fieldList field_list = type->u.record;
+            // while (field_list != NULL) 
+            // {
+            //     A_namety record_field = field_list->head;
+            //     printf(" name: %s type: %s", S_name(record_field->name), S_name(record_field->ty));
+
+            //     // advance iterator
+            //     field_list = field_list->tail;
+            // }
+
             // print all the records fields, their names and types
-            A_fieldList field_list = type->u.record;
+            Ty_fieldList field_list = type->u.record;
             while (field_list != NULL) 
             {
-                A_namety record_field = field_list->head;
-                printf(" name: %s type: %s", S_name(record_field->name), S_name(record_field->ty));
+                //printf("A\n");
+                Ty_field record_field = field_list->head;
+
+                //printf("B\n");
+                printf(" [name: %s", S_name(record_field->name));
+                printf(" type: ");
+                show_type(record_field->ty);
+                //printf("\n");
+                printf("]");
 
                 // advance iterator
                 field_list = field_list->tail;

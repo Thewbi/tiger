@@ -1,5 +1,8 @@
 let
 	type rectype = { name:string, age:int }
+    var rec1 := rectype { name="Name", age=0 }
 in
-	0
+    rec1.name = "Walter";
+    rec1.age := 55;
+    0
 end

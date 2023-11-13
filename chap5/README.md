@@ -793,7 +793,7 @@ As outlined in chapter 5.4 TYPE-CHECKING DECLARATION on page 118, entering a let
 lead to S_beginScope() and ultimately to S_endScope() calls for both the venv and the tenv. Using these
 calls, scopes are implemented and variable can be shadowed.
 
-## if then else
+## if-then-else
 
 Here is the definition of if-then and if-then-else from page 524 of the book:
 
@@ -964,14 +964,11 @@ The break expression terminates evaluation of the nearest enclosing while-expres
 A break in procedure p cannot terminate a loop in procedure q, even if p is nested within q. 
 A break that is not within a while or for is illegal
 
-
 LEGAL:
 
 12.tig              ( semanttest.exe ..\testcases\WMBao\Good\12.tig ) // OK
 19.tig              ( semanttest.exe ..\testcases\WMBao\Good\19.tig ) // OK
 61.tig              ( semanttest.exe ..\testcases\WMBao\Good\61.tig ) // OK
-
-
 
 Illegal: 
 
@@ -1002,10 +999,23 @@ end
 # Mutually Recursive Types
 
 Mutually recursive types are types that reference each other in a way that all references eventually form a loop!
-
 The loop can be very small as in a node-type that references itself or a set of types that reference each other in a circle.
+There are two approaches to the problem.
 
-There are two approaches to the problem. 
+
+Mutually recursive types
+mutually_recursive_types_with_and_keyword.tig   ( semanttest.exe ..\testcases\mutually_recursive_types_with_and_keyword.tig ) // SYNTAX ERROR since: "Type declarations separated by the keyword and form a mutually-recursive group." The "and" keyword between type declarations is not implemented! It is not part of the official language.
+mutually_recursive_types.tig                    ( semanttest.exe ..\testcases\mutually_recursive_types.tig )
+test16.tig,         ( semanttest.exe ..\testcases\book\test16.tig & cat ..\testcases\book\test16.tig & cat ast_dump.txt ) // <============== This currently semantically validates as OK although it should not
+test5.tig,          ( semanttest.exe ..\testcases\book\test5.tig  & cat ..\testcases\book\test5.tig & cat ast_dump.txt )
+test17.tig,         ( semanttest.exe ..\testcases\book\test17.tig & cat ..\testcases\book\test17.tig & cat ast_dump.txt ) // should throw an error since definition of recursive type is interrupted
+test6.tig,          ( semanttest.exe ..\testcases\book\test6.tig  & cat ..\testcases\book\test6.tig & cat ast_dump.txt )
+test7.tig,          ( semanttest.exe ..\testcases\book\test7.tig  & cat ..\testcases\book\test7.tig & cat ast_dump.txt )
+test18.tig,         ( semanttest.exe ..\testcases\book\test18.tig & cat ..\testcases\book\test18.tig & cat ast_dump.txt )
+test19.tig,         ( semanttest.exe ..\testcases\book\test19.tig & cat ..\testcases\book\test19.tig & cat ast_dump.txt ) 
+
+
+
 
 ## Approach 1 - Official Approach
 
@@ -1014,18 +1024,18 @@ valid, when they are defined in a consecutive batch of declarations (See Appendi
 
 Here is the excerpt from the Appendix:
 
-Mutually recursive types: A collection of types may be recursive or mutually
-recursive. Mutually recursive types are declared by a consecutive sequence
-of type declarations without intervening value or function declarations. 
+Mutually recursive types: A collection of types may be recursive or mutually recursive. 
+Mutually recursive types are declared by a consecutive sequence of type declarations without 
+intervening value or function declarations. 
 
 Each recursion cycle must pass through a record or array type.
 
 Thus, the type of lists of integers is legal:
 
 ```
-type intlist = {hd: int, tl: intlist}
-type tree = {key: int, children: treelist}
-type treelist = {hd: tree, tl: treelist}
+type intlist = { hd: int, tl: intlist }
+type tree = { key: int, children: treelist }
+type treelist = { hd: tree, tl: treelist }
 ```
 
 But the following declaration sequence is illegal:
