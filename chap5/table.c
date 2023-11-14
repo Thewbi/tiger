@@ -103,16 +103,81 @@ void *TAB_pop(TAB_table t) {
   return b->key;
 }
 
+/**
+ * The hashtable is a hashtable of binders.
+ * 
+ * The binders themselves have pointers to one other binder.
+ * Using this chain of binders, a "stack" of binders is emulated.
+ * The table stores a pointer to the current top of the stack binder.
+ * 
+ * This "stack" of binders is used to implement the destructive nature for
+ * type scopes! When a type scope starts, a <mark> is inserted into the binder chain.
+ * Within the scope, new types are placed on top of the mark. When the scope ends,
+ * all types up to the next mark (including the mark itself) are erased. This is how
+ * type scopes are implemented. The erasing part is the reason why this strategy is
+ * called destructive.
+ */
 void TAB_dump(TAB_table t, void (*show)(void *key, void *value)) {
-  void *k = t->top;
-  int index = ((unsigned)k) % TABSIZE;
-  binder b = t->table[index];
-  if (b==NULL) return;
-  t->table[index]=b->next;
-  t->top=b->prevtop;
-  show(b->key,b->value);
-  TAB_dump(t,show);
-  assert(t->top == b->prevtop && t->table[index]==b->next);
-  t->top=k;
-  t->table[index]=b;
+
+    // store the key of the topmost binder into k
+    void *k = t->top;
+
+    // retrieve the binder which is hashed for the key top_binder_key
+    int index = ((unsigned)k) % TABSIZE;
+    binder b = t->table[index];
+
+    // abort condition for the recursion
+    if (b == NULL) {
+        return;
+    }
+
+    // decend into next element
+    t->table[index] = b->next;
+    t->top = b->prevtop;
+
+    // show the current type
+    show(b->key, b->value);
+
+    // recurse
+    TAB_dump(t,show);
+
+    assert(t->top == b->prevtop && t->table[index] == b->next);
+
+    // revert all the changes made in this level of recursion
+    t->top = k;
+    t->table[index] = b;
+}
+
+void TAB_resolve_mutually_recursive_types(TAB_table t, void (*show)(void *key, void *value)) 
+{
+    // store the key of the topmost binder into k
+    void *top_binder_key = t->top;
+
+    while (top_binder_key != NULL)
+    {
+
+        // retrieve the binder which is hashed for the key top_binder_key
+        int index = ((unsigned)top_binder_key) % TABSIZE;
+        binder top_binder = t->table[index];
+        if (top_binder==NULL) {
+            return;
+        }
+
+        printf("Key: %s\n", S_name(top_binder->key));
+
+        if (strcmp("<mark>", S_name(top_binder->key)) == 0) 
+        {
+            printf("Aborting TAB_fix_mutually_recursive_types at first <mark>\n");
+
+            return;
+        }
+
+        // show the current type
+        show(top_binder->key, top_binder->value);
+
+        // 
+        //t->table[index] = top_binder->next;
+        top_binder_key = top_binder->prevtop;
+
+    }
 }

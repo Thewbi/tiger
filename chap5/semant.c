@@ -465,6 +465,39 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
                 decs = decs->tail;
             }
 
+            // resolve mutually recursive types here
+            printf("resolve mutually recursive types here\n");
+            printf("resolve mutually recursive types here\n");
+            printf("resolve mutually recursive types here\n");
+            printf("resolve mutually recursive types here\n");
+            printf("resolve mutually recursive types here\n");
+
+            /*
+                typedef struct binder_ *binder;
+
+                struct binder_ {
+                    void *key; 
+                    void *value; 
+                    binder next; 
+                    void *prevtop; // the binder below this binder
+                };
+
+                struct TAB_table_ {
+                    binder table[TABSIZE];
+                    void *top; // a binder called top. It is the topmost binder.
+                };
+            */
+
+            printf(">>>>>>>>>>>>>>>>>\n");
+
+            TAB_resolve_mutually_recursive_types(tenv, show);
+            printf("....................\n");
+            TAB_dump(tenv, show);
+
+            printf("<<<<<<<<<<<<<<<<<\n");
+
+
+
             struct expty exp;
             A_exp body = a->u.let.body;
             if (body != NULL) {
@@ -1182,7 +1215,7 @@ Ty_ty transTy(S_table tenv, A_ty a)
                         printf("UNKNOWN UNKNOWN UNKNOWN UNKNOWN\n");
                         printf("UNKNOWN UNKNOWN UNKNOWN UNKNOWN\n");
 
-                        Ty_ty ty_for_field = Ty_Name(record_field->name, NULL);
+                        Ty_ty ty_for_field = Ty_Name(record_field->ty, NULL);
                         Ty_field ty_field = Ty_Field(record_field->name, ty_for_field);
                         ty_fieldList = Ty_FieldList(ty_field, ty_fieldList);
                     }
@@ -1257,6 +1290,11 @@ void show(void *key, void *value)
 
 void show_type(Ty_ty type)
 {
+    show_type_indent(type, 0);
+}
+
+void show_type_indent(Ty_ty type, int indentation)
+{
     //printf("show_type A\n");
 
     if (type == NULL)
@@ -1303,7 +1341,7 @@ void show_type(Ty_ty type)
         // 0
         case Ty_record:
         {
-            printf(" Ty_record ");
+            printf(" Ty_record \n");
 
             // // print all the records fields, their names and types
             // A_fieldList field_list = type->u.record;
@@ -1324,11 +1362,15 @@ void show_type(Ty_ty type)
                 Ty_field record_field = field_list->head;
 
                 //printf("B\n");
-                printf(" [name: %s", S_name(record_field->name));
+                for (int i = 0; i < indentation; i++)
+                {
+                    printf("\t");
+                }
+                printf("[name: %s", S_name(record_field->name));
                 printf(" type: ");
-                show_type(record_field->ty);
+                show_type_indent(record_field->ty, indentation+1);
                 //printf("\n");
-                printf("]");
+                printf("]\n");
 
                 // advance iterator
                 field_list = field_list->tail;
@@ -1356,8 +1398,8 @@ void show_type(Ty_ty type)
             printf("Ty_name");
             if (type->u.name.ty == NULL)
             {
-                printf(" (Placeholder for mutually recursive type!)");
-            }            
+                printf(" (Placeholder for mutually recursive type \"%s\" !)", S_name(type->u.name.sym));
+            }
             break;
             
         case Ty_void:

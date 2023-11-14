@@ -33,6 +33,7 @@ Ty_tyList makeFormalTyList(S_table tenv, A_fieldList params);
 
 void show(void *key, void *value);
 void show_type(Ty_ty type);
+void show_type_indent(Ty_ty type, int indentation);
 char* label_type(Ty_ty type);
 
 #endif
