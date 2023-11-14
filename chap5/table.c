@@ -148,6 +148,12 @@ void TAB_dump(TAB_table t, void (*show)(void *key, void *value)) {
     t->table[index] = b;
 }
 
+/**
+ * Decends the (emulated) stack of types in the current scope (= until the first <mark>) only
+ * and performs resolution of mutually recursive types. This means that the placeholder
+ * Name(s, NULL) is replaced by the real type! If the real type is not defined, a semantic error
+ * has been found!
+ */
 void TAB_resolve_mutually_recursive_types(TAB_table t, void (*show)(void *key, void *value)) 
 {
     // store the key of the topmost binder into k
@@ -155,7 +161,6 @@ void TAB_resolve_mutually_recursive_types(TAB_table t, void (*show)(void *key, v
 
     while (top_binder_key != NULL)
     {
-
         // retrieve the binder which is hashed for the key top_binder_key
         int index = ((unsigned)top_binder_key) % TABSIZE;
         binder top_binder = t->table[index];
@@ -165,18 +170,55 @@ void TAB_resolve_mutually_recursive_types(TAB_table t, void (*show)(void *key, v
 
         printf("Key: %s\n", S_name(top_binder->key));
 
+        // detect the end of the current scope (first <mark> binder)
         if (strcmp("<mark>", S_name(top_binder->key)) == 0) 
         {
             printf("Aborting TAB_fix_mutually_recursive_types at first <mark>\n");
-
             return;
         }
 
         // show the current type
         show(top_binder->key, top_binder->value);
 
-        // 
+        // find records, because the resolution is implemented for record fields!
+        Ty_ty binder_value = top_binder->value;
+        if (binder_value->kind == Ty_record) {
+
+            printf("Record found!\n");
+
+            // print all the records fields, their names and types
+            Ty_fieldList field_list = binder_value->u.record;
+            while (field_list != NULL) 
+            {
+                printf("A\n");
+                Ty_field record_field = field_list->head;
+
+                printf("B\n");
+                for (int i = 0; i < 1; i++)
+                {
+                    printf("\t");
+                }
+                printf("[name: %s", S_name(record_field->name));
+                printf(" type: ");
+
+                //show_type_indent(record_field->ty, indentation+1);
+                //printf("\n");
+
+                if (record_field->ty->kind == Ty_name) {
+                    printf("I HAVE TO REPLACE THIS S_NAME BY THIS TYPE: %s", S_name(record_field->ty->u.name.sym));
+                }
+
+                printf("]\n");
+
+                // advance iterator
+                field_list = field_list->tail;
+            }
+        }
+
+        // ???
         //t->table[index] = top_binder->next;
+
+        // descend the emulated stack of type definitions
         top_binder_key = top_binder->prevtop;
 
     }
