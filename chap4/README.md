@@ -313,7 +313,7 @@ case A_functionDec:
     }
 
     //
-    // Second (Micro)-Pass
+    // Second (Micro)-Pass, given the prototypes from Micro-Pass 1, semantically analyse functions
     //
 
     fundecList = d->u.function;

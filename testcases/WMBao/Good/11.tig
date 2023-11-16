@@ -3,4 +3,5 @@ let
 	var x:int := 0
 in
 	/*hey look! a  /*nested*/ comment! */
+    0
 end

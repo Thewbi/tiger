@@ -241,6 +241,11 @@ void TAB_resolve_mutually_recursive_types(TAB_table tenv, int recursion_depth, v
 
                 //printf("]\n");
 
+                if (field_list == field_list->tail)
+                {
+                    return;
+                }
+
                 // advance iterator
                 field_list = field_list->tail;
             }
@@ -248,6 +253,11 @@ void TAB_resolve_mutually_recursive_types(TAB_table tenv, int recursion_depth, v
 
         // ???
         //t->table[index] = top_binder->next;
+
+        if (top_binder_key == top_binder->prevtop)
+        {
+            return;
+        }
 
         // descend the emulated stack of type definitions
         top_binder_key = top_binder->prevtop;

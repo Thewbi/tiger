@@ -53,14 +53,13 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
                 //EM_error(a->pos, "Use of undeclared function \"%s\" !\n", S_name(func));
                 //assert(0);
 
-                printf("WARNING: undeclared function used! Mutually recursive?\n");
+                printf("WARNING: undeclared function \"%s\" used! Mutually recursive or programming error?\n", S_name(func));
                 
                 Ty_ty ty_for_mutually_recursive_function = Ty_Name(func, NULL);
                 return expTy(a, ty_for_mutually_recursive_function);
             }
             else
             {
-
                 //show(func, func_ty);
                 //printf("\n");
 
@@ -94,6 +93,9 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
                     struct expty actual_param_expTy = transExp(venv, tenv, args->head, OUTSIDE_LOOP);
                     Ty_ty actual_param_ty = actual_param_expTy.ty;
                     //printf("A_callExp 19 - BBBBBBB\n");
+
+                    // // DEBUG
+                    // printf("Checking call of \"%s\" \n", S_name(func));
 
                     // // DEBUG
                     // printf("Formal Param-%d: ", param_idx);
@@ -156,8 +158,8 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
                     return expTy(a, Ty_Int());
                 }
 
-                printf("TAB TAB TAB OP OP OP\n");
-                TAB_dump(venv, 5, show);
+                // printf("TAB TAB TAB OP OP OP\n");
+                // TAB_dump(venv, 5, show);
 
                 //printf("A_opExp left transExp()\n");
                 struct expty left = transExp(venv, tenv, a->u.op.left, inside_loop);
@@ -166,7 +168,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
                 struct expty right = transExp(venv, tenv, a->u.op.right, inside_loop);
 
                 //printf("A_opExp 20 - OPERAND B left: %d, right: %d, left-ty: %d, right-ty: %d\n", left, right, left.ty, right.ty);
-                printf("A_opExp 20 - OPERAND B left-kind: %d, right-kind: %d\n", left.ty->kind, right.ty->kind);
+                //printf("A_opExp 20 - OPERAND B left-kind: %d, right-kind: %d\n", left.ty->kind, right.ty->kind);
 
                 // Ty_record - 0
                 // Ty_nil - 1 
@@ -1099,10 +1101,11 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 fundecList = fundecList->tail;
             }
 
-            TAB_dump(venv, 5, show);
+            // DEBUG
+            //TAB_dump(venv, 5, show);
 
             //
-            // Second (Micro)-Pass
+            // Second (Micro)-Pass, given the prototypes from Micro-Pass 1, semantically analyse functions
             //
 
             fundecList = d->u.function;
@@ -1148,7 +1151,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 // start parameter scope
                 S_beginScope(venv);
 
-                printf("Inserting formal parameters into the scope...\n");
+                //printf("Inserting formal parameters into the scope...\n");
 
                 // insert formal parameters into the scope
                 {
@@ -1158,10 +1161,9 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                     Ty_tyList t;
                     for (l = fundec->params, t = formalTys; l; l = l->tail, t = t->tail)
                     {
-                        printf("param: %s type: \n", S_name(l->head->name));
-                        show_type(t->head, 5);
-                        printf("\n");
-
+                        // printf("param: %s type: \n", S_name(l->head->name));
+                        // show_type(t->head, 5);
+                        // printf("\n");
 
                         S_enter(venv, l->head->name, E_VarEntry(t->head));
                         //S_enter(venv, l->head->name, E_VarEntry(l->head));
@@ -1199,8 +1201,6 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 
                 //printf("next function UIOAIUSDOIUASDOIUASDOUIASDUIO\n");
 
-                
-
                 // next function declaration
                 fundecList = fundecList->tail;
             }
@@ -1222,7 +1222,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
  */
 Ty_tyList makeFormalTyList(S_table tenv, A_fieldList params)
 {
-    printf("makeFormalTyList() \n");
+    //printf("makeFormalTyList() \n");
 
     Ty_tyList result = NULL;
     Ty_tyList iter = NULL;
@@ -1234,10 +1234,10 @@ Ty_tyList makeFormalTyList(S_table tenv, A_fieldList params)
 
         Ty_ty paramTy = S_look(tenv, param->typ);
 
-        // DEBUG
-        printf("param ");
-        show_type(paramTy, 5);
-        printf("\n");
+        // // DEBUG
+        // printf("param ");
+        // show_type(paramTy, 5);
+        // printf("\n");
 
         Ty_tyList temp = Ty_TyList(paramTy, NULL);
 
@@ -1255,7 +1255,7 @@ Ty_tyList makeFormalTyList(S_table tenv, A_fieldList params)
         params = params->tail;
     }
 
-    printf("makeFormalTyList() done.\n");
+    //printf("makeFormalTyList() done.\n");
 
     return result;
 }

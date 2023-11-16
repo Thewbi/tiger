@@ -1288,7 +1288,7 @@ keyword_04.tig      ( semanttest.exe ..\testcases\nwtnni\lex\keyword_04.tig ) //
 Shadowing variables
 
 Shadowing types
-test47.tig ( semanttest.exe ..\testcases\book\test47.tig ) // OK, Shadowing is allowed! Two types both called 'a' are created in the current tenv but this is fine if the uppermost type from the tenv is used! The uppermost type is the type defined last which shadows all other types!
+test47.tig          ( semanttest.exe ..\testcases\book\test47.tig ) // OK, Shadowing is allowed! Two types both called 'a' are created in the current tenv but this is fine if the uppermost type from the tenv is used! The uppermost type is the type defined last which shadows all other types!
 
 
 
@@ -1310,54 +1310,93 @@ semanttest.exe ..\testcases\WMBao\Good\6.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\7.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\8.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\10.tig // SYNTAX ERROR
-semanttest.exe ..\testcases\WMBao\Good\11.tig
-semanttest.exe ..\testcases\WMBao\Good\12.tig
-semanttest.exe ..\testcases\WMBao\Good\13.tig
-semanttest.exe ..\testcases\WMBao\Good\14.tig
-semanttest.exe ..\testcases\WMBao\Good\15.tig
-semanttest.exe ..\testcases\WMBao\Good\16.tig
+semanttest.exe ..\testcases\WMBao\Good\11.tig // OK
+semanttest.exe ..\testcases\WMBao\Good\12.tig // OK
+semanttest.exe ..\testcases\WMBao\Good\13.tig // OK
+semanttest.exe ..\testcases\WMBao\Good\14.tig // OK
+semanttest.exe ..\testcases\WMBao\Good\15.tig // OK
+semanttest.exe ..\testcases\WMBao\Good\16.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\17.tig // OK
-semanttest.exe ..\testcases\WMBao\Good\18.tig
-semanttest.exe ..\testcases\WMBao\Good\19.tig
-semanttest.exe ..\testcases\WMBao\Good\20.tig
-semanttest.exe ..\testcases\WMBao\Good\21.tig
-semanttest.exe ..\testcases\WMBao\Good\22.tig
+semanttest.exe ..\testcases\WMBao\Good\18.tig // SEM_WARNING, printi() not defined!
+semanttest.exe ..\testcases\WMBao\Good\19.tig // OK
+semanttest.exe ..\testcases\WMBao\Good\20.tig // SEM_WARNING, printi() not defined!
+semanttest.exe ..\testcases\WMBao\Good\21.tig // SEM_WARNING, printi() not defined!
+semanttest.exe ..\testcases\WMBao\Good\22.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\23.tig // OK, this is the queens.tig by appel
-semanttest.exe ..\testcases\WMBao\Good\24.tig
-semanttest.exe ..\testcases\WMBao\Good\25.tig
+semanttest.exe ..\testcases\WMBao\Good\24.tig // SEM_WARNING, printi() not defined!
+semanttest.exe ..\testcases\WMBao\Good\25.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\26.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\27.tig
 semanttest.exe ..\testcases\WMBao\Good\28.tig
-semanttest.exe ..\testcases\WMBao\Good\29.tig
+semanttest.exe ..\testcases\WMBao\Good\29.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\30.tig
 semanttest.exe ..\testcases\WMBao\Good\32.tig
 semanttest.exe ..\testcases\WMBao\Good\33.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\34.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\35.tig // OK
-semanttest.exe ..\testcases\WMBao\Good\36.tig // SEM_ERROR: use of undeclared function printi
-semanttest.exe ..\testcases\WMBao\Good\38.tig // SEM_ERROR: use of undeclared function printi
+semanttest.exe ..\testcases\WMBao\Good\36.tig // SEM_WARNING: use of undeclared function printi
+semanttest.exe ..\testcases\WMBao\Good\38.tig // SEM_WARNING: use of undeclared function printi
 semanttest.exe ..\testcases\WMBao\Good\40.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\43.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\52.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\61.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\68.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\69.tig // OK
-semanttest.exe ..\testcases\WMBao\Good\70.tig
-semanttest.exe ..\testcases\WMBao\Good\71.tig
+semanttest.exe ..\testcases\WMBao\Good\70.tig // OK
+semanttest.exe ..\testcases\WMBao\Good\71.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\72.tig
 semanttest.exe ..\testcases\WMBao\Good\73.tig
-semanttest.exe ..\testcases\WMBao\Good\74.tig
+semanttest.exe ..\testcases\WMBao\Good\74.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\76.tig
 semanttest.exe ..\testcases\WMBao\Good\77.tig
 semanttest.exe ..\testcases\WMBao\Good\78.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\79.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\80.tig
-semanttest.exe ..\testcases\WMBao\Good\81.tig
+semanttest.exe ..\testcases\WMBao\Good\81.tig // SEM_WARNING: use of undeclared function printi
 semanttest.exe ..\testcases\WMBao\Good\82.tig
 semanttest.exe ..\testcases\WMBao\Good\83.tig
-semanttest.exe ..\testcases\WMBao\Good\84.tig
-semanttest.exe ..\testcases\WMBao\Good\85.tig
+semanttest.exe ..\testcases\WMBao\Good\84.tig // SEM_WARNING: use of undeclared function printi
+semanttest.exe ..\testcases\WMBao\Good\85.tig // SEM_WARNING: use of undeclared function printi
 semanttest.exe ..\testcases\WMBao\Good\86.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\87.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\88.tig // OK
-semanttest.exe ..\testcases\WMBao\Good\pi.tig // SEM_ERROR: use of undeclared function printi
+semanttest.exe ..\testcases\WMBao\Good\pi.tig // SEM_WARNING: use of undeclared function printi
+
+
+The following tests in the bad folder only make sense when the parser has been extended to understand
+the boolean datatype
+
+semanttest.exe ..\testcases\WMBao\Bad\1.tig // SEM_ERROR: variable "true" not defined. Tiger officially has no boolean datatype
+semanttest.exe ..\testcases\WMBao\Bad\2.tig // SEM_ERROR: variable "false" not defined. Tiger officially has no boolean datatype
+semanttest.exe ..\testcases\WMBao\Bad\3.tig // SEM_ERROR: integer required for operator
+semanttest.exe ..\testcases\WMBao\Bad\4.tig // SEM_ERROR: variable "true" not defined. Tiger officially has no boolean datatype
+semanttest.exe ..\testcases\WMBao\Bad\5.tig
+semanttest.exe ..\testcases\WMBao\Bad\6.tig
+semanttest.exe ..\testcases\WMBao\Bad\7.tig
+semanttest.exe ..\testcases\WMBao\Bad\8.tig
+semanttest.exe ..\testcases\WMBao\Bad\9.tig
+semanttest.exe ..\testcases\WMBao\Bad\10.tig
+semanttest.exe ..\testcases\WMBao\Bad\11.tig
+semanttest.exe ..\testcases\WMBao\Bad\12.tig
+semanttest.exe ..\testcases\WMBao\Bad\13.tig
+semanttest.exe ..\testcases\WMBao\Bad\15.tig
+semanttest.exe ..\testcases\WMBao\Bad\18.tig
+semanttest.exe ..\testcases\WMBao\Bad\19.tig // SEM_ERROR: structs are not the same type
+semanttest.exe ..\testcases\WMBao\Bad\20.tig
+semanttest.exe ..\testcases\WMBao\Bad\23.tig
+semanttest.exe ..\testcases\WMBao\Bad\24.tig
+semanttest.exe ..\testcases\WMBao\Bad\25.tig
+semanttest.exe ..\testcases\WMBao\Bad\26.tig
+semanttest.exe ..\testcases\WMBao\Bad\29.tig
+semanttest.exe ..\testcases\WMBao\Bad\32.tig
+semanttest.exe ..\testcases\WMBao\Bad\41.tig
+semanttest.exe ..\testcases\WMBao\Bad\42.tig
+semanttest.exe ..\testcases\WMBao\Bad\43.tig
+semanttest.exe ..\testcases\WMBao\Bad\46.tig
+semanttest.exe ..\testcases\WMBao\Bad\47.tig
+semanttest.exe ..\testcases\WMBao\Bad\48.tig
+semanttest.exe ..\testcases\WMBao\Bad\58.tig
+semanttest.exe ..\testcases\WMBao\Bad\59.tig
+semanttest.exe ..\testcases\WMBao\Bad\60.tig
+semanttest.exe ..\testcases\WMBao\Bad\62.tig
+semanttest.exe ..\testcases\WMBao\Bad\75.tig

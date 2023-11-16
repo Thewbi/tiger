@@ -21,7 +21,8 @@ int main(int argc, char **argv)
         //tig_file = ".\\testcases\\merge.tig";
         //tig_file = ".\\testcases\\mutually_recursive_types.tig";
         //tig_file = ".\\testcases\\mutually_recursive_types_as_function_parameters.tig";
-        tig_file = ".\\testcases\\book\\test6.tig";
+        //tig_file = ".\\testcases\\book\\test6.tig";
+        tig_file = ".\\testcases\\book\\test47.tig";
     }
     else 
     {
@@ -142,9 +143,14 @@ int main(int argc, char **argv)
     A_field substring_first_formal_param = A_Field(0, S_Symbol("s"), S_Symbol("string"));
     A_field substring_second_formal_param = A_Field(0, S_Symbol("first"), S_Symbol("int"));
     A_field substring_third_formal_param = A_Field(0, S_Symbol("n"), S_Symbol("int"));
-    A_fieldList substring_params = A_FieldList(substring_first_formal_param, NULL);
+    // A_fieldList substring_params = A_FieldList(substring_first_formal_param, NULL);
+    // substring_params = A_FieldList(substring_second_formal_param, substring_params);
+    // substring_params = A_FieldList(substring_third_formal_param, substring_params);
+
+    A_fieldList substring_params = A_FieldList(substring_third_formal_param, NULL);
     substring_params = A_FieldList(substring_second_formal_param, substring_params);
-    substring_params = A_FieldList(substring_third_formal_param, substring_params);
+    substring_params = A_FieldList(substring_first_formal_param, substring_params);
+
     Ty_tyList substring_formals = makeFormalTyList(tenv, substring_params);
     Ty_ty substring_result_ty = Ty_String();
     S_enter(venv, S_Symbol("substring"), E_FunEntry(substring_formals, substring_result_ty));
@@ -203,11 +209,11 @@ int main(int argc, char **argv)
     printf("Performing Semantic Analysis ...\n");
     struct expty exp = transExp(venv, tenv, program, OUTSIDE_LOOP);
 
-    if (exp.ty == Ty_Nil())
-    {
-        printf("Unit received (The application returns no type! This can be caused by if-then or by functions that return unit (aka. procedures)! Please extend the applicatin using a sequence so that all expressions return a type!\n");
-        assert(0);
-    }
+    // if (exp.ty == Ty_Nil())
+    // {
+    //     printf("Unit received (The application returns no type! This can be caused by if-then or by functions that return unit (aka. procedures)! Please extend the applicatin using a sequence so that all expressions return a type!\n");
+    //     assert(0);
+    // }
 
     printf("Performing Semantic Analysis done.");
 

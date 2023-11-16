@@ -3,20 +3,30 @@
  */
 
 let
+    var demo_variable:int := 0
+
+    /**/
 	function reverse (s : string) : string =
-		if size (s) <= 1 then s	
+		if size (s) <= 1 
+        then 
+            s	
 		else
-			concat (reverse (substring (s, 1, size (s) - 1)),
-					substring (s, 0, 1))
+			concat(reverse(substring(s, 1, size(s) - 1)), substring(s, 0, 1))
+            //substring(s, 0, 1)
+    
 
 	/* read string from terminal until newline seen */
 	function getstring () : string =
-		let var c := getchar() /* c is string of length 1 */
+        // c is string of length 1
+		let var c := getchar() 
 		in
 			if c = "\n" then ""
 						else concat (c, getstring ())
 		end
+    
 in
-	print (reverse (getstring ()));
-	print ("\n")
+    getstring();
+    reverse(getstring());
+	//print (reverse (getstring ()));
+	print("\n")
 end
