@@ -1,19 +1,22 @@
- seqExp(
-  expList(
-   stringExp(),
+ letExp(
+  decList(
+   functionDec(
+    fundecList(
+     fundec(do_nothing1, fieldList( field(a, int, TRUE),
+       fieldList( field(b, string, TRUE),
+        fieldList())),
+      callExp(do_nothing2, expList( opExp( PLUS, varExp( simpleVar(a)), intExp(1)), expList()))),
+     fundecList(
+      fundec(do_nothing2, fieldList( field(d, int, TRUE), fieldList()),
+       callExp(do_nothing1, expList( varExp( simpleVar(d)), expList( stringExp(str), expList())))),
+      fundecList()))),
+   decList()),
+  seqExp(
    expList(
-    stringExp(1234567890123456789012345678901),
-    expList(
-     stringExp(12345678901234567890123456789012),
+    callExp(do_nothing1,
      expList(
-      stringExp(A string with
-a newline!),
+      intExp(0),
       expList(
-       stringExp(Column 1	Column 2	Column 3),
-       expList(
-        stringExp("),
-        expList(
-         stringExp(\),
-         expList(
-          stringExp(the_end),
-          expList())))))))))
+       stringExp(str2),
+       expList()))),
+    expList())))

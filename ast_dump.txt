@@ -1,38 +1,50 @@
  letExp(
   decList(
-   typeDec(
-    nametyList(
-     namety(list,
-      recordTy(
+   functionDec(
+    fundecList(
+     fundec(do_nothing1,
+      fieldList(
+       field(a,
+        int,
+        TRUE),
        fieldList(
-        field(first,
-         int,
+        field(b,
+         string,
          TRUE),
-        fieldList(
-         field(rest,
-          list,
-          TRUE),
-         fieldList())))),
-     nametyList())),
+        fieldList())),
+      callExp(do_nothing2,
+       expList(
+        opExp(
+         PLUS,
+         varExp(
+          simpleVar(a)),
+         intExp(1)),
+        expList()))),
+     fundecList())),
    decList(
     functionDec(
      fundecList(
-      fundec(printlist,
+      fundec(do_nothing2,
        fieldList(
-        field(l,
-         list,
+        field(d,
+         int,
          TRUE),
         fieldList()),
-       callExp(printlist,
+       callExp(do_nothing1,
         expList(
          varExp(
-          fieldVar(
-           simpleVar(l),
-           rest)),
-         expList()))),
+          simpleVar(d)),
+         expList(
+          stringExp(str),
+          expList())))),
       fundecList())),
     decList())),
   seqExp(
    expList(
-    intExp(0),
+    callExp(do_nothing1,
+     expList(
+      intExp(0),
+      expList(
+       stringExp(str2),
+       expList()))),
     expList())))

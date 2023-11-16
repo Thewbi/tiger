@@ -37,7 +37,9 @@ extern int yylineno;
     A_field a_field;
     A_efield a_efield;
     A_efieldList a_efieldlist;
+
     A_fundec a_fundec;
+    A_fundecList a_fundeclist;
 	}
 
 /* */
@@ -80,7 +82,10 @@ extern int yylineno;
 %type <a_explist> expseq_comma
 /* %type <a_explist> record_creation_assignments */
 
-%type <a_fundec> fundec
+/*%type <a_fundec> fundec*/
+
+%type <a_fundeclist> fundec
+%type <a_fundec> fundecs
 
 %type <a_ty> ty
 
@@ -336,7 +341,8 @@ decs : dec { printf("decs - dec - A\n"); $$ = A_DecList($1, NULL); }
 
 dec : tydec { $$ = $1; }
     | vardec { $$ = $1; }
-    | fundec { printf("dec - fundec\n"); $$ = A_FunctionDec(yylineno, A_FundecList($1, NULL)); }
+//    | fundec { printf("dec - fundec\n"); $$ = A_FunctionDec(yylineno, A_FundecList($1, NULL)); }
+    | fundecs { printf("dec - fundecs\n"); $$ = A_FunctionDec(yylineno, $1); }
     ;
 
 tydec : TYPE ID EQ ty { $$ = A_TypeDec(yylineno, A_NametyList(A_Namety(S_Symbol($2), $4), NULL)); }
@@ -379,6 +385,10 @@ vardec : VAR ID ASSIGN exp {
         }
        //| VAR ID COLON ASSIGN ID array_creation 
        ;
+
+fundecs : fundec { printf("fundecs - fundec - A\n"); $$ = A_FundecList($1, NULL); }
+     | fundec fundecs { printf("fundecs - fundec+fundecs - B\n"); $$ = A_FundecList($1, $2); }
+     ;
 
 // A_fundec A_Fundec(A_pos pos, S_symbol name, A_fieldList params, S_symbol result, A_exp body);
 fundec : FUNCTION ID LPAREN tyfields RPAREN EQ exp { printf("fundec A\n"); $$ = A_Fundec(yylineno, S_Symbol($2), $4, NULL, $7); }

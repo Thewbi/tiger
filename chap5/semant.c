@@ -50,81 +50,89 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
             // check if the function has been defined
             if (func_ty == NULL)
             {
-                EM_error(a->pos, "Use of undeclared function \"%s\" !\n", S_name(func));
-                assert(0);
+                //EM_error(a->pos, "Use of undeclared function \"%s\" !\n", S_name(func));
+                //assert(0);
+
+                printf("WARNING: undeclared function used! Mutually recursive?\n");
+                
+                Ty_ty ty_for_mutually_recursive_function = Ty_Name(func, NULL);
+                return expTy(a, ty_for_mutually_recursive_function);
             }
-
-            //show(func, func_ty);
-            //printf("\n");
-
-            //printf("A_callExp B\n");
-
-            E_enventry enventry = (E_enventry) func_ty;
-
-            //printf("A_callExp C\n");
-
-            //printf("Result-");
-            //show_type(enventry->u.fun.result);
-            //printf("\n");
-
-            //printf("A_callExp 19 - A\n");
-
-            int param_idx = 1;
-            Ty_tyList formals = enventry->u.fun.formals;
-            while (formals != NULL) {
-
-                Ty_ty formal_param_ty = formals->head;
-
-                // if a actual parameter is missing, return an error
-                if (args == NULL)
-                {
-                    EM_error(a->pos, "Missing actual parameter in function \"%s\" !\n", S_name(func));
-                    assert(0);
-                }
-
-                //printf("A_callExp 19 - AAAAAA args: %d\n", args);
-                // convert the expression of the current actual parameter into a type
-                struct expty actual_param_expTy = transExp(venv, tenv, args->head, OUTSIDE_LOOP);
-                Ty_ty actual_param_ty = actual_param_expTy.ty;
-                //printf("A_callExp 19 - BBBBBBB\n");
-
-                // // DEBUG
-                // printf("Formal Param-%d: ", param_idx);
-                // show_type(formal_param_ty, 5);
-                // printf(" Actual Param-%d: ", param_idx);
-                // show_type(actual_param_ty, 5);
-                // printf("\n");
-
-                // check the types
-                if (formal_param_ty->kind != actual_param_ty->kind)
-                {
-                    EM_error(a->pos, "Actual and formal parameter %d are of incompatible types!\n", param_idx);
-                    assert(0);
-                }
-
-                param_idx = param_idx + 1;
-
-                // advance pointers
-                formals = formals->tail;
-                args = args->tail;
-            }
-
-            //printf("A_callExp 19 - B\n");
-
-            // the return value of the call is the return type of the function declaration.
-            // functions do not always have to have a return type!
-            if (enventry->u.fun.result == NULL)
+            else
             {
-                //printf("A_callExp 19 - C\n");
-                return expTy(a, Ty_Nil());
-                //return expTy(a, Ty_nil);
+
+                //show(func, func_ty);
+                //printf("\n");
+
+                //printf("A_callExp B\n");
+
+                E_enventry enventry = (E_enventry) func_ty;
+
+                //printf("A_callExp C\n");
+
+                //printf("Result-");
+                //show_type(enventry->u.fun.result);
+                //printf("\n");
+
+                //printf("A_callExp 19 - A\n");
+
+                int param_idx = 1;
+                Ty_tyList formals = enventry->u.fun.formals;
+                while (formals != NULL) {
+
+                    Ty_ty formal_param_ty = formals->head;
+
+                    // if a actual parameter is missing, return an error
+                    if (args == NULL)
+                    {
+                        EM_error(a->pos, "Missing actual parameter in function \"%s\" !\n", S_name(func));
+                        assert(0);
+                    }
+
+                    //printf("A_callExp 19 - AAAAAA args: %d\n", args);
+                    // convert the expression of the current actual parameter into a type
+                    struct expty actual_param_expTy = transExp(venv, tenv, args->head, OUTSIDE_LOOP);
+                    Ty_ty actual_param_ty = actual_param_expTy.ty;
+                    //printf("A_callExp 19 - BBBBBBB\n");
+
+                    // // DEBUG
+                    // printf("Formal Param-%d: ", param_idx);
+                    // show_type(formal_param_ty, 5);
+                    // printf(" Actual Param-%d: ", param_idx);
+                    // show_type(actual_param_ty, 5);
+                    // printf("\n");
+
+                    // check the types
+                    if (formal_param_ty->kind != actual_param_ty->kind)
+                    {
+                        EM_error(a->pos, "Actual and formal parameter %d are of incompatible types!\n", param_idx);
+                        assert(0);
+                    }
+
+                    param_idx = param_idx + 1;
+
+                    // advance pointers
+                    formals = formals->tail;
+                    args = args->tail;
+                }
+
+                //printf("A_callExp 19 - B\n");
+
+                // the return value of the call is the return type of the function declaration.
+                // functions do not always have to have a return type!
+                if (enventry->u.fun.result == NULL)
+                {
+                    //printf("A_callExp 19 - C\n");
+                    return expTy(a, Ty_Nil());
+                    //return expTy(a, Ty_nil);
+                }
+
+                //printf("A_callExp 19 - D - result: %d\n", enventry->u.fun.result);
+
+                //return transExp(venv, tenv, enventry->u.fun.result); // why was this line here?
+
+                return expTy(a, enventry->u.fun.result); // this line is here because of getchar.tig
             }
-
-            //printf("A_callExp 19 - D - result: %d\n", enventry->u.fun.result);
-
-            //return transExp(venv, tenv, enventry->u.fun.result); // why was this line here?
-
-            return expTy(a, enventry->u.fun.result); // this line is here because of getchar.tig
         }
         break;
 
@@ -459,6 +467,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
             S_beginScope(venv);
             S_beginScope(tenv);
 
+            // process all type and function declarations of the let expression
             A_decList decs = a->u.let.decs;
             while (decs != NULL) {
 
@@ -1119,18 +1128,19 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 // remove parameter scope
                 S_endScope(venv);
 
+                // DEBUG
                 //printf("testing fundec: %d\n", fundec);
                 //printf("testing fundec: %d\n", fundec->result);
                 //printf("testing function_result_type: %d\n", function_result_type);
                 //printf("testing function_result_type.ty: %d\n", function_result_type.ty);
 
+/*
                 if ((fundec->result == NULL) && (function_result_type.ty != Ty_Nil()))
-                //if ((fundec->result == NULL) && (function_result_type.ty->kind != Ty_nil))
                 {
-                    //printf("wololo\n");
                     EM_error(d->pos, "Function \"%s\" is declared without return type but returns %s.\n", S_name(fundec->name), label_type(function_result_type.ty));
                     assert(0);
                 }
+*/
 
                 //printf("next function UIOAIUSDOIUASDOIUASDOUIASDUIO\n");
 

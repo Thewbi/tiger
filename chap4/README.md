@@ -185,6 +185,96 @@ The file absyn.h contains functions that construct nodes that can be inserted in
 
 
 
+
+
+# Function Declarations
+
+Functions are defined in let-expressions. An example using mutually recursive functions is test6.tig:
+
+```
+/* define valid mutually recursive procedures */
+
+let
+
+    function do_nothing1(a: int, b: string) =
+        do_nothing2(a+1)
+
+    function do_nothing2(d: int) =
+        do_nothing1(d, "str")
+
+in
+	do_nothing1(0, "str2")
+end
+```
+
+The way that Mr. Apple wants the student to parse function delarations into the AST is by parsing consecutive
+function declarations into a fundecList node as opposed to having each function
+declarations as a independent elements in the list of all declarations of the current let-expression.
+
+When the .tig file declares two functions func_A and func_B, one after the other without any variable declartions
+in between, then the AST contains a single functionDec-node which in turn contains a fundecList-node.
+The fundecList-node contains both function declarations func_A and func_B organized as a list.
+
+The node shown below contains two functions do_nothing1 and do_nothing2 organized in a fundecList.
+
+```
+letExp(
+    decList(
+        functionDec( <============== contains a list of all consecutive function declarations
+            fundecList(
+                fundec(do_nothing1, fieldList( field(a, int, TRUE),
+                fieldList( field(b, string, TRUE),
+                    fieldList())),
+                callExp(do_nothing2, expList( opExp( PLUS, varExp( simpleVar(a)), intExp(1)), expList()))),
+                fundecList(
+                    fundec(do_nothing2, fieldList( field(d, int, TRUE), fieldList()),
+                    callExp(do_nothing1, expList( varExp( simpleVar(d)), expList( stringExp(str), expList())))),
+                    fundecList()))),
+    decList()),
+    seqExp(
+        expList(
+            callExp(do_nothing1,
+                expList(
+                    intExp(0),
+                    expList(
+                        stringExp(str2),
+                    expList()))),
+        expList())))
+```
+
+It is more intuitive to have func_A and func_B to be independent functionDec-nodes in the decList-node of the
+let expression. What is the motivation to organize function declarations like this?
+
+The reason is that when traversing the AST later, having a list of consecutive function declarations, it
+is possible to perform several "micro-passes" over all the consecutive function declarations although the
+compiler inherently is constructed as a single pass comiler.
+
+The "micro-passes" can be used to resolve mutually recursive function declarations.
+If you look at test6.tig, do_nothing1 calls do_nothing2 although do_nothing2 is not declared yet while 
+do_nothing2 also calls do_nothing1!
+This is a mutually recursive situation. The way to resolve this is using several passes to resolve the 
+situation until all declarations have been seen and all placeholders have been replaced by real declarations.
+
+In a single pass compiler, several passes are not an option. The C-Programming language has forward 
+declarations that can also be placed in header files. A forward declaration contains information that the
+developer provides for the compiler so that the compiler has information about all used functions before
+it encounters any function calls. In the C programming language, the developer is a manual pass to the
+compiler if you so want.
+
+The tiger programming language does not define function prototypes. So there is no way for a developer
+to support the compiler. The compiler has to figure out function declarations in the only single pass
+that it performs and it has to figure out all the forward declarations itself.
+
+The way to approach this is a multi-pass approach but instead of making the entire compiler multi-pass,
+a "micro-pass" is introduced as a while loop around function declaration lists. That way, if you
+define several functions in a row without any variable declarations in between, the parser will organize
+those declarations in a declaration list node and the semantic analysis performed later can run the 
+while loop over this list until all forward declarationse have been resolved.
+
+
+
+
+
 # Approach Developing and Testing the Software for Chapter 4
 
 Constructing and printing the AST means to have semantic actions for all parts of the grammar to construct the AST.

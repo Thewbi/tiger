@@ -20,7 +20,8 @@ int main(int argc, char **argv)
 
         //tig_file = ".\\testcases\\merge.tig";
         //tig_file = ".\\testcases\\mutually_recursive_types.tig";
-        tig_file = ".\\testcases\\mutually_recursive_types_as_function_parameters.tig";
+        //tig_file = ".\\testcases\\mutually_recursive_types_as_function_parameters.tig";
+        tig_file = ".\\testcases\\book\\test6.tig";
     }
     else 
     {
