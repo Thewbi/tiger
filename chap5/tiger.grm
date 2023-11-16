@@ -38,6 +38,7 @@ extern int yylineno;
     A_efield a_efield;
     A_efieldList a_efieldlist;
     A_fundec a_fundec;
+    A_fundecList a_fundeclist;
 	}
 
 /* */
@@ -80,7 +81,10 @@ extern int yylineno;
 %type <a_explist> expseq_comma
 /* %type <a_explist> record_creation_assignments */
 
-%type <a_fundec> fundec
+/*%type <a_fundec> fundec*/
+
+%type <a_fundeclist> fundec
+%type <a_fundec> fundecs
 
 %type <a_ty> ty
 
@@ -167,7 +171,7 @@ exp : lvalue { /*printf("exp - lvalue\n");*/ $$ = $1; /*printf("exp - lvalue kin
     ;
 
 lvalue : ID { 
-            /*printf("lvalue - ID\n");*/ 
+            /*printf("lvalue - ID\n");*/
             $$ = A_VarExp(yylineno, A_SimpleVar(yylineno, S_Symbol($1)));
             /*printf("lvalue - ID kind: %d\n", $$->kind);*/
             } // variable
@@ -223,7 +227,7 @@ sequencing : LPAREN expseq RPAREN { /*printf("sequencing 1\n");*/ $$ = A_SeqExp(
 no_value : LPAREN RPAREN { /*printf("no_value\n");*/ $$ = A_NilExp(yylineno); }
          ;
 
-function_call : ID LPAREN RPAREN { /*printf("function_call - A\n");*/ 
+function_call : ID LPAREN RPAREN { /*printf("function_call - A\n");*/
                 //$$ = A_NilExp(yylineno); 
                 $$ = A_CallExp(yylineno, S_Symbol($1), NULL); 
               }
@@ -255,11 +259,11 @@ record_creation : ID LBRACE record_creation_assignments RBRACE { /*printf("recor
                 ;
 
 record_creation_assignments : %empty { $$ = NULL; }
-                            | record_creation_assignment { /*printf("record_creation_assignments 1\n");*/ 
+                            | record_creation_assignment { /*printf("record_creation_assignments 1\n");*/
                                 //$$ = A_ExpList($1, NULL);
                                 $$ = A_EfieldList($1, NULL);
                                 }
-                            | record_creation_assignment COMMA record_creation_assignments { /*printf("record_creation_assignments 2\n");*/ 
+                            | record_creation_assignment COMMA record_creation_assignments { /*printf("record_creation_assignments 2\n");*/
                                 //$$ = A_ExpList($1, $3);
                                 $$ = A_EfieldList($1, $3);
                                 }
@@ -340,7 +344,8 @@ decs : dec { /*printf("decs - dec - A\n");*/ $$ = A_DecList($1, NULL); }
 
 dec : tydec { $$ = $1; }
     | vardec { $$ = $1; }
-    | fundec { /*printf("dec - fundec\n");*/ $$ = A_FunctionDec(yylineno, A_FundecList($1, NULL)); }
+//    | fundec { /*printf("dec - fundec\n");*/ $$ = A_FunctionDec(yylineno, A_FundecList($1, NULL)); }
+    | fundecs { /*printf("dec - fundecs\n");*/ $$ = A_FunctionDec(yylineno, $1); }
     ;
 
 tydec : TYPE ID EQ ty { $$ = A_TypeDec(yylineno, A_NametyList(A_Namety(S_Symbol($2), $4), NULL)); }
@@ -354,6 +359,7 @@ ty : ID { $$ = A_NameTy(yylineno, S_Symbol($1)); }
 tyfields : %empty { $$ = NULL; }
          | tyfield { $$ = A_FieldList($1, NULL); }
          | tyfield COMMA tyfields { $$ = A_FieldList($1, $3); }
+//         | tyfields COMMA tyfield { $$ = A_FieldList($3, $1); }
          ;
 
 tyfield : ID COLON ID { $$ = A_Field(yylineno, S_Symbol($1), S_Symbol($3)); }
@@ -367,6 +373,7 @@ expseq :
 
 expseq_comma : exp { /*printf("expseq_comma 1\n");*/ $$ = A_ExpList($1, NULL); }
              | exp COMMA expseq_comma { /*printf("expseq_comma 2\n");*/ $$ = A_ExpList($1, $3); }
+             //| expseq_comma COMMA exp { /*printf("expseq_comma 2\n");*/ $$ = A_ExpList($3, $1); }
              ;
 
 // A_dec A_VarDec(A_pos pos, S_symbol var, S_symbol typ, A_exp init)
@@ -383,6 +390,10 @@ vardec : VAR ID ASSIGN exp {
         }
        //| VAR ID COLON ASSIGN ID array_creation 
        ;
+
+fundecs : fundec { /*printf("fundecs - fundec - A\n");*/ $$ = A_FundecList($1, NULL); }
+     | fundec fundecs { /*printf("fundecs - fundec+fundecs - B\n");*/ $$ = A_FundecList($1, $2); }
+     ;
 
 // A_fundec A_Fundec(A_pos pos, S_symbol name, A_fieldList params, S_symbol result, A_exp body);
 fundec : FUNCTION ID LPAREN tyfields RPAREN EQ exp { /*printf("fundec A\n");*/ $$ = A_Fundec(yylineno, S_Symbol($2), $4, NULL, $7); }

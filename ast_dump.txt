@@ -20,9 +20,6 @@
           simpleVar(a)),
          intExp(1)),
         expList()))),
-     fundecList())),
-   decList(
-    functionDec(
      fundecList(
       fundec(do_nothing2,
        fieldList(
@@ -30,21 +27,22 @@
          int,
          TRUE),
         fieldList()),
-       callExp(do_nothing1,
-        expList(
-         varExp(
-          simpleVar(d)),
-         expList(
-          stringExp(str),
-          expList())))),
-      fundecList())),
-    decList())),
+       nilExp()),
+      fundecList(
+       fundec(do_nothing3,
+        fieldList(
+         field(a,
+          int,
+          TRUE),
+         fieldList(
+          field(b,
+           string,
+           TRUE),
+          fieldList())),
+        nilExp()),
+       fundecList())))),
+   decList()),
   seqExp(
    expList(
-    callExp(do_nothing1,
-     expList(
-      intExp(0),
-      expList(
-       stringExp(str2),
-       expList()))),
+    intExp(0),
     expList())))

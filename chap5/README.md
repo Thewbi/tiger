@@ -1093,10 +1093,10 @@ Therefore, this program translates into the abstract syntax
 
 ## Tests for Mutually Recursive Functions
 
-test6.tig           ( semanttest.exe ..\testcases\book\test6.tig ) <========= fix it!
-test7.tig           ( semanttest.exe ..\testcases\book\test7.tig ) <========= fix it!
-test18.tig          ( semanttest.exe ..\testcases\book\test18.tig ) <========= fix it!
-test19.tig          ( semanttest.exe ..\testcases\book\test19.tig ) <========= fix it!
+test6.tig           ( semanttest.exe ..\testcases\book\test6.tig ) // OK
+test7.tig           ( semanttest.exe ..\testcases\book\test7.tig ) // OK
+test18.tig          ( semanttest.exe ..\testcases\book\test18.tig ) // OK
+test19.tig          ( semanttest.exe ..\testcases\book\test19.tig ) // SEM_ERROR, var a undeclared
 
 
 
@@ -1193,10 +1193,10 @@ test18.tig,         ( semanttest.exe ..\testcases\book\test18.tig & cat ..\testc
 test19.tig,         ( semanttest.exe ..\testcases\book\test19.tig & cat ..\testcases\book\test19.tig & cat ast_dump.txt ) 
 
 mutually recursive functions
-test6.tig           ( semanttest.exe ..\testcases\book\test6.tig ) <========= fix it!
-test7.tig           ( semanttest.exe ..\testcases\book\test7.tig ) <========= fix it!
-test18.tig          ( semanttest.exe ..\testcases\book\test18.tig ) <========= fix it!
-test19.tig          ( semanttest.exe ..\testcases\book\test19.tig ) <========= fix it!
+test6.tig           ( semanttest.exe ..\testcases\book\test6.tig ) // OK
+test7.tig           ( semanttest.exe ..\testcases\book\test7.tig ) // OK
+test18.tig          ( semanttest.exe ..\testcases\book\test18.tig ) // OK
+test19.tig          ( semanttest.exe ..\testcases\book\test19.tig ) // SEM_ERROR, a not declared
 
 
 All the following tests are in the testcases\book folder
@@ -1259,10 +1259,10 @@ test48.tig          ( semanttest.exe ..\testcases\book\test48.tig & cat ..\testc
 
 function declarations and function calls:
 test4.tig,          ( semanttest.exe ..\testcases\book\test4.tig  & cat ..\testcases\book\test4.tig & cat ast_dump.txt ) // OK
-test6.tig,          ( semanttest.exe ..\testcases\book\test6.tig  & cat ..\testcases\book\test6.tig & cat ast_dump.txt ) // <======== currently fails but has to be ok
-test7.tig,          ( semanttest.exe ..\testcases\book\test7.tig  & cat ..\testcases\book\test7.tig & cat ast_dump.txt ) // <======== currently fails but has to be ok
-test18.tig,         ( semanttest.exe ..\testcases\book\test18.tig & cat ..\testcases\book\test18.tig & cat ast_dump.txt ) // <======== currently fails but has to be ok
-test19.tig,         ( semanttest.exe ..\testcases\book\test19.tig & cat ..\testcases\book\test19.tig & cat ast_dump.txt ) // <======== currently fails but has to be ok
+test6.tig,          ( semanttest.exe ..\testcases\book\test6.tig  & cat ..\testcases\book\test6.tig & cat ast_dump.txt ) // OK
+test7.tig,          ( semanttest.exe ..\testcases\book\test7.tig  & cat ..\testcases\book\test7.tig & cat ast_dump.txt ) // OK
+test18.tig,         ( semanttest.exe ..\testcases\book\test18.tig & cat ..\testcases\book\test18.tig & cat ast_dump.txt ) // OK
+test19.tig,         ( semanttest.exe ..\testcases\book\test19.tig & cat ..\testcases\book\test19.tig & cat ast_dump.txt ) // SEM-ERRIR, var a not defined
 test34.tig,         ( semanttest.exe ..\testcases\book\test34.tig & cat ..\testcases\book\test34.tig & cat ast_dump.txt ) // SEM-ERROR, formal and actual parameter types differ
 test35.tig,         ( semanttest.exe ..\testcases\book\test35.tig & cat ..\testcases\book\test35.tig & cat ast_dump.txt ) // SEM-ERROR, formals are more then actuals
 test36.tig,         ( semanttest.exe ..\testcases\book\test36.tig & cat ..\testcases\book\test36.tig & cat ast_dump.txt ) // SEM-ERROR, formals are fewer then actuals
@@ -1308,7 +1308,7 @@ semanttest.exe ..\testcases\WMBao\Good\3.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\5.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\6.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\7.tig // OK
-semanttest.exe ..\testcases\WMBao\Good\8.tig
+semanttest.exe ..\testcases\WMBao\Good\8.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\10.tig // SYNTAX ERROR
 semanttest.exe ..\testcases\WMBao\Good\11.tig
 semanttest.exe ..\testcases\WMBao\Good\12.tig

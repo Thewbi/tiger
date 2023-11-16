@@ -156,6 +156,9 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
                     return expTy(a, Ty_Int());
                 }
 
+                printf("TAB TAB TAB OP OP OP\n");
+                TAB_dump(venv, 5, show);
+
                 //printf("A_opExp left transExp()\n");
                 struct expty left = transExp(venv, tenv, a->u.op.left, inside_loop);
 
@@ -163,6 +166,15 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
                 struct expty right = transExp(venv, tenv, a->u.op.right, inside_loop);
 
                 //printf("A_opExp 20 - OPERAND B left: %d, right: %d, left-ty: %d, right-ty: %d\n", left, right, left.ty, right.ty);
+                printf("A_opExp 20 - OPERAND B left-kind: %d, right-kind: %d\n", left.ty->kind, right.ty->kind);
+
+                // Ty_record - 0
+                // Ty_nil - 1 
+                // Ty_int - 2 
+                // Ty_string - 3
+                // Ty_array - 4 
+                // Ty_name - 5 
+                // Ty_void - 6
 
                 bool sane = TRUE;
 
@@ -1059,20 +1071,14 @@ void transDec(S_table venv, S_table tenv, A_dec d)
             //function_result_type.ty = Ty_nil;
             function_result_type.ty = Ty_Nil();
 
+            //
+            // First (Micro)-Pass: enter all function prototypes into venv
+            //
+
             A_fundecList fundecList = d->u.function;
             while (fundecList != NULL) 
             {
                 A_fundec fundec = fundecList->head;
-                //printf("fundec: pos: %d\n", fundec->pos);
-                //printf("fundec: name: %s\n", S_name(fundec->name));
-
-                // // check if the function is already contained in the current venv
-                // void* binding_value = S_look(venv, fundec->name);
-                // if (binding_value != NULL)
-                // {
-                //     EM_error(d->pos, "Reuse of function name \"%s\". This implementation does not allow function name reuse/shadowing! Line: %d\n", S_name(fundec->name), d->pos);
-                //     assert(0);
-                // }
 
                 Ty_tyList formalTys = makeFormalTyList(tenv, fundec->params);
 
@@ -1089,6 +1095,48 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                     S_enter(venv, fundec->name, E_FunEntry(formalTys, resultTy));
                 }
 
+                // next function declaration
+                fundecList = fundecList->tail;
+            }
+
+            TAB_dump(venv, 5, show);
+
+            //
+            // Second (Micro)-Pass
+            //
+
+            fundecList = d->u.function;
+            while (fundecList != NULL) 
+            {
+                A_fundec fundec = fundecList->head;
+                //printf("fundec: pos: %d\n", fundec->pos);
+                //printf("fundec: name: %s\n", S_name(fundec->name));
+
+                // // check if the function is already contained in the current venv
+                // void* binding_value = S_look(venv, fundec->name);
+                // if (binding_value != NULL)
+                // {
+                //     EM_error(d->pos, "Reuse of function name \"%s\". This implementation does not allow function name reuse/shadowing! Line: %d\n", S_name(fundec->name), d->pos);
+                //     assert(0);
+                // }
+
+                Ty_tyList formalTys = makeFormalTyList(tenv, fundec->params);
+
+/*
+                // functions do not have to return a value. 
+                // They can be defined without return type!
+                if (fundec->result == NULL)
+                {
+                    //printf("123445\n");
+                    S_enter(venv, fundec->name, E_FunEntry(formalTys, NULL));
+                }
+                else
+                {
+                    Ty_ty resultTy = S_look(tenv, fundec->result);
+                    S_enter(venv, fundec->name, E_FunEntry(formalTys, resultTy));
+                }
+*/
+
                 //
                 // Perform the semantic analysis on the body.
                 //
@@ -1100,6 +1148,8 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 // start parameter scope
                 S_beginScope(venv);
 
+                printf("Inserting formal parameters into the scope...\n");
+
                 // insert formal parameters into the scope
                 {
                     //printf("Processing formal function parameters ...\n");
@@ -1108,8 +1158,13 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                     Ty_tyList t;
                     for (l = fundec->params, t = formalTys; l; l = l->tail, t = t->tail)
                     {
-                        //printf("param: %s\n", S_name(l->head->name));
+                        printf("param: %s type: \n", S_name(l->head->name));
+                        show_type(t->head, 5);
+                        printf("\n");
+
+
                         S_enter(venv, l->head->name, E_VarEntry(t->head));
+                        //S_enter(venv, l->head->name, E_VarEntry(l->head));
                     }
 
                     //printf("Processing formal function parameters done.\n");
@@ -1144,6 +1199,8 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 
                 //printf("next function UIOAIUSDOIUASDOIUASDOUIASDUIO\n");
 
+                
+
                 // next function declaration
                 fundecList = fundecList->tail;
             }
@@ -1165,9 +1222,10 @@ void transDec(S_table venv, S_table tenv, A_dec d)
  */
 Ty_tyList makeFormalTyList(S_table tenv, A_fieldList params)
 {
-    //printf("makeFormalTyList() \n");
+    printf("makeFormalTyList() \n");
 
     Ty_tyList result = NULL;
+    Ty_tyList iter = NULL;
 
     while (params != NULL)
     {
@@ -1175,14 +1233,29 @@ Ty_tyList makeFormalTyList(S_table tenv, A_fieldList params)
         //printf("param: %s\n", S_name(param->name));
 
         Ty_ty paramTy = S_look(tenv, param->typ);
-        // show_type(paramTy);
 
-        result = Ty_TyList(paramTy, result);
+        // DEBUG
+        printf("param ");
+        show_type(paramTy, 5);
+        printf("\n");
+
+        Ty_tyList temp = Ty_TyList(paramTy, NULL);
+
+        if (iter == NULL)
+        { 
+            result = temp;
+            iter = temp;
+        }
+        else 
+        {
+            iter->tail = temp;
+            iter = temp;
+        }
 
         params = params->tail;
     }
 
-    //printf("makeFormalTyList() done.\n");
+    printf("makeFormalTyList() done.\n");
 
     return result;
 }
@@ -1334,7 +1407,7 @@ void show_type_indent(Ty_ty type, int indentation, int recursion_depth)
     {
         case E_varEntry:
         {
-            printf(" E_varEntry");
+            printf(" E_varEntry ");
 
             E_enventry enventry = (E_enventry) type;
 
