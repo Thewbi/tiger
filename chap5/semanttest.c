@@ -12,13 +12,23 @@ extern int yyparse(void);
 
 int main(int argc, char **argv) 
 {
-    if (argc!=2) 
+    string tig_file = NULL;
+    if (argc != 2) 
     {
-        fprintf(stderr,"usage: a.out filename\n"); exit(1);
+        //fprintf(stderr, "usage: a.out filename\n"); 
+        //exit(1);
+
+        //tig_file = ".\\testcases\\merge.tig";
+        //tig_file = ".\\testcases\\mutually_recursive_types.tig";
+        tig_file = ".\\testcases\\mutually_recursive_types_as_function_parameters.tig";
+    }
+    else 
+    {
+        tig_file = argv[1];
     }
 
     printf("Parsing the input ...\n");
-    A_exp program = parse(argv[1]);
+    A_exp program = parse(tig_file);
     printf("Parsing the input done.\n");
 
     if (program == NULL)
@@ -198,7 +208,7 @@ int main(int argc, char **argv)
         assert(0);
     }
 
-    printf("Performing Semantic Analysis done.\n");
+    printf("Performing Semantic Analysis done.");
 
     return 0;
 }

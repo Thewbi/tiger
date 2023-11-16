@@ -31,9 +31,9 @@ void transDec(S_table venv, S_table tenv, A_dec d);
 
 Ty_tyList makeFormalTyList(S_table tenv, A_fieldList params);
 
-void show(void *key, void *value);
-void show_type(Ty_ty type);
-void show_type_indent(Ty_ty type, int indentation);
+void show(void *key, void *value, int recursion_depth);
+void show_type(Ty_ty type, int recursion_depth);
+void show_type_indent(Ty_ty type, int indentation, int recursion_depth);
 char* label_type(Ty_ty type);
 
 #endif

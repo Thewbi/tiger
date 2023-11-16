@@ -77,5 +77,5 @@ void S_endScope(S_table t)
 }
 
 void S_dump(S_table t, void (*show)(S_symbol sym, void *binding)) {
-  TAB_dump(t, (void (*)(void *, void *)) show);
+  TAB_dump(t, 10, (void (*)(void *, void *)) show);
 }

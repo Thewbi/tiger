@@ -34,39 +34,31 @@ let
     let 
         var any := any { any=0 }
         var i := readint(any)
-    in 
-
-        // TODO semantic analysis fails. It says types in if and else differ
+    in
+        // types in if and else differ!
         // BUT: in the then branch, the a anonymous list variable is declared and nil has to match any type!!!!!!
+
         if any.any
         then list { first=i, rest=readlist() }
         else nil
-
-        //if any.any
-        //then nil
-        //else nil
-
-        //list{first=i,rest=readlist()}
-
-        //nil
     end
 
     function merge(a: list, b: list) : list =
-        if a = nil 
+        if a = nil
         then b
         else
-            if b=nil 
+            if b=nil
             then a
-            else 
+            else
                 if a.first < b.first 
-                then list{first=a.first,rest=merge(a.rest,b)}
-                else list{first=b.first,rest=merge(a,b.rest)}
+                then list{ first=a.first, rest=merge(a.rest, b) }
+                else list{ first=b.first, rest=merge(a, b.rest) }
 
     function printint(i: int) =
     let 
         function f(i:int) = 
             if i>0 
-            then (f(i/10); print(chr(i-i/10*10+ord("0"))))
+            then ( f(i/10); print(chr(i-i/10*10+ord("0"))) )
     in 
         if i < 0 
         then ( print("-"); f(-i) )
@@ -77,17 +69,21 @@ let
     end
 
     function printlist(l: list) =
-        if l=nil 
+        if l = nil 
         then print("\n")
-        else (printint(l.first); print(" "); printlist(l.rest))
+        else ( 
+            printint(l.first); 
+            print(" "); 
+            printlist(l.rest)
+        )
 
     var list1 := readlist()
 
-    var list2 := (buffer:=getchar(); readlist())
+    var list2 := ( buffer := getchar(); readlist() )
 
 in
     /* BODY OF MAIN PROGRAM */
-    printlist(merge(list1,list2));
+    printlist(merge(list1, list2));
     0
 end
 

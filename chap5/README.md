@@ -1081,6 +1081,24 @@ end
 See mutually_recursive_types_with_and_keyword.tig
 
 
+# Mutually Recursive Functions
+
+From the book on page 99
+
+The Tiger language treats adjacent function declarations as (possibly) mutually recursive. The FunctionDec constructor of the abstract syntax takes
+a list of function declarations, not just a single function. The intent is that
+this list is a maximal consecutive sequence of function declarations. Thus,
+functions declared by the same FunctionDec can be mutually recursive.
+Therefore, this program translates into the abstract syntax
+
+## Tests for Mutually Recursive Functions
+
+test6.tig           ( semanttest.exe ..\testcases\book\test6.tig ) <========= fix it!
+test7.tig           ( semanttest.exe ..\testcases\book\test7.tig ) <========= fix it!
+test18.tig          ( semanttest.exe ..\testcases\book\test18.tig ) <========= fix it!
+test19.tig          ( semanttest.exe ..\testcases\book\test19.tig ) <========= fix it!
+
+
 
 
 # Tests
@@ -1091,10 +1109,10 @@ vardec_no_type_no_initializer.tig       ( semanttest.exe ..\testcases\vardec_no_
 vardec_type_no_initialization.tig       ( semanttest.exe ..\testcases\vardec_type_no_initialization.tig ) SYNTAX_ERROR
 
 Assignments:
-assignment.tig      ( semanttest.exe ..\testcases\assignment.tig & cat ast_dump.txt ) SEMANTIC_ERROR (no type specified)
+assignment.tig      ( semanttest.exe ..\testcases\assignment.tig    & cat ast_dump.txt ) SEMANTIC_ERROR (no type specified)
 
 Sequences:
-sequencing.tig      ( semanttest.exe ..\testcases\sequencing.tig & cat ast_dump.txt ) SEMANTIC_ERROR, i has no type
+sequencing.tig      ( semanttest.exe ..\testcases\sequencing.tig    & cat ast_dump.txt ) SEMANTIC_ERROR, i has no type
 
 Let
 let.tig             ( semanttest.exe ..\testcases\let.tig           & cat ..\testcases\let.tig           & cat ast_dump.txt ) // SEM-ERROR
@@ -1174,6 +1192,11 @@ test7.tig,          ( semanttest.exe ..\testcases\book\test7.tig  & cat ..\testc
 test18.tig,         ( semanttest.exe ..\testcases\book\test18.tig & cat ..\testcases\book\test18.tig & cat ast_dump.txt )
 test19.tig,         ( semanttest.exe ..\testcases\book\test19.tig & cat ..\testcases\book\test19.tig & cat ast_dump.txt ) 
 
+mutually recursive functions
+test6.tig           ( semanttest.exe ..\testcases\book\test6.tig ) <========= fix it!
+test7.tig           ( semanttest.exe ..\testcases\book\test7.tig ) <========= fix it!
+test18.tig          ( semanttest.exe ..\testcases\book\test18.tig ) <========= fix it!
+test19.tig          ( semanttest.exe ..\testcases\book\test19.tig ) <========= fix it!
 
 
 All the following tests are in the testcases\book folder

@@ -117,7 +117,12 @@ void *TAB_pop(TAB_table t) {
  * type scopes are implemented. The erasing part is the reason why this strategy is
  * called destructive.
  */
-void TAB_dump(TAB_table t, void (*show)(void *key, void *value)) {
+void TAB_dump(TAB_table t, int recursion_depth, void (*show)(void *key, void *value, int recursion_depth)) {
+
+    if (recursion_depth == 0)
+    {
+        return;
+    }
 
     // store the key of the topmost binder into k
     void *k = t->top;
@@ -136,10 +141,10 @@ void TAB_dump(TAB_table t, void (*show)(void *key, void *value)) {
     t->top = b->prevtop;
 
     // show the current type
-    show(b->key, b->value);
+    show(b->key, b->value, recursion_depth);
 
     // recurse
-    TAB_dump(t,show);
+    TAB_dump(t, recursion_depth, show);
 
     assert(t->top == b->prevtop && t->table[index] == b->next);
 
@@ -154,61 +159,87 @@ void TAB_dump(TAB_table t, void (*show)(void *key, void *value)) {
  * Name(s, NULL) is replaced by the real type! If the real type is not defined, a semantic error
  * has been found!
  */
-void TAB_resolve_mutually_recursive_types(TAB_table t, void (*show)(void *key, void *value)) 
+void TAB_resolve_mutually_recursive_types(TAB_table tenv, int recursion_depth, void (*show)(void *key, void *value, int recursion_depth)) 
 {
+    //printf("TAB_resolve_mutually_recursive_types\n");
+
     // store the key of the topmost binder into k
-    void *top_binder_key = t->top;
+    void *top_binder_key = tenv->top;
 
     while (top_binder_key != NULL)
     {
         // retrieve the binder which is hashed for the key top_binder_key
         int index = ((unsigned)top_binder_key) % TABSIZE;
-        binder top_binder = t->table[index];
-        if (top_binder==NULL) {
+        binder top_binder = tenv->table[index];
+        if (top_binder == NULL) {
             return;
         }
 
-        printf("Key: %s\n", S_name(top_binder->key));
+        //printf("Key: %s\n", S_name(top_binder->key));
 
         // detect the end of the current scope (first <mark> binder)
         if (strcmp("<mark>", S_name(top_binder->key)) == 0) 
         {
-            printf("Aborting TAB_fix_mutually_recursive_types at first <mark>\n");
+            //printf("Aborting TAB_fix_mutually_recursive_types at first <mark>\n");
             return;
         }
 
+        //printf("show...\n");
+
         // show the current type
-        show(top_binder->key, top_binder->value);
+        //show(top_binder->key, top_binder->value, recursion_depth);
+
+        //printf("show done.\n");
 
         // find records, because the resolution is implemented for record fields!
         Ty_ty binder_value = top_binder->value;
         if (binder_value->kind == Ty_record) {
 
-            printf("Record found!\n");
+            //printf("Record found!\n");
 
             // print all the records fields, their names and types
             Ty_fieldList field_list = binder_value->u.record;
             while (field_list != NULL) 
             {
-                printf("A\n");
+                //printf("A\n");
                 Ty_field record_field = field_list->head;
 
-                printf("B\n");
-                for (int i = 0; i < 1; i++)
-                {
-                    printf("\t");
-                }
-                printf("[name: %s", S_name(record_field->name));
-                printf(" type: ");
+                //printf("B\n");
+                
+                // for (int i = 0; i < 1; i++)
+                // {
+                //     printf("\t");
+                // }
+                // printf("[name: %s", S_name(record_field->name));
+                // printf(" type: ");
 
                 //show_type_indent(record_field->ty, indentation+1);
                 //printf("\n");
 
                 if (record_field->ty->kind == Ty_name) {
-                    printf("I HAVE TO REPLACE THIS S_NAME BY THIS TYPE: %s", S_name(record_field->ty->u.name.sym));
+                    //printf("I HAVE TO REPLACE THIS S_NAME BY THIS TYPE: %s", S_name(record_field->ty->u.name.sym));
+
+                    void* binding_value = S_look(tenv, record_field->ty->u.name.sym);
+                    if (binding_value == NULL)
+                    {
+                        // if a type cannot be resolved yet, then just advance.
+                        // The type is resolved later, if the file is semantically correct
+
+                        // EM_error(0, "undeclared type \"%s\". tenv does not contain type: \"%s\"\n", S_name(record_field->ty->u.name.sym), S_name(record_field->ty->u.name.sym));
+                        // assert(0);
+
+                        // advance iterator
+                        field_list = field_list->tail;
+
+                        continue;
+                    }
+
+                    // replace placeholder by resolved actual type
+                    Ty_ty resolved_type = (Ty_ty) binding_value;
+                    record_field->ty = resolved_type;
                 }
 
-                printf("]\n");
+                //printf("]\n");
 
                 // advance iterator
                 field_list = field_list->tail;
@@ -220,6 +251,5 @@ void TAB_resolve_mutually_recursive_types(TAB_table t, void (*show)(void *key, v
 
         // descend the emulated stack of type definitions
         top_binder_key = top_binder->prevtop;
-
     }
 }
