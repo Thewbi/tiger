@@ -34,7 +34,7 @@ The $$ symbol is used to assign a value to the reduced left hand side symbol. Wh
 in a rule on the right-hand side, and that rule is reduced, the semantic action has access to the value
 assigned to the symbol using \$1, \$2, \$3, ....
 
-The variables \$1, \$2, \$3, ... and so on denote the individual symbols on the right-hand side when a non-terminal 
+The variables \$1, \$2, ... and so on denote the individual symbols on the right-hand side when a non-terminal 
 is reduced. You have to realize that when a non-terminal is reduced and the right-hand side contains
 non-terminals then these non-terminals have been reduced before hence they already have a value assigned
 to them. You can then take the values from the non-terminals and combine them in new ways into a value
