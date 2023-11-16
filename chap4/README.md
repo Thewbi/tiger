@@ -275,6 +275,85 @@ define several functions in a row without any variable declarations in between, 
 those declarations in a declaration list node and the semantic analysis performed later can run the 
 while loop over this list until all forward declarationse have been resolved.
 
+The code for the Micro-Pass approach is required in chap5 but it is shown below to complete the documentation
+of mutually recursive function declarations.
+
+```
+case A_functionDec:
+{
+
+    struct expty function_result_type;
+    function_result_type.ty = Ty_Nil();
+
+    //
+    // First (Micro)-Pass: enter all function prototypes into venv
+    //
+
+    A_fundecList fundecList = d->u.function;
+    while (fundecList != NULL) 
+    {
+        A_fundec fundec = fundecList->head;
+
+        Ty_tyList formalTys = makeFormalTyList(tenv, fundec->params);
+
+        // functions do not have to return a value. 
+        // They can be defined without return type!
+        if (fundec->result == NULL)
+        {
+            S_enter(venv, fundec->name, E_FunEntry(formalTys, NULL));
+        }
+        else
+        {
+            Ty_ty resultTy = S_look(tenv, fundec->result);
+            S_enter(venv, fundec->name, E_FunEntry(formalTys, resultTy));
+        }
+
+        // next function declaration
+        fundecList = fundecList->tail;
+    }
+
+    //
+    // Second (Micro)-Pass
+    //
+
+    fundecList = d->u.function;
+    while (fundecList != NULL) 
+    {
+        A_fundec fundec = fundecList->head;
+        Ty_tyList formalTys = makeFormalTyList(tenv, fundec->params);
+
+        //
+        // Perform the semantic analysis on the body.
+        //
+        // Because the body may make use of the formal parameters, 
+        // the semantic analysis first creates a new scope for the
+        // function body and inserts all formal parameters into it.
+        //
+
+        // start parameter scope
+        S_beginScope(venv);
+
+        // insert formal parameters into the scope
+        {
+            A_fieldList l;
+            Ty_tyList t;
+            for (l = fundec->params, t = formalTys; l; l = l->tail, t = t->tail)
+            {
+                S_enter(venv, l->head->name, E_VarEntry(t->head));
+            }
+        }
+
+        // process the body
+        function_result_type = transExp(venv, tenv, fundec->body, OUTSIDE_LOOP);
+
+        // remove parameter scope
+
+        // next function declaration
+        fundecList = fundecList->tail;
+    }
+}
+break;
+```
 
 
 
