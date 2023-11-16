@@ -159,7 +159,7 @@ void TAB_dump(TAB_table t, int recursion_depth, void (*show)(void *key, void *va
  * Name(s, NULL) is replaced by the real type! If the real type is not defined, a semantic error
  * has been found!
  */
-void TAB_resolve_mutually_recursive_types(TAB_table tenv, int recursion_depth, void (*show)(void *key, void *value, int recursion_depth)) 
+void TAB_resolve_mutually_recursive_types(int pos, TAB_table tenv, int recursion_depth, bool throw_error_on_undefined_type, void (*show)(void *key, void *value, int recursion_depth)) 
 {
     //printf("TAB_resolve_mutually_recursive_types\n");
 
@@ -193,7 +193,7 @@ void TAB_resolve_mutually_recursive_types(TAB_table tenv, int recursion_depth, v
 
         // find records, because the resolution is implemented for record fields!
         Ty_ty binder_value = top_binder->value;
-        if (binder_value->kind == Ty_record) {
+        if ((binder_value != NULL) && (binder_value->kind == Ty_record)) {
 
             //printf("Record found!\n");
 
@@ -213,8 +213,9 @@ void TAB_resolve_mutually_recursive_types(TAB_table tenv, int recursion_depth, v
                 // printf("[name: %s", S_name(record_field->name));
                 // printf(" type: ");
 
-                //show_type_indent(record_field->ty, indentation+1);
-                //printf("\n");
+                // // DEBUG
+                // show_type_indent(record_field->ty, 0);
+                // printf("\n");
 
                 if (record_field->ty->kind == Ty_name) {
                     //printf("I HAVE TO REPLACE THIS S_NAME BY THIS TYPE: %s", S_name(record_field->ty->u.name.sym));
@@ -224,6 +225,13 @@ void TAB_resolve_mutually_recursive_types(TAB_table tenv, int recursion_depth, v
                     {
                         // if a type cannot be resolved yet, then just advance.
                         // The type is resolved later, if the file is semantically correct
+
+                        if (throw_error_on_undefined_type) {
+                            //printf("Could not resolve\n");
+
+                            EM_error(pos, "Could not resolve type \"%s\"!", S_name(record_field->ty->u.name.sym));
+                            assert(0);
+                        }
 
                         // EM_error(0, "undeclared type \"%s\". tenv does not contain type: \"%s\"\n", S_name(record_field->ty->u.name.sym), S_name(record_field->ty->u.name.sym));
                         // assert(0);

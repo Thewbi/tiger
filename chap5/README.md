@@ -1085,7 +1085,7 @@ See mutually_recursive_types_with_and_keyword.tig
 
 From the book on page 99
 
-The Tiger language treats adjacent function declarations as (possibly) mutually recursive. The FunctionDec constructor of the abstract syntax takes
+The Tiger language treats adjacent function declarations as (possibly) mutually recursive. The FunctionDec constructor of the abstract syntax takes
 a list of function declarations, not just a single function. The intent is that
 this list is a maximal consecutive sequence of function declarations. Thus,
 functions declared by the same FunctionDec can be mutually recursive.
@@ -1095,7 +1095,7 @@ Therefore, this program translates into the abstract syntax
 
 test6.tig           ( semanttest.exe ..\testcases\book\test6.tig ) // OK
 test7.tig           ( semanttest.exe ..\testcases\book\test7.tig ) // OK
-test18.tig          ( semanttest.exe ..\testcases\book\test18.tig ) // OK
+test18.tig          ( semanttest.exe ..\testcases\book\test18.tig ) // SEM_ERROR, variable declaration interrupts mutually recursive type declarations
 test19.tig          ( semanttest.exe ..\testcases\book\test19.tig ) // SEM_ERROR, var a undeclared
 
 
@@ -1109,10 +1109,10 @@ vardec_no_type_no_initializer.tig       ( semanttest.exe ..\testcases\vardec_no_
 vardec_type_no_initialization.tig       ( semanttest.exe ..\testcases\vardec_type_no_initialization.tig ) SYNTAX_ERROR
 
 Assignments:
-assignment.tig      ( semanttest.exe ..\testcases\assignment.tig    & cat ast_dump.txt ) SEMANTIC_ERROR (no type specified)
+assignment.tig      ( semanttest.exe ..\testcases\assignment.tig    & cat ast_dump.txt ) // SEMANTIC_ERROR (no type specified for variable i)
 
 Sequences:
-sequencing.tig      ( semanttest.exe ..\testcases\sequencing.tig    & cat ast_dump.txt ) SEMANTIC_ERROR, i has no type
+sequencing.tig      ( semanttest.exe ..\testcases\sequencing.tig    & cat ast_dump.txt ) // SEMANTIC_ERROR, i has no type
 
 Let
 let.tig             ( semanttest.exe ..\testcases\let.tig           & cat ..\testcases\let.tig           & cat ast_dump.txt ) // SEM-ERROR
@@ -1185,17 +1185,17 @@ Mutually recursive types
 mutually_recursive_types_with_and_keyword.tig   ( semanttest.exe ..\testcases\mutually_recursive_types_with_and_keyword.tig ) // SYNTAX ERROR since: "Type declarations separated by the keyword and form a mutually-recursive group." The "and" keyword between type declarations is not implemented! It is not part of the official language.
 mutually_recursive_types.tig                    ( semanttest.exe ..\testcases\mutually_recursive_types.tig )
 test16.tig,         ( semanttest.exe ..\testcases\book\test16.tig & cat ..\testcases\book\test16.tig & cat ast_dump.txt ) // <============== This currently semantically validates as OK although it should not
-test5.tig,          ( semanttest.exe ..\testcases\book\test5.tig  & cat ..\testcases\book\test5.tig & cat ast_dump.txt )
+test5.tig,          ( semanttest.exe ..\testcases\book\test5.tig  & cat ..\testcases\book\test5.tig & cat ast_dump.txt ) // OK
 test17.tig,         ( semanttest.exe ..\testcases\book\test17.tig & cat ..\testcases\book\test17.tig & cat ast_dump.txt ) // should throw an error since definition of recursive type is interrupted
-test6.tig,          ( semanttest.exe ..\testcases\book\test6.tig  & cat ..\testcases\book\test6.tig & cat ast_dump.txt )
-test7.tig,          ( semanttest.exe ..\testcases\book\test7.tig  & cat ..\testcases\book\test7.tig & cat ast_dump.txt )
-test18.tig,         ( semanttest.exe ..\testcases\book\test18.tig & cat ..\testcases\book\test18.tig & cat ast_dump.txt )
-test19.tig,         ( semanttest.exe ..\testcases\book\test19.tig & cat ..\testcases\book\test19.tig & cat ast_dump.txt ) 
+test6.tig,          ( semanttest.exe ..\testcases\book\test6.tig  & cat ..\testcases\book\test6.tig & cat ast_dump.txt ) // OK
+test7.tig,          ( semanttest.exe ..\testcases\book\test7.tig  & cat ..\testcases\book\test7.tig & cat ast_dump.txt ) // OK
+test18.tig,         ( semanttest.exe ..\testcases\book\test18.tig & cat ..\testcases\book\test18.tig & cat ast_dump.txt ) // SEM_ERROR, mutually recursive function declarations are interrupted by variable declaration
+test19.tig,         ( semanttest.exe ..\testcases\book\test19.tig & cat ..\testcases\book\test19.tig & cat ast_dump.txt ) // SEM_ERROR, a not declared
 
 mutually recursive functions
 test6.tig           ( semanttest.exe ..\testcases\book\test6.tig ) // OK
 test7.tig           ( semanttest.exe ..\testcases\book\test7.tig ) // OK
-test18.tig          ( semanttest.exe ..\testcases\book\test18.tig ) // OK
+test18.tig          ( semanttest.exe ..\testcases\book\test18.tig ) // SEM_ERROR, mutually recursive function declarations are interrupted by variable declaration
 test19.tig          ( semanttest.exe ..\testcases\book\test19.tig ) // SEM_ERROR, a not declared
 
 
@@ -1255,7 +1255,7 @@ test29.tig,         ( semanttest.exe ..\testcases\book\test29.tig & cat ..\testc
 test30.tig,         ( semanttest.exe ..\testcases\book\test30.tig & cat ..\testcases\book\test30.tig & cat ast_dump.txt ) // OK
 test38.tig,         ( semanttest.exe ..\testcases\book\test38.tig & cat ..\testcases\book\test38.tig & cat ast_dump.txt ) // SEM-ERROR, two types of same name in the same batch
 test47.tig,         ( semanttest.exe ..\testcases\book\test47.tig & cat ..\testcases\book\test47.tig & cat ast_dump.txt ) // OK
-test48.tig          ( semanttest.exe ..\testcases\book\test48.tig & cat ..\testcases\book\test48.tig & cat ast_dump.txt ) // SEM-ERROR, this implementation prevents shadowing!
+test48.tig          ( semanttest.exe ..\testcases\book\test48.tig & cat ..\testcases\book\test48.tig & cat ast_dump.txt ) // OK
 
 function declarations and function calls:
 test4.tig,          ( semanttest.exe ..\testcases\book\test4.tig  & cat ..\testcases\book\test4.tig & cat ast_dump.txt ) // OK
@@ -1326,11 +1326,11 @@ semanttest.exe ..\testcases\WMBao\Good\23.tig // OK, this is the queens.tig by a
 semanttest.exe ..\testcases\WMBao\Good\24.tig // SEM_WARNING, printi() not defined!
 semanttest.exe ..\testcases\WMBao\Good\25.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\26.tig // OK
-semanttest.exe ..\testcases\WMBao\Good\27.tig
-semanttest.exe ..\testcases\WMBao\Good\28.tig
+semanttest.exe ..\testcases\WMBao\Good\27.tig // SEM_WARNING, printi() not defined!
+semanttest.exe ..\testcases\WMBao\Good\28.tig // SEM_WARNING, printi() not defined!
 semanttest.exe ..\testcases\WMBao\Good\29.tig // OK
-semanttest.exe ..\testcases\WMBao\Good\30.tig
-semanttest.exe ..\testcases\WMBao\Good\32.tig
+semanttest.exe ..\testcases\WMBao\Good\30.tig // OK
+semanttest.exe ..\testcases\WMBao\Good\32.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\33.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\34.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\35.tig // OK
@@ -1344,8 +1344,8 @@ semanttest.exe ..\testcases\WMBao\Good\68.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\69.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\70.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\71.tig // OK
-semanttest.exe ..\testcases\WMBao\Good\72.tig
-semanttest.exe ..\testcases\WMBao\Good\73.tig
+semanttest.exe ..\testcases\WMBao\Good\72.tig // OK
+semanttest.exe ..\testcases\WMBao\Good\73.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\74.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\76.tig
 semanttest.exe ..\testcases\WMBao\Good\77.tig
@@ -1387,14 +1387,14 @@ semanttest.exe ..\testcases\WMBao\Bad\23.tig
 semanttest.exe ..\testcases\WMBao\Bad\24.tig
 semanttest.exe ..\testcases\WMBao\Bad\25.tig
 semanttest.exe ..\testcases\WMBao\Bad\26.tig
-semanttest.exe ..\testcases\WMBao\Bad\29.tig
-semanttest.exe ..\testcases\WMBao\Bad\32.tig
+semanttest.exe ..\testcases\WMBao\Bad\29.tig // why is nil = nil bad?
+semanttest.exe ..\testcases\WMBao\Bad\32.tig // SEM_ERROR
 semanttest.exe ..\testcases\WMBao\Bad\41.tig
 semanttest.exe ..\testcases\WMBao\Bad\42.tig
 semanttest.exe ..\testcases\WMBao\Bad\43.tig
 semanttest.exe ..\testcases\WMBao\Bad\46.tig
 semanttest.exe ..\testcases\WMBao\Bad\47.tig
-semanttest.exe ..\testcases\WMBao\Bad\48.tig
+semanttest.exe ..\testcases\WMBao\Bad\48.tig // <===================== FIX THE SEMANT! THIS HAS TO FAIL (See also semanttest.exe ..\testcases\book\test29.tig)
 semanttest.exe ..\testcases\WMBao\Bad\58.tig
 semanttest.exe ..\testcases\WMBao\Bad\59.tig
 semanttest.exe ..\testcases\WMBao\Bad\60.tig

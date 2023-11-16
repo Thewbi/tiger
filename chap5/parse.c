@@ -20,7 +20,9 @@ extern A_exp absyn_root;
    return abstract syntax data structure */
 A_exp parse(string fname) 
 {
-  EM_reset(fname);
+  if (!EM_reset(fname)) {
+    return NULL;
+  }
 
   if (yyparse() == 0) {
 

@@ -22,7 +22,10 @@ int main(int argc, char **argv)
         //tig_file = ".\\testcases\\mutually_recursive_types.tig";
         //tig_file = ".\\testcases\\mutually_recursive_types_as_function_parameters.tig";
         //tig_file = ".\\testcases\\book\\test6.tig";
-        tig_file = ".\\testcases\\book\\test47.tig";
+        //tig_file = ".\\testcases\\book\\test47.tig";
+        //tig_file = ".\\testcases\\book\\test17.tig";
+        //tig_file = ".\\testcases\\nil_matches_any_type.tig";
+        tig_file = ".\\testcases\\book\\test16.tig";
     }
     else 
     {
@@ -31,13 +34,12 @@ int main(int argc, char **argv)
 
     printf("Parsing the input ...\n");
     A_exp program = parse(tig_file);
-    printf("Parsing the input done.\n");
-
     if (program == NULL)
     {
         printf("No root exp retrieved! Aborting!\n");
         return 0;
     }
+    printf("Parsing the input done.\n");
 
     printf("Dumping the AST ...\n");
     // open a file in write only mode

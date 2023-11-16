@@ -50,8 +50,8 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
             // check if the function has been defined
             if (func_ty == NULL)
             {
-                //EM_error(a->pos, "Use of undeclared function \"%s\" !\n", S_name(func));
-                //assert(0);
+                EM_error(a->pos, "Use of undeclared function \"%s\" !\n", S_name(func));
+                assert(0);
 
                 printf("WARNING: undeclared function \"%s\" used! Mutually recursive or programming error?\n", S_name(func));
                 
@@ -415,8 +415,6 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
 
             //printf("A_forExp D\n");
 
-
-
             // insert iterator variable with type int into the for-loops venv
             S_enter(venv, var, Ty_Int());
 
@@ -488,7 +486,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
                 //printf("dec: pos: %d\n", a->pos);
                 transDec(venv, tenv, decs->head);
 
-                TAB_resolve_mutually_recursive_types(tenv, 5, show);
+                TAB_resolve_mutually_recursive_types(a->pos, tenv, 5, FALSE, show);
 
                 // advance iterator
                 decs = decs->tail;
@@ -519,7 +517,7 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
 
             //printf(">>>>>>>>>>>>>>>>>\n");
 
-            TAB_resolve_mutually_recursive_types(tenv, 5, show);
+            TAB_resolve_mutually_recursive_types(a->pos, tenv, 5, TRUE, show);
 
             //printf("....................\n");
 

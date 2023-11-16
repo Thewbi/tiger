@@ -3,20 +3,28 @@
    typeDec(
     nametyList(
      namety(a,
-      nameTy(int)),
+      nameTy(c)),
      nametyList())),
    decList(
-    varDec(b,
-     intExp(4),
-     TRUE),
+    typeDec(
+     nametyList(
+      namety(b,
+       nameTy(a)),
+      nametyList())),
     decList(
      typeDec(
       nametyList(
-       namety(a,
-        nameTy(string)),
+       namety(c,
+        nameTy(d)),
        nametyList())),
-     decList()))),
+     decList(
+      typeDec(
+       nametyList(
+        namety(d,
+         nameTy(a)),
+        nametyList())),
+      decList())))),
   seqExp(
    expList(
-    intExp(0),
+    stringExp(),
     expList())))

@@ -55,11 +55,23 @@ void EM_error(int pos, char *message,...)
 
 }
 
-void EM_reset(string fname)
+bool EM_reset(string fname)
 {
- anyErrors=FALSE; fileName=fname; lineNum=1;
+ anyErrors=FALSE; 
+ fileName=fname; 
+ lineNum=1;
+
  linePos=intList(0,NULL);
  yyin = fopen(fname,"r");
- if (!yyin) {EM_error(0,"cannot open"); exit(1);}
+
+ if ((yyin == NULL) || (!yyin))
+ {
+    fprintf(stderr, "Cannot open the file!\n");
+    return FALSE;
+ }
+
+ //if (!yyin) {EM_error(0,"cannot open"); exit(1);}
+
+ return TRUE;
 }
 

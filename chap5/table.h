@@ -49,6 +49,6 @@ void TAB_dump(TAB_table t, int recursion_depth, void (*show)(void *key, void *va
  * Name(s, NULL) is replaced by the real type! If the real type is not defined, a semantic error
  * has been found!
  */
-void TAB_resolve_mutually_recursive_types(TAB_table t, int recursion_depth, void (*show)(void *key, void *value, int recursion_depth));
+void TAB_resolve_mutually_recursive_types(int pos, TAB_table t, int recursion_depth, bool throw_error_on_undefined_type, void (*show)(void *key, void *value, int recursion_depth));
 
 #endif
