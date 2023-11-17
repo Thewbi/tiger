@@ -939,8 +939,8 @@ test19.tig,         ( semanttest.exe ..\testcases\book\test19.tig & cat ..\testc
 test34.tig,         ( semanttest.exe ..\testcases\book\test34.tig & cat ..\testcases\book\test34.tig & cat ast_dump.txt ) // SEM_ERROR, formals and actuals have different types
 test35.tig,         ( semanttest.exe ..\testcases\book\test35.tig & cat ..\testcases\book\test35.tig & cat ast_dump.txt ) // SEM_ERROR, formals are more then actuals
 test36.tig,         ( semanttest.exe ..\testcases\book\test36.tig & cat ..\testcases\book\test36.tig & cat ast_dump.txt ) // SEM_ERROR, formals are fewer then actuals
-test39.tig,         ( semanttest.exe ..\testcases\book\test39.tig & cat ..\testcases\book\test39.tig & cat ast_dump.txt )
-test40.tig          ( semanttest.exe ..\testcases\book\test40.tig & cat ..\testcases\book\test40.tig & cat ast_dump.txt )
+test39.tig,         ( semanttest.exe ..\testcases\book\test39.tig & cat ..\testcases\book\test39.tig & cat ast_dump.txt ) // SEM_ERROR, function with same name within the same batch
+test40.tig          ( semanttest.exe ..\testcases\book\test40.tig & cat ..\testcases\book\test40.tig & cat ast_dump.txt ) // OK
 
 
 ```

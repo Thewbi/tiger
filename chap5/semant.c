@@ -118,6 +118,12 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
                     args = args->tail;
                 }
 
+                if (args != NULL)
+                {
+                    EM_error(a->pos, "Too many actual parameters in function call \"%s\" !\n", S_name(func));
+                    assert(0);
+                }
+
                 //printf("A_callExp 19 - B\n");
 
                 // the return value of the call is the return type of the function declaration.
@@ -633,7 +639,7 @@ struct expty transVar(S_table venv, S_table tenv, A_var v)
             if (ty == NULL) {
                 EM_error(v->pos, "Variable \"%s\" is not declared. The type is unknown! Line: %d\n", S_name(v->u.simple), v->pos);
                 assert(0);
-                return expTy(NULL, Ty_Nil());
+                //return expTy(NULL, Ty_Nil());
                 //return expTy(NULL, Ty_nil);
             }
 
@@ -1091,16 +1097,24 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 
                 Ty_tyList formalTys = makeFormalTyList(tenv, fundec->params);
 
-                // functions do not have to return a value. 
-                // They can be defined without return type!
+                // functions do not have to have a return a value! 
+                // They can be defined without any return type!
                 if (fundec->result == NULL)
                 {
-                    //printf("123445\n");
+                    void * binding = S_look(venv, fundec->name);
+                    if (binding != NULL) {
+                        EM_error(d->pos, "Function name \"%s\" already declared within the current batch!\n", S_name(fundec->name));
+                        assert(0);
+                    }
                     S_enter(venv, fundec->name, E_FunEntry(formalTys, NULL));
                 }
                 else
                 {
                     Ty_ty resultTy = S_look(tenv, fundec->result);
+                    if (resultTy != NULL) {
+                        EM_error(d->pos, "Function name \"%s\" already declared within the current batch!\n", S_name(fundec->name));
+                        assert(0);
+                    }
                     S_enter(venv, fundec->name, E_FunEntry(formalTys, resultTy));
                 }
 
