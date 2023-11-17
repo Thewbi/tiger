@@ -1082,9 +1082,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
         {
             // printf("A_functionDec\n");
 
-            struct expty function_result_type;
-            //function_result_type.ty = Ty_nil;
-            function_result_type.ty = Ty_Nil();
+            
 
             //
             // First (Micro)-Pass: enter all function prototypes into venv
@@ -1200,7 +1198,15 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 
                 // process the body
                 //printf(">>>+++>>>> Processing function body...\n");
-                function_result_type = transExp(venv, tenv, fundec->body, OUTSIDE_LOOP);
+                //struct expty function_result_type;
+                //function_result_type.ty = Ty_nil;
+                //function_result_type.ty = Ty_Nil();
+                struct expty function_result_type = transExp(venv, tenv, fundec->body, OUTSIDE_LOOP);
+
+                if ((fundec->result == NULL) && (function_result_type.ty != A_nilExp)) {
+                    EM_error(d->pos, "Function name \"%s\" does not have a return type (procedure) but returns a value!\n", S_name(fundec->name));
+                    assert(0);
+                }
                 //printf("<<<+++<<< Processing function body done.\n");
 
                 // remove parameter scope

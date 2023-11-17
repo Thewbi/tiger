@@ -25,7 +25,8 @@ int main(int argc, char **argv)
         //tig_file = ".\\testcases\\book\\test6.tig";
         //tig_file = ".\\testcases\\book\\test16.tig";
         //tig_file = ".\\testcases\\book\\test17.tig";
-        tig_file = ".\\testcases\\book\\test29.tig";
+        //tig_file = ".\\testcases\\book\\test29.tig";
+        tig_file = ".\\testcases\\book\\test40.tig";
         //tig_file = ".\\testcases\\book\\test47.tig";
     }
     else 
