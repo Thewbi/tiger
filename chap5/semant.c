@@ -1108,12 +1108,19 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 }
                 else
                 {
-                    Ty_ty resultTy = S_look(tenv, fundec->result);
-                    if (resultTy != NULL) {
+                    Ty_ty binding = S_look(tenv, fundec->name);
+                    if (binding != NULL) {
                         EM_error(d->pos, "Function name \"%s\" already declared within the current batch!\n", S_name(fundec->name));
                         assert(0);
                     }
+
+                    Ty_ty resultTy = S_look(tenv, fundec->result);
                     S_enter(venv, fundec->name, E_FunEntry(formalTys, resultTy));
+
+                    // // DEBUG
+                    // printf("venv: \n");
+                    // TAB_dump(venv, 5, show);
+                    // printf("\n");
                 }
 
                 // next function declaration
@@ -1145,7 +1152,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 Ty_tyList formalTys = makeFormalTyList(tenv, fundec->params);
 
 /*
-                // functions do not have to return a value. 
+                // functions do not have to have return a value!
                 // They can be defined without return type!
                 if (fundec->result == NULL)
                 {
@@ -1203,7 +1210,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 //function_result_type.ty = Ty_Nil();
                 struct expty function_result_type = transExp(venv, tenv, fundec->body, OUTSIDE_LOOP);
 
-                if ((fundec->result == NULL) && (function_result_type.ty != A_nilExp)) {
+                if ((fundec->result == NULL) && ((function_result_type.ty != A_nilExp) && (function_result_type.ty->kind != Ty_nil))) {
                     EM_error(d->pos, "Function name \"%s\" does not have a return type (procedure) but returns a value!\n", S_name(fundec->name));
                     assert(0);
                 }

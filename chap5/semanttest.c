@@ -22,12 +22,16 @@ int main(int argc, char **argv)
         //tig_file = ".\\testcases\\mutually_recursive_types.tig";
         //tig_file = ".\\testcases\\mutually_recursive_types_as_function_parameters.tig";
         //tig_file = ".\\testcases\\nil_matches_any_type.tig";
+        tig_file = ".\\testcases\\function_recursive.tig";
+
         //tig_file = ".\\testcases\\book\\test6.tig";
         //tig_file = ".\\testcases\\book\\test16.tig";
         //tig_file = ".\\testcases\\book\\test17.tig";
         //tig_file = ".\\testcases\\book\\test29.tig";
-        tig_file = ".\\testcases\\book\\test40.tig";
+        //tig_file = ".\\testcases\\book\\test40.tig";
         //tig_file = ".\\testcases\\book\\test47.tig";
+
+        //tig_file = ".\\testcases\\WMBao\\Bad\\75.tig";
     }
     else 
     {

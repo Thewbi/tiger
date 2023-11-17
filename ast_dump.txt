@@ -2,20 +2,35 @@
   decList(
    functionDec(
     fundecList(
-     fundec(g,
+     fundec(fact,
       fieldList(
-       field(a,
+       field(n,
         int,
         TRUE),
        fieldList()),
-      varExp(
-       simpleVar(a))),
+      int,
+      iffExp(
+       opExp(
+        EQUAL,
+        varExp(
+         simpleVar(n)),
+        intExp(0)),
+       intExp(1),
+       opExp(
+        TIMES,
+        varExp(
+         simpleVar(n)),
+        callExp(fact,
+         expList(
+          opExp(
+           MINUS,
+           varExp(
+            simpleVar(n)),
+           intExp(1)),
+          expList()))))),
      fundecList())),
    decList()),
   seqExp(
    expList(
-    callExp(g,
-     expList(
-      intExp(2),
-      expList())),
+    intExp(0),
     expList())))

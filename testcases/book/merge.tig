@@ -7,7 +7,7 @@ function readint(any: any) : int =
  let var i := 0
      function isdigit(s : string) : int = 
 		  ord(buffer)>=ord("0") & ord(buffer)<=ord("9")
-     function skipto() =
+     function skipto() : string =
        while buffer=" " | buffer="\n"
          do buffer := getchar()
   in skipto();

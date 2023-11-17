@@ -940,7 +940,7 @@ test34.tig,         ( semanttest.exe ..\testcases\book\test34.tig & cat ..\testc
 test35.tig,         ( semanttest.exe ..\testcases\book\test35.tig & cat ..\testcases\book\test35.tig & cat ast_dump.txt ) // SEM_ERROR, formals are more then actuals
 test36.tig,         ( semanttest.exe ..\testcases\book\test36.tig & cat ..\testcases\book\test36.tig & cat ast_dump.txt ) // SEM_ERROR, formals are fewer then actuals
 test39.tig,         ( semanttest.exe ..\testcases\book\test39.tig & cat ..\testcases\book\test39.tig & cat ast_dump.txt ) // SEM_ERROR, function with same name within the same batch
-test40.tig          ( semanttest.exe ..\testcases\book\test40.tig & cat ..\testcases\book\test40.tig & cat ast_dump.txt ) // OK
+test40.tig          ( semanttest.exe ..\testcases\book\test40.tig & cat ..\testcases\book\test40.tig & cat ast_dump.txt ) // SEM_ERROR, procedure returns value
 
 
 ```
@@ -1005,14 +1005,14 @@ There are two approaches to the problem.
 
 Mutually recursive types
 mutually_recursive_types_with_and_keyword.tig   ( semanttest.exe ..\testcases\mutually_recursive_types_with_and_keyword.tig ) // SYNTAX ERROR since: "Type declarations separated by the keyword and form a mutually-recursive group." The "and" keyword between type declarations is not implemented! It is not part of the official language.
-mutually_recursive_types.tig                    ( semanttest.exe ..\testcases\mutually_recursive_types.tig )
-test16.tig,         ( semanttest.exe ..\testcases\book\test16.tig & cat ..\testcases\book\test16.tig & cat ast_dump.txt ) // <============== This currently semantically validates as OK although it should not
-test5.tig,          ( semanttest.exe ..\testcases\book\test5.tig  & cat ..\testcases\book\test5.tig & cat ast_dump.txt )
+mutually_recursive_types.tig                    ( semanttest.exe ..\testcases\mutually_recursive_types.tig ) // OK
+test16.tig,         ( semanttest.exe ..\testcases\book\test16.tig & cat ..\testcases\book\test16.tig & cat ast_dump.txt ) // <============== This currently semantically validates as OK although it should not. I just do not understand why this is relevant!
+test5.tig,          ( semanttest.exe ..\testcases\book\test5.tig  & cat ..\testcases\book\test5.tig & cat ast_dump.txt ) // OK
 test17.tig,         ( semanttest.exe ..\testcases\book\test17.tig & cat ..\testcases\book\test17.tig & cat ast_dump.txt ) // should throw an error since definition of recursive type is interrupted
-test6.tig,          ( semanttest.exe ..\testcases\book\test6.tig  & cat ..\testcases\book\test6.tig & cat ast_dump.txt )
-test7.tig,          ( semanttest.exe ..\testcases\book\test7.tig  & cat ..\testcases\book\test7.tig & cat ast_dump.txt )
-test18.tig,         ( semanttest.exe ..\testcases\book\test18.tig & cat ..\testcases\book\test18.tig & cat ast_dump.txt )
-test19.tig,         ( semanttest.exe ..\testcases\book\test19.tig & cat ..\testcases\book\test19.tig & cat ast_dump.txt ) 
+test6.tig,          ( semanttest.exe ..\testcases\book\test6.tig  & cat ..\testcases\book\test6.tig & cat ast_dump.txt ) // OK
+test7.tig,          ( semanttest.exe ..\testcases\book\test7.tig  & cat ..\testcases\book\test7.tig & cat ast_dump.txt ) // OK
+test18.tig,         ( semanttest.exe ..\testcases\book\test18.tig & cat ..\testcases\book\test18.tig & cat ast_dump.txt ) // SEM_ERROR, mutually recursive definitions are interrupted by variable declaration
+test19.tig,         ( semanttest.exe ..\testcases\book\test19.tig & cat ..\testcases\book\test19.tig & cat ast_dump.txt ) // SEM_ERROR, variable a not defined
 
 
 
@@ -1183,8 +1183,8 @@ queens.tig          ( semanttest.exe ..\testcases\queens.tig ) // OK
 
 Mutually recursive types
 mutually_recursive_types_with_and_keyword.tig   ( semanttest.exe ..\testcases\mutually_recursive_types_with_and_keyword.tig ) // SYNTAX ERROR since: "Type declarations separated by the keyword and form a mutually-recursive group." The "and" keyword between type declarations is not implemented! It is not part of the official language.
-mutually_recursive_types.tig                    ( semanttest.exe ..\testcases\mutually_recursive_types.tig )
-test16.tig,         ( semanttest.exe ..\testcases\book\test16.tig & cat ..\testcases\book\test16.tig & cat ast_dump.txt ) // <============== This currently semantically validates as OK although it should not
+mutually_recursive_types.tig                    ( semanttest.exe ..\testcases\mutually_recursive_types.tig ) // OK
+test16.tig,         ( semanttest.exe ..\testcases\book\test16.tig & cat ..\testcases\book\test16.tig & cat ast_dump.txt ) // <============== This currently semantically validates as OK although it should not. I do not understand why this code is a problem!
 test5.tig,          ( semanttest.exe ..\testcases\book\test5.tig  & cat ..\testcases\book\test5.tig & cat ast_dump.txt ) // OK
 test17.tig,         ( semanttest.exe ..\testcases\book\test17.tig & cat ..\testcases\book\test17.tig & cat ast_dump.txt ) // should throw an error since definition of recursive type is interrupted
 test6.tig,          ( semanttest.exe ..\testcases\book\test6.tig  & cat ..\testcases\book\test6.tig & cat ast_dump.txt ) // OK
@@ -1347,13 +1347,13 @@ semanttest.exe ..\testcases\WMBao\Good\71.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\72.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\73.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\74.tig // OK
-semanttest.exe ..\testcases\WMBao\Good\76.tig
-semanttest.exe ..\testcases\WMBao\Good\77.tig
+semanttest.exe ..\testcases\WMBao\Good\76.tig // OK
+semanttest.exe ..\testcases\WMBao\Good\77.tig // SEM_WARNING: use of undeclared function printi
 semanttest.exe ..\testcases\WMBao\Good\78.tig // OK
 semanttest.exe ..\testcases\WMBao\Good\79.tig // OK
-semanttest.exe ..\testcases\WMBao\Good\80.tig
+semanttest.exe ..\testcases\WMBao\Good\80.tig // SEM_WARNING: use of undeclared function printi
 semanttest.exe ..\testcases\WMBao\Good\81.tig // SEM_WARNING: use of undeclared function printi
-semanttest.exe ..\testcases\WMBao\Good\82.tig
+semanttest.exe ..\testcases\WMBao\Good\82.tig // SEM_WARNING: use of undeclared function printi
 semanttest.exe ..\testcases\WMBao\Good\83.tig
 semanttest.exe ..\testcases\WMBao\Good\84.tig // SEM_WARNING: use of undeclared function printi
 semanttest.exe ..\testcases\WMBao\Good\85.tig // SEM_WARNING: use of undeclared function printi
@@ -1375,7 +1375,7 @@ semanttest.exe ..\testcases\WMBao\Bad\6.tig
 semanttest.exe ..\testcases\WMBao\Bad\7.tig
 semanttest.exe ..\testcases\WMBao\Bad\8.tig
 semanttest.exe ..\testcases\WMBao\Bad\9.tig
-semanttest.exe ..\testcases\WMBao\Bad\10.tig
+semanttest.exe ..\testcases\WMBao\Bad\10.tig // SEM_ERROR: if-then-else invalid! then and else are of different type!
 semanttest.exe ..\testcases\WMBao\Bad\11.tig
 semanttest.exe ..\testcases\WMBao\Bad\12.tig
 semanttest.exe ..\testcases\WMBao\Bad\13.tig
