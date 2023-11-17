@@ -2,29 +2,25 @@
   decList(
    typeDec(
     nametyList(
-     namety(a,
-      nameTy(c)),
+     namety(arrtype1,
+      arrayTy(int)),
      nametyList())),
    decList(
     typeDec(
      nametyList(
-      namety(b,
-       nameTy(a)),
+      namety(arrtype2,
+       arrayTy(int)),
       nametyList())),
     decList(
-     typeDec(
-      nametyList(
-       namety(c,
-        nameTy(d)),
-       nametyList())),
-     decList(
-      typeDec(
-       nametyList(
-        namety(d,
-         nameTy(a)),
-        nametyList())),
-      decList())))),
+     varDec(arr1,
+      arrtype1,
+      arrayExp(arrtype2,
+       intExp(10),
+       intExp(0)),
+      TRUE),
+     decList()))),
   seqExp(
    expList(
-    stringExp(),
+    varExp(
+     simpleVar(arr1)),
     expList())))

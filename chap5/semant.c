@@ -193,6 +193,8 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a, int inside_loop)
                 if (right.ty->kind != Ty_int)
                 {
                     EM_error(a->u.op.right->pos, "right operand invalid - integer required");
+                    printf("This also happens when a function returns a value which is not explicily defined (procedure)\n");
+
                     assert(0);
                     sane = FALSE;
                 }
@@ -897,7 +899,8 @@ void transDec(S_table venv, S_table tenv, A_dec d)
             // }
 
             // see VARIABLE DECLARATIONS, page 119
-            struct expty init_type = expTy(NULL, Ty_Nil());
+            struct expty init_expty = expTy(NULL, Ty_Nil());
+            Ty_ty init_type = init_expty.ty;
             //struct expty init_type = expTy(NULL, Ty_nil);
 
             // determine the type of the initialization value
@@ -905,7 +908,8 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 
                 // printf("d->u.var.init - kind: %d\n", d->u.var.init->kind);
 
-                init_type = transExp(venv, tenv, d->u.var.init, OUTSIDE_LOOP);
+                init_expty = transExp(venv, tenv, d->u.var.init, OUTSIDE_LOOP);
+                init_type = init_expty.ty;
 
                 // printf("init_type retrieved: %d - ", init_type);
                 // show_type(init_type.ty);
@@ -921,7 +925,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
             S_symbol type_symbol = d->u.var.typ;
             if (type_symbol == NULL)
             {
-                S_enter(venv, d->u.var.var, init_type.ty);
+                S_enter(venv, d->u.var.var, init_type);
 
                 // printf("\nTAB_DUMP venv\n=============================\n");
                 // TAB_dump(venv, show);
@@ -942,12 +946,12 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 // show_type(var_type);
                 // printf("\n");
 
-                bool init_type_is_nil = init_type.ty->kind == Ty_nil;
+                bool init_type_is_nil = init_type->kind == Ty_nil;
                 bool var_type_is_nil = var_type->kind == Ty_nil;
 
                 // printf("init_type_is_nil: %d, var_type_is_nil: %d\n", init_type_is_nil, var_type_is_nil);
 
-                if ((init_type.ty->kind != Ty_nil) && (var_type->kind != Ty_nil)) {
+                if ((init_type->kind != Ty_nil) && (var_type->kind != Ty_nil)) {
 
                     // printf("AAAAAA\n");
 
@@ -961,7 +965,12 @@ void transDec(S_table venv, S_table tenv, A_dec d)
 
                     // printf("%d - %d\n", var_type, init_type.ty);
 
-                    if (var_type->kind != init_type.ty->kind) {
+                    if (var_type != init_type) {
+                        EM_error(d->pos, "Variable \"%s\". Initializer type and variable type differ! Line: %d\n", S_name(d->u.var.var), d->pos);
+                        assert(0);
+                    }
+
+                    if (var_type->kind != init_type->kind) {
                         EM_error(d->pos, "Variable \"%s\". Initializer type and variable type differ! Line: %d\n", S_name(d->u.var.var), d->pos);
                         assert(0);
                     }
@@ -976,7 +985,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                             break;
 
                         case Ty_array:
-                            if (var_type->u.array != init_type.ty->u.array)
+                            if (var_type->u.array != init_type->u.array)
                             {
                                 // printf("BBBBBB\n");
 
@@ -989,7 +998,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                             break;
 
                         case Ty_record:
-                            if (var_type->u.record != init_type.ty->u.record)
+                            if (var_type->u.record != init_type->u.record)
                             {
                                 // printf("CCCCCCCC\n");
 
@@ -1011,7 +1020,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                     // enter binding for the declared variable into the variable environment (venv)
                     // The initializer type is used because the explizit type specifier is optional and
                     // the initializer and specifier types have to match at all times
-                    S_enter(venv, d->u.var.var, init_type.ty);
+                    S_enter(venv, d->u.var.var, init_type);
 
                     // printf("Current venv :\n");
 

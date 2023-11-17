@@ -898,12 +898,12 @@ at least one concrete type is present.
 if nil = nil then ...
 ```
 
-test4.tig,
-test8.tig,          ( parsetest.exe ..\testcases\book\test8.tig & cat ast_dump.txt )
-test9.tig,          ( parsetest.exe ..\testcases\book\test9.tig & cat ..\testcases\book\test9.tig & cat ast_dump.txt )
-test14.tig
-test15.tig          ( parsetest.exe ..\testcases\book\test15.tig & cat ..\testcases\book\test15.tig & cat ast_dump.txt )
-test21.tig
+test4.tig,          ( semanttest.exe ..\testcases\book\test4.tig ) // OK
+test8.tig,          ( semanttest.exe ..\testcases\book\test8.tig & cat ast_dump.txt ) // OK
+test9.tig,          ( semanttest.exe ..\testcases\book\test9.tig & cat ..\testcases\book\test9.tig & cat ast_dump.txt ) // SEM_ERROR, types of if-then-else differ
+test14.tig          ( semanttest.exe ..\testcases\book\test14.tig ) // SEM_ERROR cannot compare record and array
+test15.tig          ( semanttest.exe ..\testcases\book\test15.tig & cat ..\testcases\book\test15.tig & cat ast_dump.txt ) // OK
+test21.tig          ( semanttest.exe ..\testcases\book\test21.tig ) // SEM_ERROR function without return type defined (procedure) returns value!!!
 
 
 ## for-loop
@@ -931,14 +931,14 @@ test20.tig
 
 ## Functions
 
-test4.tig,          ( semanttest.exe ..\testcases\book\test4.tig & cat ..\testcases\book\test4.tig & cat ast_dump.txt )
-test6.tig,          ( semanttest.exe ..\testcases\book\test6.tig & cat ..\testcases\book\test6.tig & cat ast_dump.txt )
-test7.tig,          ( semanttest.exe ..\testcases\book\test7.tig & cat ..\testcases\book\test7.tig & cat ast_dump.txt )
-test18.tig,         ( semanttest.exe ..\testcases\book\test18.tig & cat ..\testcases\book\test18.tig & cat ast_dump.txt )
-test19.tig,         ( semanttest.exe ..\testcases\book\test19.tig & cat ..\testcases\book\test19.tig & cat ast_dump.txt )
-test34.tig,         ( semanttest.exe ..\testcases\book\test34.tig & cat ..\testcases\book\test34.tig & cat ast_dump.txt )
-test35.tig,         ( semanttest.exe ..\testcases\book\test35.tig & cat ..\testcases\book\test35.tig & cat ast_dump.txt )
-test36.tig,         ( semanttest.exe ..\testcases\book\test36.tig & cat ..\testcases\book\test36.tig & cat ast_dump.txt )
+test4.tig,          ( semanttest.exe ..\testcases\book\test4.tig & cat ..\testcases\book\test4.tig & cat ast_dump.txt ) // OK
+test6.tig,          ( semanttest.exe ..\testcases\book\test6.tig & cat ..\testcases\book\test6.tig & cat ast_dump.txt ) // OK
+test7.tig,          ( semanttest.exe ..\testcases\book\test7.tig & cat ..\testcases\book\test7.tig & cat ast_dump.txt ) // OK
+test18.tig,         ( semanttest.exe ..\testcases\book\test18.tig & cat ..\testcases\book\test18.tig & cat ast_dump.txt ) // SEM_ERRRO, use of undeclared function do_nothing2, mutually recursive declarations separated by variable declaration
+test19.tig,         ( semanttest.exe ..\testcases\book\test19.tig & cat ..\testcases\book\test19.tig & cat ast_dump.txt ) // SEM_ERROR, variable a not defined
+test34.tig,         ( semanttest.exe ..\testcases\book\test34.tig & cat ..\testcases\book\test34.tig & cat ast_dump.txt ) // SEM_ERROR, formals and actuals have different types
+test35.tig,         ( semanttest.exe ..\testcases\book\test35.tig & cat ..\testcases\book\test35.tig & cat ast_dump.txt ) // SEM_ERROR, formals are more then actuals
+test36.tig,         ( semanttest.exe ..\testcases\book\test36.tig & cat ..\testcases\book\test36.tig & cat ast_dump.txt ) // SEM_ERROR, formals are fewer then actuals
 test39.tig,         ( semanttest.exe ..\testcases\book\test39.tig & cat ..\testcases\book\test39.tig & cat ast_dump.txt )
 test40.tig          ( semanttest.exe ..\testcases\book\test40.tig & cat ..\testcases\book\test40.tig & cat ast_dump.txt )
 
@@ -1251,7 +1251,7 @@ test14.tig,         ( semanttest.exe ..\testcases\book\test14.tig & cat ..\testc
 test22.tig,         ( semanttest.exe ..\testcases\book\test22.tig & cat ..\testcases\book\test22.tig & cat ast_dump.txt ) // SEM-ERRRO, field not in record type
 test23.tig,         ( semanttest.exe ..\testcases\book\test23.tig & cat ..\testcases\book\test23.tig & cat ast_dump.txt ) // SEM-ERROR, type mismatch
 test28.tig,         ( semanttest.exe ..\testcases\book\test28.tig & cat ..\testcases\book\test28.tig & cat ast_dump.txt ) // SEM-ERROR, different record types
-test29.tig,         ( semanttest.exe ..\testcases\book\test29.tig & cat ..\testcases\book\test29.tig & cat ast_dump.txt ) // <================= FIX IT !!!!!! should be SEM-ERROR, different array types
+test29.tig,         ( semanttest.exe ..\testcases\book\test29.tig & cat ..\testcases\book\test29.tig & cat ast_dump.txt ) // SEM-ERROR, different array types
 test30.tig,         ( semanttest.exe ..\testcases\book\test30.tig & cat ..\testcases\book\test30.tig & cat ast_dump.txt ) // OK
 test38.tig,         ( semanttest.exe ..\testcases\book\test38.tig & cat ..\testcases\book\test38.tig & cat ast_dump.txt ) // SEM-ERROR, two types of same name in the same batch
 test47.tig,         ( semanttest.exe ..\testcases\book\test47.tig & cat ..\testcases\book\test47.tig & cat ast_dump.txt ) // OK
@@ -1394,7 +1394,7 @@ semanttest.exe ..\testcases\WMBao\Bad\42.tig
 semanttest.exe ..\testcases\WMBao\Bad\43.tig
 semanttest.exe ..\testcases\WMBao\Bad\46.tig
 semanttest.exe ..\testcases\WMBao\Bad\47.tig
-semanttest.exe ..\testcases\WMBao\Bad\48.tig // <===================== FIX THE SEMANT! THIS HAS TO FAIL (See also semanttest.exe ..\testcases\book\test29.tig)
+semanttest.exe ..\testcases\WMBao\Bad\48.tig // SEM_ERROR types are different (see also semanttest.exe ..\testcases\book\test29.tig)
 semanttest.exe ..\testcases\WMBao\Bad\58.tig
 semanttest.exe ..\testcases\WMBao\Bad\59.tig
 semanttest.exe ..\testcases\WMBao\Bad\60.tig
